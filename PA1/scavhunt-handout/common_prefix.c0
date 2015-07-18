@@ -1,0 +1,9 @@
+int common_prefix(string s1, string s2, int len)
+//@requires len == min(string_length(s1), string_length(s2));
+//@ensures 0 <= \result && \result <= len;
+//@ensures string_equal(string_sub(s1, 0, \result), string_sub(s2, 0, \result));
+/*@ensures \result == len
+  @     || string_charat(s1, \result) != string_charat(s2, \result); @*/
+{
+
+}

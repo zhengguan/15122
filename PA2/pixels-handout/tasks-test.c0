@@ -1,0 +1,11 @@
+/* Testing hw1.c0 */
+
+#use <conio>
+
+int main() {
+  test_remove_red();
+  test_quantize();
+  test_count_zeroes();
+  println("All tests passed!");
+  return 0;
+}

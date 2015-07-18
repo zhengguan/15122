@@ -1,0 +1,15 @@
+int main()
+{
+  //tests for function squares_array(int)
+  int[] array1 = squares_array(1);
+  assert(array1[0] == 0);
+  int[] array3 = squares_array(3);
+  assert(array3[2] == 4);
+
+  for(int i = 0; i < 2000; i++)
+    {
+      sum_array(squares_array(i), i);
+    }
+
+  return 0;
+}

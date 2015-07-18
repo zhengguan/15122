@@ -1,0 +1,9 @@
+
+int quot(int x, int y)
+//@requires y != 0;
+//@ensures \result == x / y;
+{
+    int divident = x;
+    int divisor = y;
+    int sign = ((x >> 31) ^ (y >> 31)) & 1;
+}

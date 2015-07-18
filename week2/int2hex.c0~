@@ -1,0 +1,39 @@
+#use <string>
+
+char half_byte2hex_char(int hb)
+//@requires 0 <= hb && hb <= 15;
+{
+  if (hb <= 9)
+    return char_chr(char_ord('0') + hb);
+  else {
+    return char_chr(char_ord('A') + (hb - 10));
+  }
+}
+
+  string sub_chararray_to_string(char[] array, int start, int end)
+  //@requires string_terminated(array, \length(array))
+  // && 0 <= start && start <= end && end <= \length(array);
+  {
+    return string_sub(string_from_chararray(array), start, end);
+  }
+
+string int2hex(int x)
+//@requires
+n//@ensures
+{
+    char[] tmp = alloc_array(char, 9);
+    tmp[8] = '\0';
+    int x_init = x;
+    int mask = 15; //0xF
+    int h;
+    //@loop_invariant
+    // string_equal(
+    //  string_join(int2hex_prototype(x_init),
+    //    string_sub(string_from_chararray(tmp), i, 7)),
+    //  int2hex_prototype(x));
+    for (int i = 7; x_init != 0; i--) {
+        h = x_init & mask;
+        tmp[i] = half_byte2hex_char(h);
+        x_init = (x_init >> 4) & (~(mask << 28));
+    }
+}

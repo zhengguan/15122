@@ -1,0 +1,47 @@
+/*
+ * Unit tests for the string puzzles
+ *
+ */
+
+int main() {
+
+  /***********************/
+  /* common_prefix tests */
+  /***********************/
+
+  // Normally, we write unit tests that assert that the result we're
+  // expecting is the result that we're going to get:
+  assert(common_prefix("", "", 0) == 0);
+  assert(common_prefix("", "abc", 0) == 0);
+  assert(common_prefix("abc", "", 0) == 0);
+  assert(common_prefix("abc", "def", 3) == 0);
+  assert(common_prefix("abc", "aa", 2) == 1);
+  assert(common_prefix("abc", "adef", 3) == 1);
+  assert(common_prefix("abc", "abe", 3) == 2);
+  assert(common_prefix("abc", "abed", 3) == 2);
+  assert(common_prefix("abc", "abc", 3) == 3);
+  assert(common_prefix("abc", "abcd", 3) == 3);
+
+  // It's also possible to just run the function, ignoring the result,
+  // and let the contracts take care of checking the result.
+  common_prefix("abcd", "abefg", 4);
+  common_prefix("abcd", "abecd", 4);
+
+  /*********************************/
+  /* non_repeating_character tests */
+  /*********************************/
+
+
+
+  /************************/
+  /* same_start_end tests */
+  /************************/
+
+  assert(is_substring(same_start_end("hello"), "ll")
+      && is_substring("ll", same_start_end("hello")));
+  assert(is_substring(same_start_end("world"), ""));
+
+  same_start_end("hello");
+
+  return 0;
+}

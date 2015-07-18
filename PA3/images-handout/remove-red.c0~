@@ -1,0 +1,29 @@
+/* Assumes that pixel is already defined to be an int (pixel.c0) */
+/* typedef int pixel; */
+
+#use <util>
+
+pixel[] remove_red (pixel[] A, int width, int height)
+//@requires width > 0 && height > 0 && width <= int_max() / height;
+//@requires \length(A) == width*height;
+//@ensures \result != A;
+//@ensures \length(\result) == \length(A);
+{
+  pixel[] B = alloc_array(pixel, width*height);
+
+  for (int j = 0; j < height; j++)
+    //@loop_invariant 0 <= j;
+    {
+      for (int i = 0; i < width; i++)
+        //@loop_invariant 0 <= i;
+        {
+          //@assert 0 <= j && j < height && 0 <= i && i < width;
+          int index = get_index(j, i, width, height);
+          //@assert 0 <= index && index < \length(A);
+          //@assert \length(A) == \length(B);
+          B[index] = A[index] & 0xFF00FFFF;
+        }
+    }
+
+  return B;
+}

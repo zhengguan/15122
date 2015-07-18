@@ -1,0 +1,10 @@
+#use <string>
+#use <conio>
+
+string greet(string salutation, string entity) {
+  string str = salutation;
+  str = string_join(str, ", ");
+  str = string_join(str, entity);
+  str = string_join(str, "!");
+  return str;
+}

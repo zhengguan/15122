@@ -1,0 +1,85 @@
+bool is_sorted(int[] A, int lower, int upper)
+//@requires 0 <= lower && lower <= upper && upper <= \length(A);
+{
+  for(int i = lower; i < upper - 1; i++)
+    //@loop_invariant 0 <= i && i + 1 <= \length(A);
+    {
+      if(A[i] > A[i+1]) {
+        return false;
+      }
+    }
+  return true;
+}
+
+bool le_seg(int x, int[] A, int lower, int upper)
+//@requires 0 <= lower && lower <= upper && upper <= \length(A);
+{
+  for(int i = lower; i < upper; i++)
+    //@loop_invariant 0 <= i && i <= \length(A);
+    {
+      if(!(x<=A[i])) {
+        return false;
+      }
+    }
+  return true;
+}
+
+
+bool le_segs(int[] A, int lower1, int upper1, int lower2, int upper2)
+//@requires 0 <= lower1 && lower1 <= upper1 && upper1 <= \length(A);
+//@requires 0 <= lower2 && lower2 <= upper2 && upper2 <= \length(A);
+{
+  for(int i = lower1; i < upper1; i++)
+    //@loop_invariant 0 <= i && i <= \length(A);
+    {
+      if(!le_seg(A[i], A, lower2, upper2))
+        {
+          return false;
+        }
+    }
+  return true;
+}
+
+void swap(int[] A, int i, int j)
+//@requires 0 <= i && i < \length(A);
+//@requires 0 <= j && j < \length(A);
+{
+  int tmp = A[i];
+  A[i] = A[j];
+  A[j] = tmp;
+  return;
+}
+
+int min_index(int[] A, int lower, int upper)
+//@requires 0 <= lower && lower < upper && upper <= \length(A);
+//@ensures lower <= \result && \result < upper;
+//@ensures le_seg(A[\result], A, lower, upper);
+{
+  int min_ele_index = lower;
+  for(int i = lower; i < upper; i++)
+    //@loop_invariant lower <= i && i <= upper;
+    //@loop_invariant le_seg(A[min_ele_index], A, lower, i);
+    {
+      if(A[i] < A[min_ele_index]) {
+        min_ele_index = i;
+      }
+    }
+  return min_ele_index;
+}
+
+void sort(int[] A, int lower, int upper)
+//@requires 0 <= lower && lower <= upper && upper <= \length(A);
+//@ensures is_sorted(A, lower, upper);
+{
+  int index;
+  for(int i = lower; i < upper; i++)
+    //@loop_invariant 0 <= i && i <= \length(A);
+    //@loop_invariant is_sorted(A, lower, i);
+    //@loop_invariant le_segs(A, lower, i, i, upper);
+   {
+     index = min_index(A, i, upper);
+     //@assert le_seg(A[index], A, i, upper);
+     swap(A, i, index);
+   }
+  return;
+}

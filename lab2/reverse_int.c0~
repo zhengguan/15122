@@ -1,0 +1,7 @@
+
+int reverse_int(int x)
+
+{
+  int result = 0;
+  int mask
+}

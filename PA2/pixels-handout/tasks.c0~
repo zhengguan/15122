@@ -1,0 +1,225 @@
+/* The file pixel.c0 describes the pixel type. It also defines the
+ * pixel interface with five functions: get_red(p), get_green(p),
+ * get_blue(p), get_alpha(p), and make_pixel(a,r,g,b).  If you're
+ * *given* a working pixel implementation, you can use the pixel
+ * interface without knowing which part of the integer is used to
+ * store the blue intensity. You don't even need to know that pixels
+ * are integers!
+ *
+ * When writing this file, only use the interface of pixels.c0. We'll
+ * check your code by compiling and running it against different
+ * implementations of the pixel interface, like the one you were given
+ * in pixel-array.c0.
+ *
+ * There are 4 tasks in this file:
+ *  - 4 - Respecting interfaces
+ *  - 5 - Implement quantize() as described in the writeup
+ *  - 6 - Testing quantize()
+ *  - 7 - count_zeroes() */
+
+/* Task 4 - Respecting interfaces
+ *
+ * This implementation of the remove_red() function takes a pixel and
+ * return a pixel with red intensity 0 and with other intensities
+ * unchanged. It does not currently respect the interface to pixels:
+ * change it so that it does. */
+
+pixel remove_red(pixel p) {
+  //  return 0xFF00FFFF & p;
+  return make_pixel(get_alpha(p), 0, get_green(p), get_blue(p));
+}
+
+/* This is some code for testing the remove_red() function. It *does*
+ * respect the pixel interface. You can use it to test your
+ * implementation and, if you want, extend it with your own tests, but
+ * we won't run this test code in the autograder. */
+
+bool remove_red_works(pixel p1) {
+  pixel p2 = remove_red(p1);
+  if (get_alpha(p2) != get_alpha(p1)) return false;
+  if (get_red(p2)   != 0)             return false;
+  if (get_green(p2) != get_green(p1)) return false;
+  if (get_blue(p2)  != get_blue(p1))  return false;
+  return true;
+}
+
+void test_remove_red() {
+  assert(remove_red_works(make_pixel(0xFF, 0x01, 0x03, 0x04)));
+  assert(remove_red_works(make_pixel(0x02, 0x00, 0xFF, 0xEE)));
+  assert(remove_red_works(make_pixel(0xFF, 0xFF, 0xFF, 0xFF)));
+  assert(remove_red_works(make_pixel(0x00, 0x00, 0x00, 0x00)));
+  assert(remove_red_works(make_pixel(0x00, 0xAA, 0xBB, 0xCC)));
+}
+
+/* Task 5 - Implement quantize() as described in the writeup */
+
+pixel quantize(pixel p, int q)
+//@requires 0 <= q && q < 8;
+{
+  // Implement me!
+  int mask = (1 << 31) >> (31 - q);
+  //@assert ((1 << q) & mask) != 0;
+  //@assert (((1 << q) >> 1) & mask) == 0;
+  return  make_pixel(get_alpha(p), mask & get_red(p),
+                     mask & get_green(p), mask & get_blue(p));
+}
+
+/* Task 6 - Testing quantize()
+ *
+ * Write some more tests for quantize. Remember to respect the pixels
+ * interface! We *will* run these tests, and will grade them based on
+ * their ability to catch buggy implementations of quantize. */
+
+void test_quantize() {
+  pixel p = quantize(make_pixel(0xFF, 0xFF, 0xFF, 0xFF), 4);
+  assert(get_alpha(p) == 0xFF);
+  assert(get_red(p)   == 0xF0);
+  assert(get_green(p) == 0xF0);
+  assert(get_blue(p)  == 0xF0);
+
+  // tests added by ZGS
+  pixel p1 = quantize(make_pixel(0xFF, 0xFF, 0xFF, 0xFF), 0);
+  assert(get_alpha(p1) == 0xFF);
+  assert(get_red(p1)   == 0xFF);
+  assert(get_green(p1) == 0xFF);
+  assert(get_blue(p1)  == 0xFF);
+
+  pixel p2 = quantize(make_pixel(0xFF, 0xFF, 0xFF, 0xFF), 7);
+  assert(get_alpha(p2) == 0xFF);
+  assert(get_red(p2)   == 0x80);
+  assert(get_green(p2) == 0x80);
+  assert(get_blue(p2)  == 0x80);
+
+  pixel p3 = quantize(make_pixel(0x66, 0x66, 0x66, 0x66), 0);
+  assert(get_alpha(p3) == 0x66);
+  assert(get_red(p3)   == 0x66);
+  assert(get_green(p3) == 0x66);
+  assert(get_blue(p3)  == 0x66);
+
+  pixel p4 = quantize(make_pixel(0x66, 0x66, 0x66, 0x66), 7);
+  assert(get_alpha(p4) == 0x66);
+  assert(get_red(p4)   == 0x00);
+  assert(get_green(p4) == 0x00);
+  assert(get_blue(p4)  == 0x00);
+
+  pixel p5 = quantize(make_pixel(0x66, 0x66, 0x66, 0x66), 1);
+  assert(get_alpha(p5) == 0x66);
+  assert(get_red(p5)   == 0x66);
+  assert(get_green(p5) == 0x66);
+  assert(get_blue(p5)  == 0x66);
+}
+
+/* Task 7 - count_zeroes()
+ *
+v * In C and C0, it's a bit difficult to return more than one value
+ * from a function. For instance, say we needed to know, given an
+ * array of pixels, how many pixels had red intensity 0, how many
+ * pixels had blue intensity 0, and how many pixels had green
+ * intensity 0.
+ *
+ * We could write three different functions to return these three
+ * values, but what we'd like to do instead is write one loop that
+ * calculates all three values. Then, those three values are returned
+ * to the user by modifying the contents of an array that was passed
+ * to the function.
+ *
+ * The function count_zeroes is supposed to count the number of
+ * 0-intensity red, green, and blue pixels and store the results in
+ * results[0], results[1], and results[2], respectively. In other
+ * words, the pixel array A[] is an input and should not change, but
+ * the integer array results[] is an output, and we have to change
+ * it.
+ *
+ * The count_zeroes function has a couple of bugs and therefore fails
+ * the test cases below. Fix it, but do not change the interface. (You
+ * shouldn't need to change the test cases, either.) */
+
+void count_zeroes(pixel[] A, int length, int[] results)
+//@requires \length(A) == length;
+//@requires \length(results) == 3;
+{
+  results = alloc_array(int, 3);
+
+  for(int i = 0; i < length; i++)
+    //@loop_invariant 0 <= i;
+    {
+      if (get_red(A[i]) == 0)
+        results[0] = results[0] + 1;
+      if (get_green(A[i]) == 0)
+        results[1] = results[1] + 1;
+      if (get_blue(A[i]) == 0)
+        results[2] = results[2] + 1;
+    }
+}
+
+/* This is some code for testing the count_zeroes() function. You can
+ * use it to help you understand what count_zeroes is supposed to do,
+ * and you can use it to test your implementation. If you want, you
+ * can extend it with your own tests, but we won't run this test code
+ * in the autograder. */
+
+pixel[] copy_pixels(pixel[] A, int length)
+//@requires length == \length(A);
+//@ensures length == \length(\result);
+//@ensures \result != A;
+{
+  pixel[] B = alloc_array(pixel, length);
+  for (int i = 0; i < length; i++)
+    //@loop_invariant 0 <= i;
+    {
+      B[i] = A[i];
+    }
+  return B;
+}
+
+bool pixels_equal(pixel[] A, pixel[] B, int length)
+//@requires length == \length(A);
+//@requires length == \length(B);
+{
+  for (int i = 0; i < length; i++)
+    //@loop_invariant 0 <= i;
+    {
+      if (get_alpha(A[i]) != get_alpha(B[i])) return false;
+      if (get_red(A[i])   != get_red(B[i]))   return false;
+      if (get_green(A[i]) != get_green(B[i])) return false;
+      if (get_blue(A[i])  != get_blue(B[i]))  return false;
+    }
+  return true;
+}
+
+void test_count_zeroes() {
+  pixel[] A;
+  pixel[] C;
+  int[] results = alloc_array(int, 3);
+
+  // Initialize the array of pixels, make a copy.
+  A = alloc_array(pixel, 9);
+  A[0] = make_pixel(0xFF, 0x01, 0x03, 0x04);
+  A[1] = make_pixel(0x02, 0x00, 0xFF, 0xEE);
+  A[2] = make_pixel(0xFF, 0xFF, 0xFF, 0xFF);
+  A[3] = make_pixel(0xEE, 0xFF, 0xDD, 0x00);
+  A[4] = make_pixel(0xDD, 0xCC, 0x00, 0xFF);
+  A[5] = make_pixel(0xCC, 0x00, 0xDD, 0xEE);
+  A[6] = make_pixel(0x00, 0xEE, 0xFF, 0xDD);
+  A[7] = make_pixel(0x00, 0x00, 0x00, 0x00);
+  A[8] = make_pixel(0x00, 0xAA, 0xBB, 0xCC);
+  C = copy_pixels(A, 9);
+
+  // Count the zero-values and check the results
+  count_zeroes(A, 9, results);
+  assert(pixels_equal(A, C, 9));
+  assert(results[0] == 3);
+  assert(results[1] == 2);
+  assert(results[2] == 2);
+
+  // Modify both arrays of pixels
+  A[2] = make_pixel(0x00, 0x00, 0x00, 0xFF);
+  C[2] = make_pixel(0x00, 0x00, 0x00, 0xFF);
+
+  // Count the zero-values and check the results
+  count_zeroes(A, 9, results);
+  assert(pixels_equal(A, C, 9));
+  assert(results[0] == 4);
+  assert(results[1] == 3);
+  assert(results[2] == 2);
+}

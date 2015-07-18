@@ -1,0 +1,53 @@
+int quotient(int x, int y)
+//@requires y != 0;
+{
+  int divident = x;
+  int divisor = y;
+  int result = 0;
+  if ((x >= 0) && (y > 0)) {
+    while (divident >= divisor)
+      //@loop_invariant divident / divisor + result == x / y;
+      {
+        divident = divident - divisor;
+        result = result + 1;
+      }
+  }
+  return result;
+}
+
+
+
+int quot(int x, int y)
+//@requires y != 0;
+////@ensures \result ==
+{
+    int divident = x;
+    int divisor = y;
+    if ((x <= 0 && y < 0) || (x >=0 && y > 0) || (x % y == 0)) {
+        return x / y;
+    }
+    else {
+        //@assert x * y < 0;
+        return x / y - 1;
+    }
+}
+
+
+int rem(int x, int y)
+{
+  return x - quot(x, y) * y;
+}
+
+
+int rem1(int x, int y)
+//@requires y != 0;
+////@ensures \result ==
+{
+  if ((x <= 0 && y < 0) || (x >= 0 && y > 0) || (x % y) == 0) {
+    return x % y;
+  }
+  else {
+    //@assert x * y < 0;
+    return x % y + y;
+  }
+}

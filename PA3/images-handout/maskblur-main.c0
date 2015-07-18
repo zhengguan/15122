@@ -1,0 +1,144 @@
+#use <img>
+#use <parse>
+#use <args>
+#use <conio>
+#use <file>
+#use <string>
+
+void mask_main(string input, string output, string mask)
+{
+  print("Input image file:  ");
+  println(input);
+  print("Output image file: ");
+  println(output);
+  print("Blur mask file: ");
+  println(mask);
+  println("");
+  
+  /* Load source image */
+  image_t source = image_load(input);
+  if (source == NULL) error("Could not load source image");
+  int width = image_width(source);
+  int height = image_height(source);
+  pixel[] inpixels = image_data(source);
+
+  print("Loaded image.  Dimensions are ");
+  printint(width);
+  print(" by ");
+  printint(height);
+  println(".");
+
+  /* Load mask */
+  file_t file = file_read(mask);
+
+  if (file == NULL) {
+    error("Unable to read mask file. Try again.");
+  }
+
+  int* size = parse_int(file_readline(file),10);
+  if (size == NULL) {
+    error("Invalid blur mask size");
+  }
+  print("Mask Width: "); printint(*size); println("");
+  if (size == NULL || (*size < 0) || (*size % 2 != 1)) {
+    error("Invalid blur mask size");
+  }
+  int[] blurmask = alloc_array(int, *size * *size);
+  int i = 0;
+  while (!file_eof(file))
+    {
+      int* value = parse_int(file_readline(file),10);
+      if (value == NULL) {
+        error(string_join("Invalid weight on line ", string_fromint(i+2)));
+      }
+      blurmask[i] = *value;
+      i++;
+    }
+  if (i != *size * *size) {
+    error("Incorrect number of weights in mask file");
+  }
+
+  /* Applying mask */
+  print("Applying mask...");
+  int[] masked = apply_mask(inpixels, width, height, blurmask, *size);
+  println("done.");
+
+  /* Now masked is an array of integers. Determine scaling factor. */
+  int masksum = 0;
+  for (i = 0; i < *size * *size; i++)
+    //@loop_invariant 0 <= i;
+    {
+      masksum += blurmask[i];
+    }
+
+  // Ensure non-zero scaling factor
+  if (masksum == 0) {
+    masksum = 1;
+  }
+
+  /* Process the student-returned array into one that is clamped into
+     the [0,256) range to deal with possible negative values */
+  int[] data = alloc_array(int, width*height);
+  for (i = 0; i < width*height; i++)
+    //@loop_invariant 0 <= i;
+    {
+      data[i] = masked[i] / masksum;
+      if (data[i] > 255) data[i] = 255;
+      if (data[i] < -255) data[i] = 255;
+      if (data[i] < 0) data[i] = -data[i];
+  }
+
+  image_t dest = image_create(width, height);
+  pixel[] outpixels = image_data(dest);
+
+  for (i = 0; i < width*height; i++)
+    //@loop_invariant 0 <= i;
+    {
+      outpixels[i] = (inpixels[i] & 0xFF000000) 
+        | (data[i] << 16) 
+        | (data[i] << 8)
+        | data[i];
+    }
+  print("Saving output...");
+  image_save(dest, output);
+  println("");
+}
+
+string default_output(string input, string name) {
+  int len = string_length(input);
+  if (!(len > 4 && string_equal(".png", string_sub(input, len-4, len)))) {
+    error("Input file does not end with .png");
+  }
+  
+  string res = string_sub(input, 0, len-4);
+  res = string_join(res, "_");
+  res = string_join(res, name);
+  res = string_join(res, ".png");
+
+  return res;
+}
+
+int main() {
+  string *output = alloc(string);
+  string *input = alloc(string);
+  string *mask = alloc(string);
+
+  args_string("-o", output);
+  args_string("-i", input);
+  args_string("-m", mask);
+  args_parse();
+
+  if (string_equal("", *input) || string_equal("", *mask)) {
+    error(string_join("Usage: maskblur -i <input image> -m <blur mask>",
+                      "[-o <output image>]"));
+  }
+
+  if (string_equal("", *output)) {
+    *output = default_output(*input, "maskblur");
+  }
+
+  mask_main(*input, *output, *mask);
+
+  return 0;
+}
+

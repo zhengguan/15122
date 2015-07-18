@@ -1,0 +1,24 @@
+
+int main()
+{
+  // tests for function is_valid_imagesize()
+  assert(!is_valid_imagesize(0, 1));
+  assert(!is_valid_imagesize(1,0));
+  assert(!is_valid_imagesize(int_max() / 100 + 1, 100));
+  assert(is_valid_imagesize(1, 1));
+
+  // tests for function get_row()
+  assert(get_row(0, 10, 10) == 0);
+  assert(get_row(100, 10, 10) == 10);
+
+  // tests for function get_column()
+  assert(get_column(0, 10, 10) == 0);
+  assert(get_column(100, 10, 10) == 0);
+
+  // tests for function is_valid_pixel()
+  assert(!is_valid_pixel(0, 100, 100, 100));
+  assert(is_valid_pixel(0, 0, 100, 100));
+
+  // tests for function get_index()
+  assert(get_index(3, 4, 10, 10) == 34);
+}

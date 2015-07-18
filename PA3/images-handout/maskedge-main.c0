@@ -1,0 +1,223 @@
+#use <img>
+#use <parse>
+#use <args>
+#use <conio>
+#use <file>
+#use <string>
+
+int isqrt (int n)
+//@requires n >= 0;
+//@ensures 0 <= \result*\result && \result*\result <= n;
+//@ensures n < (\result+1)*(\result+1) || (\result+1)*(\result+1) < 0;
+//@ensures \result >= 0;
+{ int i = 0; 
+  int k = 0;
+  while (0 <= k && k <= n)
+    //@loop_invariant k == i * i;
+    //@loop_invariant i == 0 || (i > 0 && (i-1)*(i-1) <= n);
+    {
+      k = k + 2*i + 1;
+      i = i + 1;
+    }
+  return i-1;
+}
+
+int direction (int y, int x)
+{
+  if (x == 0 && y == 0)
+    return 0;
+
+  if (x == 0)
+    return 90;
+
+  int q = 10000 * y / x;
+  if (q > -4142 && q <= 4142)
+    return 0;
+  else if (q > 4142 && q <= 24142)
+    return 45;
+  else if (q > -24142 && q <= -4142)
+    return -45;
+  else
+    return 90;
+}
+
+void mask_main(string input, string output, string[] masks, int nmasks)
+{
+  print("Input image file:  ");
+  println(input);
+  print("Output image file: ");
+  println(output);
+  println("");
+
+  /* Load source image */
+  image_t source = image_load(input);
+  if (source == NULL) error("Could not load source image");
+  int width = image_width(source);
+  int height = image_height(source);
+  pixel[] inpixels = image_data(source);
+
+  print("Loaded image.  Dimensions are ");
+  printint(width);
+  print(" by ");
+  printint(height);
+  println(".");
+
+  /* Load masks */
+  int[][] maskdata = alloc_array(int[], nmasks);
+  int[] masksize = alloc_array(int, nmasks);
+  int[] masksum = alloc_array(int, nmasks);
+  for (int i = 0; i < nmasks; i++)
+    //@loop_invariant 0 <= i;
+    {
+      file_t file = file_read(masks[i]);
+      int tmp = 0;
+
+      if (file == NULL) {
+        error("Unable to read mask file. Try again.");
+      }
+
+      int* size = parse_int(file_readline(file),10);
+      if (size == NULL) {
+        error("Invalid blur mask size");
+      }
+
+      if (size == NULL || (*size < 0) || (*size % 2 != 1)) {
+        error("Invalid blur mask size");
+      }
+
+      maskdata[i] = alloc_array(int, *size * *size);
+      int j = 0;
+      while (!file_eof(file)) {
+        int* value = parse_int(file_readline(file),10);
+        if (value == NULL) {
+          print("Line ");
+          printint(j+2);
+          error(" has invalid weight");
+        }
+        maskdata[i][j] = *value;
+        tmp += *value;
+        j++;
+      }
+      if (j != *size * *size) {
+        error("Not enough weights in mask file");
+      }
+      masksize[i] = *size;
+      masksum[i] = tmp;
+    }
+
+  /* Applying blur */
+  print("Running blur...");
+  int[] blurval = apply_mask(inpixels, width, height, maskdata[0], masksize[0]);
+  println("done.");
+
+  pixel[] blurpix = alloc_array(pixel, width*height);
+  for (int i = 0; i < width * height; i++) 
+    //@loop_invariant 0 <= i;
+    {
+      int tmp = blurval[i] / masksum[0];
+      blurpix[i] = (inpixels[i] & -16777216) | (tmp << 16) |
+        (tmp << 8) | tmp;
+    }
+
+  /* Applying Sobel Operators */
+  print("Running Sobel Operator X...");
+  int[] sobelX = apply_mask(blurpix, width, height, maskdata[1], masksize[1]);
+  println("done.");
+
+  print("Running Sobel Operator Y...");
+  int[] sobelY = apply_mask(blurpix, width, height, maskdata[2], masksize[2]);
+  println("done.");
+
+  int[] G = alloc_array(int, width*height);
+  for (int i = 0; i < width*height; i++)
+    //@loop_invariant 0 <= i;
+    {
+      G[i] = isqrt(sobelY[i] * sobelY[i] + sobelX[i] * sobelX[i]);
+    }
+
+  /* Generating output image */
+  image_t dest = image_create(width, height);
+  pixel[] outpixels = image_data(dest);
+
+  for (int i = 0; i < height; i++)
+    //@loop_invariant 0 <= i;
+    {
+      for (int j = 0; j < width; j++)
+        //@loop_invariant 0 <= j;
+        {
+          int s = 1;
+          int t = 1;
+          int index = get_index(i, j, width, height);
+          int D = direction(sobelY[index], sobelX[index]);
+          if (i == 0 || j == 0 || i == height - 1 || j == width - 1)
+            outpixels[index] = -16777216;
+          else if (D == 0 &&
+                   s * G[index] > t * G[get_index(i, j - 1, width, height)] &&
+                   s * G[index] > t * G[get_index(i, j + 1, width, height)])
+            outpixels[index] = -1;
+          else if (D == 90 &&
+                   s * G[index] > t * G[get_index(i - 1, j, width, height)] &&
+                   s * G[index] > t * G[get_index(i + 1, j, width, height)])
+            outpixels[index] = -1;
+          else if (D == 45 &&
+                   s * G[index] > t * G[get_index(i - 1, j - 1,
+                                                  width, height)] &&
+                   s * G[index] > t * G[get_index(i + 1, j + 1, width, height)])
+            outpixels[index] = -1;
+          else if (D == -45 &&
+                   s * G[index] > t * G[get_index(i + 1, j - 1,
+                                                  width, height)] &&
+                   s * G[index] > t * G[get_index(i - 1, j + 1, width, height)])
+            outpixels[index] = -1;
+          else
+            outpixels[index] = -16777216;
+        }
+    }
+
+  /* Save result */
+  print("Saving output...");
+  image_save(dest, output);
+  println("done.");
+}
+
+string default_output(string input, string name) {
+  int len = string_length(input);
+  if (!(len > 4 && string_equal(".png", string_sub(input, len-4, len)))) {
+    error("Input file does not end with .png");
+  }
+  
+  string res = string_sub(input, 0, len-4);
+  res = string_join(res, "_");
+  res = string_join(res, name);
+  res = string_join(res, ".png");
+
+  return res;
+}
+
+int main() {
+  string *output = alloc(string);
+  string *input = alloc(string);
+
+  int nmasks = 3;
+  string[] masks = alloc_array(string, nmasks);
+  masks[0] = "blur-more-mask.txt";
+  masks[1] = "sobelX.txt";
+  masks[2] = "sobelY.txt";
+
+  args_string("-o", output);
+  args_string("-i", input);
+  args_parse();
+
+  if (string_equal("", *input)) {
+    error("Usage: mask2 -i <input image> [-o <output image>]");
+  }
+
+  if (string_equal("", *output)) {
+    *output = default_output(*input, "maskedge");
+  }
+
+  mask_main(*input, *output, masks, nmasks);
+
+  return 0;
+}
+

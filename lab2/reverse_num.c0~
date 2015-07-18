@@ -1,0 +1,14 @@
+int reverse_num(int x)
+//@requires 0 < x && x < 10000000;
+//@ensures 0 < \result && \result < 10000000;
+{
+  int result = 0;
+  int tmp_x = x;
+  for(int i = 0; i < 7; i++)
+    //
+    {
+      result = result * 10 + tmp_x % 10;
+      tmp_x = tmp_x / 10;
+    }
+  return x;
+}

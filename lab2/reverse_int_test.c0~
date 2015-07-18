@@ -1,0 +1,7 @@
+int main()
+{
+  assert(reverse_int(0x89ABCDEF) == 0xF7B3D591);
+  assert(reverse_int(1) == 0x80000000);
+
+  return 0;
+}

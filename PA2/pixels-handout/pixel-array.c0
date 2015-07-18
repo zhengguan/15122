@@ -1,0 +1,41 @@
+typedef int[] pixel;
+
+pixel make_pixel(int alpha, int red, int green, int blue)
+//Not including other contracts here as this is part of assignment
+//@ensures \length(\result) == 4;
+{
+    pixel p = alloc_array(int, 4);
+    p[0] = alpha;
+    p[1] = red;
+    p[2] = green;
+    p[3] = blue;
+    return p;
+}
+
+int get_alpha(pixel p)
+//@requires \length(p) == 4;
+//Not including other contracts here as this is part of assignment
+{
+    return p[0];
+}
+
+int get_red(pixel p)
+//@requires \length(p) == 4;
+//Not including other contracts here as this is part of assignment
+{
+    return p[1];
+}
+
+int get_green(pixel p)
+//@requires \length(p) == 4;
+//Not including other contracts here as this is part of assignment
+{
+    return p[2];
+}
+
+int get_blue(pixel p)
+//@requires \length(p) == 4;
+//Not including other contracts here as this is part of assignment
+{
+    return p[3];
+}

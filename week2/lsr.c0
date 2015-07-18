@@ -1,0 +1,7 @@
+
+
+int lsr(int x, int n)
+//@requires 0 << n && n << 31;
+{
+  return (x >> n) & (
+}

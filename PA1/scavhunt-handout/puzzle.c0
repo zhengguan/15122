@@ -1,0 +1,68 @@
+#use <string>
+#use <util>
+
+int min(int i, int j) { return i < j ? i : j; }
+int max(int i, int j) { return i > j ? i : j; }
+bool is_substring(string little, string big) {
+  int len = string_length(little);
+  int offset = string_length(big) - len;
+  while (offset >= 0)
+  //@loop_invariant offset <= string_length(big) - string_length(little);
+  {
+    if (string_equal(little, string_sub(big, offset, offset+len))) return true;
+    offset--;
+  }
+  return false;
+}
+
+int common_prefix(string s1, string s2, int len)
+//@requires len == min(string_length(s1), string_length(s2));
+//@ensures 0 <= \result && \result <= len;
+//@ensures string_equal(string_sub(s1, 0, \result), string_sub(s2, 0, \result));
+/*@ensures \result == len
+  @     || string_charat(s1, \result) != string_charat(s2, \result); @*/
+{
+  int i;
+  for(i = 0; i < len && string_charat(s1, i) == string_charat(s2, i); i++)
+    //@loop_invariant string_equal(string_sub(s1, 0, i), string_sub(s2, 0, i));
+    {}
+  return i;
+}
+
+int non_repeating_character(string s)
+//@requires string_length(s) > 0;
+//@requires string_charat(s, 0) != string_charat(s, string_length(s) - 1);
+//@ensures 0 <= \result && \result < string_length(s)-1;
+//@ensures string_charat(s, \result) == string_charat(s, 0);
+//@ensures string_charat(s, \result+1) != string_charat(s, 0);
+{
+  int i;
+  for(i = 0; string_charat(s, i + 1) == string_charat(s, 0); i++)
+    //@loop_invariant 0 <= i && i < string_length(s) - 1;
+    //@loop_invariant string_charat(s, i) == string_charat(s, 0);
+    {}
+  return i;
+}
+
+string same_start_end(string s)
+//@ensures is_substring(\result, s);
+/*@ensures string_length(s) < 128
+  @     || (string_length(\result) > 1
+  @         && string_charat(\result, 0)
+  @            == string_charat(\result, string_length(\result) - 1)); @*/
+{
+  int i = 0;
+  int j = 0;
+  int len = string_length(s);
+  for(i = 0; i < len; i++)
+    {
+      for(j = i+1; j < len; j++)
+        //@loop_invariant is_substring(string_sub(s, i, j), s);
+        {
+          if(string_charat(s, i) == string_charat(s, j)) {
+            return string_sub(s, i, j + 1);
+          }
+        }
+    }
+  return "";
+}

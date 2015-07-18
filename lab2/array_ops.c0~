@@ -1,0 +1,27 @@
+int[] squares_array(int x)
+//@requires x >= 0;
+//@ensures \length(\result) == x;
+{
+  int[] result_array = alloc_array(int, x);
+  for(int i = 0; i < x; i++)
+    //@loop_invariant i >= 0;
+    {
+      result_array[i] = i * i;
+    }
+  return result_array;
+}
+
+int sum_array(int[] A, int n)
+//@requires n >= 0;
+////@ensures \result == (n - 1) * n * (2 * n - 1) / 6;
+///*@ensures \result / (n + 1) == n * (2 * n + 1) / 6
+//        && \result % (n + 1) == 0; @*/
+
+{
+  int sum = 0;
+  for(int i = 0; i < n; i++)
+    {
+      sum = sum + A[i];
+    }
+  return sum;
+}

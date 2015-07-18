@@ -1,0 +1,82 @@
+#use <conio>
+#use <string>
+#use <img>
+#use <parse>
+#use <args>
+#use <util>
+
+void remove_red_main(string input, string output)
+{
+  print("Input image:  ");
+  println(input);
+  print("Output image: ");
+  println(output);
+
+  /* Load source image */
+  image_t source = image_load(input);
+  if (source == NULL) error("Could not load source image");
+  int width = image_width(source);
+  int height = image_height(source);
+  pixel[] inpixels = image_data(source);
+
+  print("Loaded image.  Dimensions are ");
+  printint(width);
+  print(" by ");
+  printint(height);
+  println(".");
+
+  /* Run transformation */
+  print("Removing red channel...");
+  pixel[] gbpixels = remove_red(inpixels, width, height);
+  println("done.");
+  //@assert \length(gbpixels) == width*height;
+
+  /* Create destination image */
+  image_t dest = image_create(width, height);
+  pixel[] outpixels = image_data(dest);
+  for (int i = 0; i < width*height; i++)
+    //@loop_invariant 0 <= i;
+    {
+      outpixels[i] = gbpixels[i];
+    }
+
+  /* Save result */
+  print("Saving output...");
+  image_save(dest, output);
+  println("done.");
+}
+
+string default_output(string input, string name) {
+  int len = string_length(input);
+  if (!(len > 4 && string_equal(".png", string_sub(input, len-4, len)))) {
+    error("Input file does not end with .png");
+  }
+  
+  string res = string_sub(input, 0, len-4);
+  res = string_join(res, "_");
+  res = string_join(res, name);
+  res = string_join(res, ".png");
+
+  return res;
+}
+
+int main() {
+  string *output = alloc(string);
+  string *input = alloc(string);
+
+  args_string("-o", output);
+  args_string("-i", input);
+  args_parse();
+
+  if (string_equal("", *input)) {
+    error("Usage: remove-red -i <input image> [-o <output image>]");
+  }
+
+  if (string_equal("", *output)) {
+    *output = default_output(*input, "remove-red");
+  }
+
+  remove_red_main(*input, *output);
+
+  return 0;
+}

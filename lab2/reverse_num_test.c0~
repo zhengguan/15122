@@ -1,0 +1,8 @@
+int main()
+{
+  assert(reverse_num(1357246) == 6427531);
+  assert(reverse_num(15122) == 2215100);
+  assert(reverse_num(42) == 2400000);
+
+  return 0;
+}

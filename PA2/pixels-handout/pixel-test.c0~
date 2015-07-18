@@ -1,0 +1,53 @@
+/*
+ * Unit tests for the pixels
+ *
+ */
+
+
+int main() {
+
+  /***********************/
+  /*    get_red tests    */
+  /***********************/
+
+  // Normally, we write unit tests that assert that the result we're
+  // expecting is the result that we're going to get:
+  assert(get_red(0x00FF0000) == 0xFF);
+  assert(get_red(0x00010000) == 0x1);
+  assert(get_red(0xFF800000) == 0x80);
+
+
+  /***********************/
+  /*   get_green tests   */
+  /***********************/
+  assert(get_green(0x0000FF00) == 0xFF);
+  assert(get_green(0x00000100) == 0x01);
+  assert(get_green(0x00008000) == 0x80);
+
+
+  /***********************/
+  /*    get_blue tests   */
+  /***********************/
+  //  assert(get_blue(0xFFFFFFFF) == 0xFF);
+  assert(get_blue(0x00000001) == 0x01);
+  assert(get_blue(0x00000080) == 0x80);
+
+
+  /***********************/
+  /*   get_alpha tests   */
+  /***********************/
+  assert(get_alpha(0xFF000000) == 0xFF);
+  assert(get_alpha(0x01000000) == 0x01);
+  assert(get_alpha(0x80000000) == 0x80);
+
+
+  /***********************/
+  /*   make_pixel tests  */
+  /***********************/
+  assert(make_pixel(1, 1, 1, 1) == 0x01010101);
+  assert(make_pixel(0x80, 0x80, 0x80, 0x80) == 0x80808080);
+  assert(make_pixel(0xFF, 0xFF, 0xFF, 0xFF) == 0xFFFFFFFF);
+
+
+  return 0;
+}

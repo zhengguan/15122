@@ -1,0 +1,98 @@
+//EX1
+bool is_permutation(int[] A1, int lower1, int upper1,
+                    int[] A2, int lower2, int upper2)
+//@requires 0 <= lower1 && lower1 <= upper1 && upper1 <= \length(A1);
+//@requires 0 <= lower2 && lower2 <= upper2 && upper2 <= \length(A2);
+{
+  int len1 = upper1 - lower1;
+  int len2 = upper2 - lower2;
+  if(len1 != len2) {
+    return false;
+  }
+
+  //@assert len1 == len2;
+  sort(A1, lower1, upper1);
+  sort(A2, lower2, upper2);
+  for(int i = 0; i < len1; i++)
+    //@loop_invariant 0 <= i && i <= len2;
+    {
+      if(A1[lower1 + i] != A2[lower2 + i]) {
+        return false;
+      }
+    }
+  return true;
+}
+
+int partition1(int[] A, int lower, int pivot_index, int upper)
+//@requires 0 <= lower && lower <= pivot_index;
+//@requires pivot_index < upper && upper <= \length(A);
+//@ensures lower <= \result && \result < upper;
+//@ensures ge_seg(A[\result], A, lower, \result);
+//@ensures le_seg(A[\result], A, \result, upper);
+{
+  int pivot = lower + (upper - lower) / 2;
+  swap(A, lower, pivot);
+
+  int left = lower + 1;
+  int right = upper;
+  while(left < right)
+    //@loop_invariant lower <= left && left <= right && right <= upper;
+    //@loop_invariant ge_seg(A[lower], A, lower + 1, left);
+    //@loop_invariant le_seg(A[lower], A, right, upper);
+    {
+      if(A[left] <= A[lower]) {
+        left++;
+      }
+      else {
+        //@assert A[left] > A[lower];
+        swap(A, left, right);
+        right--;
+      }
+    }
+  swap(A, lower, left - 1);
+  return left - 1;
+}
+
+//EX3
+//A: 3 5 4 0 6 1 2
+
+
+//EX4
+int partition(int[] A, int lower, int pivot_index, int upper)
+//@requires 0 <= lower && lower <= pivot_index;
+//@requires pivot_index < upper && upper <= \length(A);
+//@ensures ge_seg(A[\result], A, lower, \result);
+//@ensures le_seg(A[\result], A, \result, upper);
+{
+  int len = upper - lower;
+  int[] B = alloc_array(int, len);
+  int left = 0;
+  int right = len;
+  swap(A, lower, pivot_index);
+  for(int i = lower; i < upper; i++)
+    //@loop_invariant lower <= i && i <= upper;
+    //@loop_invariant 0 <= left && left <= right && right <= \length(B);
+    //@loop_invariant ge_seg(A[pivot_index], B, lower, left);
+    //@loop_invariant lt_seg(A[pivot_index], B, right, upper);
+    {
+      if(A[i] <= A[pivot_index]) {
+        B[left] = A[i];
+        left++;
+      }
+      else {
+        //@assert A[i] > A[pivot_index];
+        B[right-1] = A[i];
+        right--;
+      }
+    }
+  //@assert left >= 1;
+  //@assert B[0] == A[pivot_index];
+  swap(B, 0, left - 1);
+
+  for(int i = 0; i < len; i++)
+    //@loop_invariant 0 <= i && i <= len;
+    {
+      A[lower + i] = B[i];
+    }
+  return lower + left - 1;
+}

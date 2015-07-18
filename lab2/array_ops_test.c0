@@ -1,0 +1,31 @@
+int test_sum_array(int n)
+{
+  return sum_array(squares_array(n), n);
+}
+
+int test_sum_array_recur(int n)
+{
+  return sum_array_recur(squares_array(n), n);
+}
+
+
+int main()
+{
+  //tests for function squares_array(int)
+  int[] array1 = squares_array(1);
+  assert(array1[0] == 0);
+  int[] array3 = squares_array(3);
+  assert(array3[2] == 4);
+
+  // tests for function sum_array(int)
+  assert(test_sum_array(0) == 0);
+  assert(test_sum_array(1) == 0);
+  assert(test_sum_array(3) == 5);
+
+  // tests for function sum_array_recur(int[], int)
+  assert(test_sum_array_recur(0) == 0);
+  assert(test_sum_array_recur(1) == 0);
+  assert(test_sum_array_recur(3) == 5);
+
+  return 0;
+}

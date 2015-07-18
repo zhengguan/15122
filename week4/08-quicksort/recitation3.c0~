@@ -1,0 +1,38 @@
+void sort(int[] A, int n)
+//@requires 0 <= n && n <= \length(A);
+//@ensures is_sorted(A, 0, n);
+{
+  bool done = false;
+  while (!done)
+    //@loop_invariant !done || is_sorted(A, 0, n);
+    {
+      bool swapped = false;
+      for (int j = 0; j < n - 1; j++)
+        //@loop_invariant 0 <= j && j <= n - 1;
+        //@loop_invariant swapped || is_sorted(A, 0, j);
+        //@loop_invariant ge_seg(A[j], A, 0, j);
+        {
+          if (A[j] > A[j+1]) {
+            swapped = true;
+            swap(A, j, j+1);
+          }
+        }
+    }
+  if (!swapped) done = true;
+}
+
+
+int main()
+{
+  int A[] = alloc_array(int, 5);
+  for (int i = 0; i < 5; i++)
+    {
+      A[i] = 4 - i;
+    }
+
+  sort(A, 0, 0);
+  sort(A, 0, 1);
+  sort(A, 0, 5);
+
+  return 0;
+}

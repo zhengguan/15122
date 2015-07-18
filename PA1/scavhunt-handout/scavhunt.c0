@@ -1,0 +1,23 @@
+#use <string>
+#use <conio>
+
+string greet(string salutation, string entity) {
+  string str = salutation;
+  str = string_join(str, ", ");
+  str = string_join(str, entity);
+  str = string_join(str, "!");
+  return str;
+}
+
+/* file fact.c0 */
+int factorial(int n)
+//@requires n >= 0;
+{
+  int result = 1;      /* line 1 */
+  int i = 1;           /* line 2 */
+  while (i <= n) {     /* line 3 */
+    result = result*i; /* line 4 */
+    i = i+1;           /* line 5 */
+  }
+  return result;       /* line 6 */
+}

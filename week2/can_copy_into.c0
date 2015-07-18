@@ -1,0 +1,18 @@
+int can_copy_into(int[] source, int i, int[] target, int j, int n)
+/*@requires
+  0 <= i && i < n &&
+  0 <= j && j <= \length(target);
+ @*/
+{
+  int src_availiable = n - i;
+  int k = 0;
+  while(target[j+k] != '\0') {
+    k++;
+  }
+  if(k < src_availiable) {
+    return k;
+  }
+  else {
+    return src_availiable;
+  }
+}

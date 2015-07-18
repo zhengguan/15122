@@ -1,0 +1,59 @@
+/* Example of some unit tests for remove-red.c0 */
+
+#use <conio>
+#use <util>
+
+// We could put preconditions on this function (0 <= alpha < 256 and
+// so on), but it's not necessary for safety.
+void assert_pixels_eq(pixel p, int alpha, int red, int green, int blue) {
+  assert(get_alpha(p) == alpha);
+  assert(get_red(p) == red);
+  assert(get_green(p) == green);
+  assert(get_blue(p) == blue);
+}
+
+int main() {
+  pixel[] A;
+  pixel[] B;
+
+  /*** Test 1 - edge case (1x1) ***/
+
+  // Initialize A, run remove_red();
+  A = alloc_array(pixel, 1);
+  A[0] = make_pixel(0xFF, 0x01, 0x03, 0x04);
+  B = remove_red(A, 1, 1);
+  
+  // Is A unchanged?
+  assert_pixels_eq(A[0], 0xFF, 0x01, 0x03, 0x04);
+
+  // Is B correct?
+  assert_pixels_eq(B[0], 0xFF, 0x00, 0x03, 0x04);
+
+  /*** Test 2 - small non-edge case (2x2) ***/
+
+  // Initialize A, run remove_red();
+  A = alloc_array(pixel, 4);
+  A[0] = make_pixel(0x02, 0x00, 0xFF, 0xEE);
+  A[1] = make_pixel(0xFF, 0xFF, 0xFF, 0xFF);
+  A[2] = make_pixel(0x00, 0x00, 0x00, 0x00);
+  A[3] = make_pixel(0x00, 0xAA, 0xBB, 0xCC);
+  B = remove_red(A, 2, 2);
+  
+  // Is A unchanged?
+  assert_pixels_eq(A[0], 0x02, 0x00, 0xFF, 0xEE);
+  assert_pixels_eq(A[1], 0xFF, 0xFF, 0xFF, 0xFF);
+  assert_pixels_eq(A[2], 0x00, 0x00, 0x00, 0x00);
+  assert_pixels_eq(A[3], 0x00, 0xAA, 0xBB, 0xCC);
+
+  // Is B correct?
+  assert_pixels_eq(B[0], 0x02, 0x00, 0xFF, 0xEE);
+  assert_pixels_eq(B[1], 0xFF, 0x00, 0xFF, 0xFF);
+  assert_pixels_eq(B[2], 0x00, 0x00, 0x00, 0x00);
+  assert_pixels_eq(B[3], 0x00, 0x00, 0xBB, 0xCC);
+
+  /*** Other edge cases to consider: 1x3 image, 3x1 image ***/
+
+  println("All tests passed!");
+  
+  return 0;
+}
