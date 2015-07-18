@@ -1,0 +1,26 @@
+// GIVEN: an array of pixels represents an image and its size
+// RETURNS: an image that contains four couter clockwise rotation
+// of the given image
+pixel[] rotate(pixel pixels, int width, int height)
+//@requires is_valid_imagesize(width, hegith);
+//@requires /length(pixels) == width * hegith;
+//@requires width == height;
+//@ensures \result != pixels;
+//@ensures \length(\result) == \length(pixels) * 4;
+{
+  int size = width * 2;
+  pixel[] image = alloc_array(pixel, size * size);
+  pixel[] ninty_degree = rotate_image(pixels, width, height, 90);
+  copy_image(ninty_degree, height, width, image, 0, 0);
+}
+
+// GIVEN: an array of pixels represents an image and its size,
+// an number that represents the degree to rotate the image
+// RETURNS: the image after rotated the given degree
+pixel rotate_image(pixel[] image, int width, int height, int degree)
+{}
+
+// GIVEN: an image src and its size, another image dst and a
+// location of dst
+// EFFECT: copy src to dst, with src's top left point at the
+// given location of dst
