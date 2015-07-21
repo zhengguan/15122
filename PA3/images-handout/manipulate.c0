@@ -44,40 +44,6 @@ pixel[] manipulate (pixel[] A, int width, int height)
           int index = get_index(j, i, width, height);
           enlarge_pixel(A, width, height, j, i,
                         B, 2 * width, 2 * height, 2 * j, 2 * i);
-//          int index_b = get_index(j * 2, i * 2, width_b, height_b);
-//          int index_b_right = get_index(j * 2, i * 2 + 1,
-//                                        width_b, height_b);
-//          int index_b_down = get_index(j * 2 + 1, i * 2,
-//                                       width_b, height_b);
-//          int index_b_right_down = get_index(j * 2 + 1, i * 2 + 1,
-//                                             width_b, height_b);
-//          //@assert 0 <= index && index < \length(A);
-//          //@assert \length(A) * 4 == \length(B);
-//          pixel p = A[index];
-//          B[index_b] = clone_pixel(p);
-//          if(i + 1 < width) {
-//            B[index_b_right] = average_pixel(A[index], A[index + 1]);
-//          }
-//          else {
-//            B[index_b_right] = clone_pixel(p);
-//          }
-//
-//          if(j + 1 < height) {
-//            B[index_b_down] =
-//              average_pixel(A[index], A[get_index(j + 1, i, width, height)]);
-//          }
-//          else {
-//            B[index_b_down] = clone_pixel(p);
-//          }
-//
-//          if(i + 1 < width && j + 1 < height) {
-//            B[index_b_right_down] =
-//              average_pixel(A[index],
-//                            A[get_index(j + 1, i + 1, width, height)]);
-//          }
-//          else {
-//            B[index_b_right_down] = clone_pixel(p);
-//          }
         }
     }
 
