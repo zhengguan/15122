@@ -29,7 +29,7 @@ void manipulate_main(string input, string output)
   pixel[] manippixels = manipulate(inpixels, width, height);
   println("done.");
   /*@assert \length(manippixels) ==
-	result_width(width, height) * result_height(width, height); @*/
+       result_width(width, height) * result_height(width, height); @*/
 
   /* Create destination image */
   int outwidth = result_width(width, height);

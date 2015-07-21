@@ -1,0 +1,91 @@
+// GIVNE: a one dimension array that contains pixels of an image
+// and the size of the image, a mask and its size
+// RETURNS: the result of apply mask  on the given image to perform mask
+// transformation
+int[] apply_mask(pixel[] pixels, int width ,int height,
+                 int[] mask, int maskwidth);
+
+// GIVEN: an index of an array pixels which contains all pixels of an image,
+// the size of the image is width * height, an mask and its size
+// RETURNS: the result of applying mask over pixels[i]
+int mask_result(int index, pixel[] pixels, int width, int height,
+                int[] mask, int maskwidth);
+
+// GIVEN: the coordinates of a location and the size of an image
+// RETURNS: true iff the given location is located in the given image
+bool is_within_image(int row, int col, int width, int height);
+
+// RETURNS: the average value of the given pixel's red, green, blue channel
+int average_value(pixel p);
+
+
+// GIVNE: a one dimension array that contains pixels of an image
+// and the size of the image, a mask and its size
+// RETURNS: the result of apply mask  on the given image to perform mask
+// transformation
+int[] apply_mask(pixel[] pixels, int width ,int height,
+                 int[] mask, int maskwidth)
+//@requires is_valid_imagesize(width, height);
+//@requires \length(pixels) == width * height;
+//@requires 1 <= maskwidth && (maskwidth % 2 == 1);
+//@requires \length(mask) == maskwidth * maskwidth;
+//@ensures \length(\result) == \length(pixels);
+{
+  int[] result = alloc_array(int, width * height);
+  for(int i = 0; i < width * height; i++)
+    //@loop_invariant 0 <= i;
+    {
+      result[i] = mask_result(i, pixels, width, height, mask, maskwidth);
+    }
+  return result;
+}
+
+// GIVEN: an index of an array pixels which contains all pixels of an image,
+// the size of the image is width * height, an mask and its size
+// RETURNS: the result of applying mask over pixels[i]
+int mask_result(int index, pixel[] pixels, int width, int height,
+                int[] mask, int maskwidth)
+//@requires 0 <= index && index <= width * height;
+//@requires is_valid_imagesize(width, height);
+//@requires \length(pixels) == width * height;
+//@requires 1 <= maskwidth && (maskwidth % 2 == 1);
+//@requires \length(mask) == maskwidth * maskwidth;
+{
+  int row = get_row(index, width, height);
+  int col = get_column(index, width, height);
+  int left = col - maskwidth / 2;
+  int top = row - maskwidth / 2;
+  int value = 0;
+  for(int i = 0; i < maskwidth; i++)
+    //@loop_invariant 0 <= i;
+    {
+      for(int j = 0; j < maskwidth; j++)
+        //@loop_invariant 0 <= j;
+        {
+          if(is_within_image(top + i, left + j, width, height)) {
+            int mask_index = get_index(i, j, maskwidth, maskwidth);
+            int image_index = get_index(top + i, left + j, width, height);
+            value = value +
+              mask[mask_index] * average_value(pixels[image_index]);
+          }
+        }
+    }
+  return value;
+}
+
+// GIVEN: the coordinates of a location and the size of an image
+// RETURNS: true iff the given location is located in the given image
+bool is_within_image(int row, int col, int width, int height)
+//@requires is_valid_imagesize(width, height);
+{
+  return
+    (0 <= row) && (row < height) &&
+    (0 <= col) && (col < width);
+}
+
+
+// RETURNS: the average value of the given pixel's red, green, blue channel
+int average_value(pixel p)
+{
+  return (get_red(p) + get_green(p) + get_blue(p)) / 3;
+}

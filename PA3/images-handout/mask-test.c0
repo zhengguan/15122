@@ -1,0 +1,91 @@
+#use <conio>
+/* tests for mask.c0 */
+
+// tests for apply_mask()
+void test_apply_mask();
+
+// tests for mask_result()
+void test_mask_result();
+
+int main()
+{
+  // tests for apply_mask()
+  test_apply_mask();
+
+  // tests for mask_result()
+  test_mask_result();
+
+
+  // tests for is_within_image
+  assert(is_within_image(-1, 0, 2, 2) == false);
+  assert(is_within_image(2, 0, 2, 2) == false);
+  assert(is_within_image(1, 1, 2, 2) == true);
+
+
+  // tests for average_value()
+  assert(average_value(make_pixel(0xff, 1, 2, 3)) == 2);
+  assert(average_value(make_pixel(0xff, 2, 2, 3)) == 2);
+
+  println("All tests passed.");
+  return 0;
+}
+
+// tests for apply_mask()
+void test_apply_mask()
+{
+  pixel[] image = alloc_array(pixel, 9);
+  int image_width = 3;
+  int image_height = 3;
+  for(int i = 0; i < 9; i++)
+    //@loop_invariant 0 <= i;
+    {
+      image[i] = make_pixel(0xff, i, i, i);
+    }
+
+  int[] mask = alloc_array(int, 9);
+  int maskwidth = 3;
+  for(int i = 0; i < 9; i++)
+    //@loop_invariant 0 <= i;
+    {
+      mask[i] = i * 2 - 9;
+    }
+
+  int[] result = apply_mask(image, image_width, image_height,
+                            mask, maskwidth);
+  for(int i = 0; i < image_width * image_height; i++)
+    {
+      assert(result[i] == mask_result(i, image, image_width, image_height,
+                                      mask, maskwidth));
+    }
+
+}
+
+
+// tests for mask_result()
+void test_mask_result() {
+  pixel[] image = alloc_array(pixel, 9);
+  int image_width = 3;
+  int image_height = 3;
+  for(int i = 0; i < 9; i++)
+    //@loop_invariant 0 <= i;
+    {
+      image[i] = make_pixel(0xff, i, i, i);
+    }
+
+  int[] mask = alloc_array(int, 9);
+  int maskwidth = 3;
+  for(int i = 0; i < 9; i++)
+    //@loop_invariant 0 <= i;
+    {
+      mask[i] = i * 2 - 9;
+    }
+  assert(mask_result(0, image, image_width, image_height,
+                     mask, maskwidth)
+         == 44);
+  assert(mask_result(4, image, image_width, image_height,
+                     mask, maskwidth)
+         == 84);
+  assert(mask_result(8, image, image_width, image_height,
+                     mask, maskwidth)
+         == -100);
+}

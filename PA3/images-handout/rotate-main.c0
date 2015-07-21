@@ -1,4 +1,4 @@
-#use <conio>
+ma#use <conio>
 #use <string>
 #use <args>
 #use <parse>
@@ -46,12 +46,12 @@ void rotate_main(string input, string output)
   println("done.");
 }
 
-string default_output(string input, string name) {
+ostring default_output(string input, string name) {
   int len = string_length(input);
   if (!(len > 4 && string_equal(".png", string_sub(input, len-4, len)))) {
     error("Input file does not end with .png");
   }
-  
+
   string res = string_sub(input, 0, len-4);
   res = string_join(res, "_");
   res = string_join(res, name);
@@ -80,4 +80,3 @@ int main() {
 
   return 0;
 }
-

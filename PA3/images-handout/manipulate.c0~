@@ -1,0 +1,68 @@
+/* Assumes that pixel is already defined to be an int (pixel.c0) */
+/* typedef int pixel; */
+
+#use <util>
+
+//GIVEN: two pixels
+//RETURNS: a pixel whose ARGB value if the average of the given two
+pixel average_pixel(pixel p, pixel q);
+
+// GIVEN: a array that contains all pixels of an image, the size of the image
+// RTURNS: an image like the given one, but with its width and height doubled
+pixel[] manipulate (pixel[] A, int width, int height)
+//@requires width > 0 && height > 0 && width <= int_max() / height;
+//@requires \length(A) == width*height;
+//@ensures \result != A;
+//@ensures \length(\result) == \length(A) * 4;
+{
+
+  pixel[] B = alloc_array(pixel, 2 * width * 2 * height);
+  int height_b = 2 * height;
+  int width_b = 2 * width;
+
+  for (int j = 0; j < height; j++)
+    //@loop_invariant 0 <= j;
+    {
+      for (int i = 0; i < width; i++)
+        //@loop_invariant 0 <= i;
+        {
+          //@assert 0 <= j && j < height && 0 <= i && i < width;
+          int index = get_index(j, i, width, height);
+          int index_b = get_index(j * 2, i * 2, width_b, height_b);
+          //@assert 0 <= index && index < \length(A);
+          //@assert \length(A) * 4 == \length(B);
+          pixel p = A[index];
+          B[index_b] = make_pixel(get_alpha(p), get_red(p),
+                                  get_green(p), get_blue(p));
+          if(i + 1 < width) {
+            B[index_b + 1] = average_pixel(A[index], A[index + 1]);
+          }
+          else {
+            B[index_b + 1] = make_pixel(get_alpha(p), get_red(p),
+                                        get_green(p), get_blue(p));
+          }
+        }
+    }
+
+  return B;
+}
+
+//GIVEN: two pixels
+//RETURNS: a pixel whose ARGB value if the average of the given two
+pixel average_pixel(pixel p, pixel q)
+{
+  return make_pixel((get_alpha(p) + get_alpha(q)) / 2,
+                    (get_red(p) + get_red(q)) / 2,
+                    (get_green(p) + get_green(q)) / 2,
+                    (get_blue(p) + get_blue(q)) / 2);
+}
+
+int result_width(int width, int height)
+{
+  return width * 2;
+}
+
+int result_height(int width, int height)
+{
+  return height * 2;
+}

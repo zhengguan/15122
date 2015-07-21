@@ -1,0 +1,169 @@
+/* Assumes that pixel is already defined to be an int (pixel.c0) */
+/* typedef int pixel; */
+
+#use <util>
+
+//GIVEN: two pixels
+//RETURNS: a pixel whose ARGB value if the average of the given two
+pixel average_pixel(pixel p, pixel q);
+
+//RETURNS: a clone of the given pixel
+pixel clone_pixel(pixel p);
+
+// GIVEN: an image src, its size src_width * src_height, the coordinate of
+// a pixel on the image (src_row, src_col),
+// an image dst, its size dst_width * dst_height, the coordinate of a pixel on
+// the image (dst_row, dst_col)
+// EFFECT: enlarge the pixel on src into 2X2 pixels on dst with the top left
+// pixel at the (dst_row, dst_col)
+void enlarge_pixel(pixel[] src, int src_width, int src_height,
+                   int src_row, int src_col,
+                   pixel[] dst, int dst_width, int dst_height,
+                   int dst_row, int dst_col);
+
+// GIVEN: a array that contains all pixels of an image, the size of the image
+// RTURNS: an image like the given one, but with its width and height doubled
+pixel[] manipulate (pixel[] A, int width, int height)
+//@requires width > 0 && height > 0 && width <= int_max() / height;
+//@requires \length(A) == width*height;
+//@ensures \result != A;
+//@ensures \length(\result) == \length(A) * 4;
+{
+
+  pixel[] B = alloc_array(pixel, 2 * width * 2 * height);
+  int height_b = 2 * height;
+  int width_b = 2 * width;
+
+  for (int j = 0; j < height; j++)
+    //@loop_invariant 0 <= j;
+    {
+      for (int i = 0; i < width; i++)
+        //@loop_invariant 0 <= i;
+        {
+          //@assert 0 <= j && j < height && 0 <= i && i < width;
+          int index = get_index(j, i, width, height);
+          enlarge_pixel(A, width, height, j, i,
+                        B, 2 * width, 2 * height, 2 * j, 2 * i);
+//          int index_b = get_index(j * 2, i * 2, width_b, height_b);
+//          int index_b_right = get_index(j * 2, i * 2 + 1,
+//                                        width_b, height_b);
+//          int index_b_down = get_index(j * 2 + 1, i * 2,
+//                                       width_b, height_b);
+//          int index_b_right_down = get_index(j * 2 + 1, i * 2 + 1,
+//                                             width_b, height_b);
+//          //@assert 0 <= index && index < \length(A);
+//          //@assert \length(A) * 4 == \length(B);
+//          pixel p = A[index];
+//          B[index_b] = clone_pixel(p);
+//          if(i + 1 < width) {
+//            B[index_b_right] = average_pixel(A[index], A[index + 1]);
+//          }
+//          else {
+//            B[index_b_right] = clone_pixel(p);
+//          }
+//
+//          if(j + 1 < height) {
+//            B[index_b_down] =
+//              average_pixel(A[index], A[get_index(j + 1, i, width, height)]);
+//          }
+//          else {
+//            B[index_b_down] = clone_pixel(p);
+//          }
+//
+//          if(i + 1 < width && j + 1 < height) {
+//            B[index_b_right_down] =
+//              average_pixel(A[index],
+//                            A[get_index(j + 1, i + 1, width, height)]);
+//          }
+//          else {
+//            B[index_b_right_down] = clone_pixel(p);
+//          }
+        }
+    }
+
+  return B;
+}
+
+// GIVEN: an image src, its size src_width * src_height, the coordinate of
+// a pixel on the image (src_row, src_col),
+// an image dst, its size dst_width * dst_height, the coordinate of a pixel on
+// the image (dst_row, dst_col)
+// EFFECT: enlarge the pixel on src into 2X2 pixels on dst with the top left
+// pixel at the (dst_row, dst_col)
+void enlarge_pixel(pixel[] src, int src_width, int src_height,
+                   int src_row, int src_col,
+                   pixel[] dst, int dst_width, int dst_height,
+                   int dst_row, int dst_col)
+//@requires is_valid_imagesize(src_width, src_height);
+//@requires \length(src) == src_width * src_height;
+//@requires 0 <= src_row && src_row <= src_height;
+//@requires 0 <= src_col && src_col <= src_width;
+//@requires is_valid_imagesize(dst_width, dst_height);
+//@requires \length(dst) == dst_width * dst_height;
+//@requires 0 <= dst_row && dst_row + 1 <= dst_height;
+//@requires 0 <= dst_col && dst_col + 1 <= dst_width;
+{
+  int src_index = get_index(src_row, src_col, src_width, src_height);
+  int dst_index = get_index(dst_row, dst_col, dst_width, dst_height);
+  dst[dst_index] = clone_pixel(src[src_index]);
+
+  int dst_right_index = get_index(dst_row, dst_col + 1, dst_width, dst_height);
+  if(src_col + 1 < src_height) {
+    int src_right_index =
+      get_index(src_row, src_col + 1, src_width, src_height);
+    dst[dst_right_index] =
+      average_pixel(src[src_index], src[src_right_index]);
+  }
+  else {
+    dst[dst_right_index] = clone_pixel(src[src_index]);
+  }
+
+  int dst_down_index = get_index(dst_row + 1, dst_col, dst_width, dst_height);
+  if(src_row + 1 < src_height) {
+    int src_down_index = get_index(src_row + 1, src_col, src_width, src_height);
+    dst[dst_down_index] =
+      average_pixel(src[src_index], src[src_down_index]);
+  }
+  else {
+    dst[dst_down_index] = clone_pixel(src[src_index]);
+  }
+
+  int dst_down_right_index =
+    get_index(dst_row + 1, dst_col + 1, dst_width, dst_height);
+  if(src_row + 1 < src_height && src_col + 1 < src_width) {
+    int src_down_right_index =
+      get_index(src_row + 1, src_col + 1, src_width, src_height);
+    dst[dst_down_right_index] =
+      average_pixel(src[src_index], src[src_down_right_index]);
+  }
+  else {
+    dst[dst_down_right_index] = clone_pixel(src[src_index]);
+  }
+}
+
+//RETURNS: a clone of the given pixel
+pixel clone_pixel(pixel p)
+{
+  return make_pixel(get_alpha(p), get_red(p),
+                    get_green(p), get_blue(p));
+}
+
+//GIVEN: two pixels
+//RETURNS: a pixel whose ARGB value if the average of the given two
+pixel average_pixel(pixel p, pixel q)
+{
+  return make_pixel((get_alpha(p) + get_alpha(q)) / 2,
+                    (get_red(p) + get_red(q)) / 2,
+                    (get_green(p) + get_green(q)) / 2,
+                    (get_blue(p) + get_blue(q)) / 2);
+}
+
+int result_width(int width, int height)
+{
+  return width * 2;
+}
+
+int result_height(int width, int height)
+{
+  return height * 2;
+}

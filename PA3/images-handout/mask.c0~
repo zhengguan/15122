@@ -1,0 +1,39 @@
+int[] apply_mask(pixel[] pixels, int width ,int height,
+                 int[] mask, int maskwidth);
+
+int mask_result(int index, pixel[] pixels, int width, int height,
+                int[] mask, int maskwidth);
+
+
+
+// GIVNE: a one dimension array that contains pixels of an image
+// and the size of the image, a mask and its size
+// RETURNS: the result of apply mask  on the given image to perform mask
+// transformation
+int[] apply_mask(pixel[] pixels, int width ,int height,
+                 int[] mask, int maskwidth)
+//@requires is_valid_imagesize(width, height);
+//@requirs \length(pixels) == width * height;
+//@requires 1 <= maskwidth && (maskwidth % 2 == 1);
+//@requirs \length(mask) == maskwidth * maskwidth;
+//@ensures \length(\result) == \length(pixels);
+{
+  int[] result = alloc_array(int, width * height);
+  for(int i = 0; i < width * height; i)
+    //@loop_invariant 0 <= i;
+    {
+      result[i] = mask_result(i, pixels, width, height, mask, maskwidth);
+    }
+  return result;
+}
+
+// GIVEN: an index of an array pixels which contains all pixels of an image,
+// the size of the image is width * height, an mask and its size
+// RETURNS: the result of applying mask over pixels[i]
+int mask_result(int index, pixel[] pixels, int width, int height,
+                int[] mask, int maskwidth)
+//@requires 0 <= index && index <= width * height;
+//@requires is_valid_image_size(width, height);
+//@requires \length(pixel) == widht * height;
+//@requires 1 <= maskwidth && (maskwidth % 2 == 1);
+//@requires \length(mask) == maskwidth * maskwidth;
