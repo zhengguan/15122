@@ -1,26 +1,180 @@
+pixel[] rotate(pixel[] pixels, int width, int height);
+pixel[] rotate_image(pixel[] image, int width, int height, int degree);
+//pixel rotate_image(pixel[] image, int width, int height, int degree);
+void copy_image(pixel[] src, int src_width, int src_height,
+                pixel[] dst, int dst_width, int dst_height,
+                int row, int col);
+int rotate_index(int i, int width, int height, int degree);
+pixel clone_pixel(pixel p);
+bool is_sub_image(pixel[] src, int src_width, int src_height,
+                  pixel[] dst, int dst_width, int dst_height,
+                  int row, int col);
+bool pixel_eq(pixel p, pixel q);
+
+
 // GIVEN: an array of pixels represents an image and its size
 // RETURNS: an image that contains four couter clockwise rotation
 // of the given image
-pixel[] rotate(pixel pixels, int width, int height)
-//@requires is_valid_imagesize(width, hegith);
-//@requires /length(pixels) == width * hegith;
+pixel[] rotate(pixel[] pixels, int width, int height)
+//@requires is_valid_imagesize(width, height);
+//@requires \length(pixels) == width * height;
 //@requires width == height;
 //@ensures \result != pixels;
 //@ensures \length(\result) == \length(pixels) * 4;
 {
   int size = width * 2;
   pixel[] image = alloc_array(pixel, size * size);
-  pixel[] ninty_degree = rotate_image(pixels, width, height, 90);
-  copy_image(ninty_degree, height, width, image, 0, 0);
+  pixel[] rotated_90_degree = rotate_image(pixels, width, height, 90);
+  copy_image(rotated_90_degree, height, width, image, size, size, 0, 0);
+  pixel[] rotated_180_degree = rotate_image(pixels, width, height, 180);
+  copy_image(rotated_180_degree, height, width, image, size, size, width, 0);
+  pixel[] rotated_270_degree = rotate_image(pixels, width, height, 270);
+  copy_image(rotated_270_degree, height, width,
+             image, size, size, height, width);
+  pixel[] rotated_360_degree = rotate_image(pixels, width, height, 360);
+  copy_image(rotated_360_degree, height, width,
+             image, size, size, 0, height);
+  return image;
 }
 
 // GIVEN: an array of pixels represents an image and its size,
 // an number that represents the degree to rotate the image
-// RETURNS: the image after rotated the given degree
-pixel rotate_image(pixel[] image, int width, int height, int degree)
-{}
+// RETURNS: the image like the given one but rotated the given degree
+pixel[] rotate_image(pixel[] image, int width, int height, int degree)
+//@requires is_valid_imagesize(width, height);
+//@requires \length(image) == width * height;
+//@requires 0 <= degree &&  degree % 90 == 0;
+//@ensures \result != image;
+//@ensures \length(\result) == \length(image);
+{
+  pixel[] image_rotated = alloc_array(pixel, width * height);
+  for(int i = 0; i < width * height; i++)
+    //@loop_invariant 0 <= i;
+    {
+      int index_rotated = rotate_index(i, width, height, degree);
+      image_rotated[index_rotated] = clone_pixel(image[i]);
+    }
+  return image_rotated;
+}
 
-// GIVEN: an image src and its size, another image dst and a
-// location of dst
+// GIVEN: an image src and its size, another image dst and its size
+// and a location of dst
 // EFFECT: copy src to dst, with src's top left point at the
 // given location of dst
+void copy_image(pixel[] src, int src_width, int src_height,
+                pixel[] dst, int dst_width, int dst_height,
+                int row, int col)
+//@requires is_valid_imagesize(src_width, src_height);
+//@requires \length(src) == src_width * src_height;
+//@requires is_valid_imagesize(dst_width, dst_height);
+//@requires \length(dst) == dst_width * dst_height;
+//@requires 0 <= row && 0 <= col;
+//@requires is_valid_pixel(row, col, dst_width, dst_height);
+//@requires (row + src_height <= dst_height) && (col + src_width <= dst_width);
+/*@ensures is_sub_image(src, src_width, src_height,
+                        dst, dst_width, dst_height,
+                        row, col); @*/
+{
+  for(int i = 0; i < src_height; i++)
+    //@loop_invariant 0 <= i;
+    {
+      for(int j = 0; j < src_width; j++)
+        //@loop_invariant 0 <= j;
+        {
+          int src_index = get_index(i, j, src_width, src_height);
+          int dst_index = get_index(row + i, col + j, dst_width, dst_height);
+          dst[dst_index] = clone_pixel(src[src_index]);
+        }
+    }
+  return;
+}
+
+// GIVEN: an index of a pixel in a one-dimension array of pixels
+// representing a two-dimensional image, the size of the image,
+// a number represents degree
+// RETURN: the index of the pixel in the one-dimension array of
+// pixels representing the two-dimensional image rotated the given
+// degree
+int rotate_index(int i, int width, int height, int degree)
+//@requires is_valid_imagesize(width, height);
+//@requires 0 <= i && i < width * height;
+//@requires (0 <= degree) && (degree % 90 == 0);
+//@ensures 0 <= \result && \result <= width * height;
+{
+  int row = get_row(i, width, height);
+  int col = get_column(i, width, height);
+  int direction = degree / 90 % 4;
+  if(direction == 0) {
+    // Don't need to rotate
+    return i;
+  }
+  else if(direction == 1) {
+    // Rotate 90 degree
+    int row_rotated = width - 1 - col;
+    int col_rotated = row;
+    return get_index(row_rotated, col_rotated, height, width);
+  }
+  else if(direction == 2) {
+    // Rotate 180 degree
+    int row_rotated = height - 1 - row;
+    int col_rotated = width - 1 - col;
+    return get_index(row_rotated, col_rotated, width, height);
+  }
+  else {
+    //@assert direction == 3;
+    // Rotate 270 degree
+    int row_rotated = col;
+    int col_rotated = height - 1 - row;
+    return get_index(row_rotated, col_rotated, height, width);
+  }
+}
+
+// RETURNS: a clone of the given pixel
+pixel clone_pixel(pixel p)
+////@ensures \result != p;
+//@ensures pixel_eq(\result, p);
+{
+  return make_pixel(get_alpha(p), get_red(p),  get_green(p), get_blue(p));
+}
+
+// GIVEN: an image src and its size, another image dst and its size
+// and a location of dst
+// RETURNS: ture iff src is an sub-image of dst that src's top left
+// point located at the given location of src
+bool is_sub_image(pixel[] src, int src_width, int src_height,
+                  pixel[] dst, int dst_width, int dst_height,
+                  int row, int col)
+//@requires is_valid_imagesize(src_width, src_height);
+//@requires \length(src) == src_width * src_height;
+//@requires is_valid_imagesize(dst_width, dst_height);
+//@requires \length(dst) == dst_width * dst_height;
+//@requires 0 <= row && 0 <= col;
+//@requires is_valid_pixel(row, col, dst_width, dst_height);
+/*@requires (row + src_height <= dst_height)
+            && (col + src_width <= dst_width); @*/
+{
+  for(int i = 0; i < src_height; i++)
+    //@loop_invariant 0 <= i;
+    {
+      for(int j = 0; j < src_width; j++)
+        //@loop_invariant 0 <= j;
+        {
+          int index_src = get_index(i, j, src_width, src_height);
+          int index_dst = get_index(i + row, j + col, dst_width, dst_height);
+          if(pixel_eq(src[index_src], dst[index_dst]) == false) {
+            return false;
+          }
+        }
+    }
+  return true;
+}
+
+// RETURNS: true iff the two given pixels are equal
+bool pixel_eq(pixel p, pixel q)
+{
+  return
+    (get_alpha(p) == get_alpha(q)) &&
+    (get_red(p)   == get_red(q))   &&
+    (get_green(p) == get_green(q)) &&
+    (get_blue(p)  == get_blue(q));
+}

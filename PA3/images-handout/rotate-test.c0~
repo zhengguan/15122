@@ -1,0 +1,15 @@
+/* Some unit tests for rotate.c0 */
+
+#use <conio>
+#use <util>
+
+int main()
+{
+  // Tests for pixel_eq()
+  assert(pixel_eq(make_pixel(0xFF, 0x01, 0x03, 0x04),
+                  make_pixel(0xff, 0x01, 0x03, 0x04);
+
+
+  println("All tests passed");
+  return 0;
+}

@@ -1,0 +1,196 @@
+/* Some unit tests for rotate.c0 */
+
+#use <conio>
+#use <util>
+
+// tests for is_sub_image()
+void test_is_sub_image();
+
+// test for rotate_index()
+void test_rotate_index();
+
+// tests for copy_image()
+void test_copy_image();
+
+// tests for rotate_image()
+void test_rotate_image();
+
+// assert whether two images are equal
+void assert_equal_image(pixel[] image1, int width1, int height1,
+                        pixel[] image2, int width2, int height2);
+
+// tests for rotate()
+void test_rotate();
+
+int main()
+{
+  // tests for pixel_eq()
+  assert(pixel_eq(make_pixel(0xFF, 0x01, 0x03, 0x04),
+                  make_pixel(0xff, 0x01, 0x03, 0x04)));
+
+  // tests for is_sub_image()
+  test_is_sub_image();
+
+  // tests for clone_pixel()
+  pixel  pixel1 = make_pixel(0xFF, 0x01, 0x03, 0x04);
+  assert(pixel_eq(clone_pixel(pixel1), pixel1));
+
+  // tests for rotate_index()
+  test_rotate_index();
+
+  // tests for copy_image()
+  test_copy_image();
+
+  // tests for rotate_image()
+  test_rotate_image();
+
+  // tests for rotate()
+  test_rotate();
+
+  println("All tests passed");
+  return 0;
+}
+
+// tests for rotate()
+void test_rotate() {
+  pixel[] image1 = alloc_array(pixel, 4);
+  int width1 = 2;
+  int height1 = 2;
+  for(int i = 0; i < 4; i++)
+    //@loop_invariant 0 <= i && i <= 4;
+    {
+      image1[i] = make_pixel(0xff, i, i, i);
+    }
+
+  pixel[] image1_rotated = rotate(image1, width1, height1);
+  assert(is_sub_image(image1, width1, height1,
+                      image1_rotated, 2 * width1, 2 * height1,
+                      0, width1));
+  assert(is_sub_image(rotate_image(image1, width1, height1, 90),
+                      height1, width1,
+                      image1_rotated, 2 * width1, 2 * height1,
+                      0, 0));
+  assert(is_sub_image(rotate_image(image1, width1, height1, 180),
+                      width1, height1,
+                      image1_rotated, 2 * width1, 2 * height1,
+                      width1, 0));
+  assert(is_sub_image(rotate_image(image1, width1, height1, 270),
+                      height1, width1,
+                      image1_rotated, 2 * width1, 2 * height1,
+                      height1, width1));
+}
+
+// tests for is_sub_image()
+void test_is_sub_image() {
+  pixel[] image1 = alloc_array(pixel, 4);
+  int width1 = 2;
+  int height2 = 2;
+  for(int i = 0; i < 4; i++)
+    //@loop_invariant 0 <= i && i <= 4;
+    {
+      image1[i] = make_pixel(0xff, i, i, i);
+    }
+  pixel[] image2 = alloc_array(pixel, 1);
+  image2[0] = image1[0];
+  pixel[] image3 = alloc_array(pixel, 1);
+  image3[0] = image1[3];
+  assert(is_sub_image(image2, 1, 1, image1, 2, 2, 0, 0));
+  assert(is_sub_image(image2, 1, 1, image1, 2, 2, 1, 1) == false);
+}
+
+// tests for copy_image()
+void test_copy_image()
+{
+  pixel[] image1 = alloc_array(pixel, 4);
+  int width1 = 2;
+  int height1 = 2;
+
+  for(int i = 0; i < 4; i++)
+    //@loop_invariant 0 <= i;
+    {
+      image1[i] = make_pixel(0xff, i, i, i);
+    }
+
+  pixel[] image2 = alloc_array(pixel, 9);
+  int width2 = 3;
+  int height2 = 3;
+
+  copy_image(image1, 2, 2, image2, 3, 3, 1, 1);
+  assert(is_sub_image(image1, 2, 2, image2, 3, 3, 1, 1));
+}
+
+// tests for rotate_index()
+void test_rotate_index() {
+  assert(rotate_index(0, 3, 2, 90) == 4);
+  assert(rotate_index(2, 3, 2, 90) == 0);
+  assert(rotate_index(5, 3, 2, 90) == 1);
+  assert(rotate_index(3, 3, 2, 90) == 5);
+  assert(rotate_index(1, 3, 2, 90) == 2);
+
+  assert(rotate_index(0, 3, 2, 180) == 5);
+  assert(rotate_index(2, 3, 2, 180) == 3);
+  assert(rotate_index(5, 3, 2, 180) == 0);
+  assert(rotate_index(3, 3, 2, 180) == 2);
+  assert(rotate_index(1, 3, 2, 180) == 4);
+
+  assert(rotate_index(0, 3, 2, 270) == 1);
+  assert(rotate_index(2, 3, 2, 270) == 5);
+  assert(rotate_index(5, 3, 2, 270) == 4);
+  assert(rotate_index(3, 3, 2, 270) == 0);
+  assert(rotate_index(1, 3, 2, 270) == 3);
+}
+
+// tests for rotate_image()
+void test_rotate_image() {
+  pixel[] image1 = alloc_array(pixel, 4);
+  int width1 = 2;
+  int height1 = 2;
+  for(int i = 0; i < 4; i++) {
+    image1[i] = make_pixel(0xFF, i, i, i);
+  }
+
+  // image rotated 90 degree counter clockwise
+  pixel[] image2 = alloc_array(pixel, 4);
+  image2[0] = image1[1];
+  image2[1] = image1[3];
+  image2[2] = image1[0];
+  image2[3] = image1[2];
+  pixel[] image1_rotated_90_degree = rotate_image(image1, width1, height1, 90);
+  assert_equal_image(image1_rotated_90_degree, height1, width1,
+                     image2, height1, width1);
+
+  // image rotated 180 degree counter clockwise
+  pixel[] image3 = alloc_array(pixel, 4);
+  image3[0] = image1[3];
+  image3[1] = image1[2];
+  image3[2] = image1[1];
+  image3[3] = image1[0];
+  pixel[] image1_rotated_180_degree =
+    rotate_image(image1, width1, height1, 180);
+  assert_equal_image(image1_rotated_180_degree, height1, width1,
+                     image3, height1, width1);
+
+  // image rotated 270 degree counter clockwise
+  pixel[] image4 = alloc_array(pixel, 4);
+  image4[0] = image1[2];
+  image4[1] = image1[0];
+  image4[2] = image1[3];
+  image4[3] = image1[1];
+  pixel[] image1_rotated_270_degree =
+    rotate_image(image1, width1, height1, 270);
+  assert_equal_image(image1_rotated_270_degree, height1, width1,
+                     image4, height1, width1);
+
+}
+
+// assert whether two images are equal
+void assert_equal_image(pixel[] image1, int width1, int height1,
+                        pixel[] image2, int width2, int height2)
+/*@requires is_valid_imagesize(width1, height1)
+            && is_valid_imagesize(width2, height2); @*/
+//@requires width1 == width2;
+//@requires height1 == height2;
+{
+  assert(is_sub_image(image1, width1, height1, image2, width2, height2, 0, 0));
+  assert(is_sub_image(image2, width2, height2, image1, width1, height1, 0, 0));
+}

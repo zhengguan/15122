@@ -1,0 +1,92 @@
+#use <conio>
+#use <string>
+#use <parse>
+#use <img>
+
+// GIVEN: two one-dimension array of pixels that represent two images of
+// the same size
+// RETURN: true iff the two given images are the same
+bool is_equal_image(pixel[] image1, pixel[] image2, int width, int height)
+//@requires is_valid_imagesize(width, height);
+//@requires \length(image1) == width * height;
+//@requires \length(image2) == width * height;
+{
+  for(int i = 0; i < width * height; i++)
+    //@loop_invariant 0 <= i;
+    {
+      if(!image1[i] == image2[i])
+    }
+}
+
+
+// GIVEN: the path of tow input image and the path of the output image
+// EFFECT: compare the two given image, output the different pixels
+// into the output image if they are different, otherwise do nothing.
+void image_diff(string image1, string image2, string output) {
+  /* Load input images */
+  image_t in1 = image_load(image1);
+  if (in1 == NULL) error("Could not load the first input image");
+  int width1 = image_width(in1);
+  int height1 = image_height(in1);
+  pixel[] in1_pixels = image_data(in1);
+
+  image_t in2 = image_load(image2);
+  if(in2 == NULL) error("Could not load the second input image");
+  int width2 = image_width(in2);
+  int height2 = image_height(in2);
+  pixel[] in2_pixels = image_data(in2);
+
+  //@assert (width1 == width2) && (height1 == height2);
+  print("Loaded image. Dimensions are ");
+  printint(width1);
+  print(" by ");
+  printint(height1);
+  println(".");
+  flush();
+
+  if(!is_equal_image(in1_pixels, in2_pixels, width1, height2)) {
+
+  }
+
+  return 0;
+}
+
+
+
+
+string default_output(string input, string name) {
+  int len = string_length(input);
+  if (!(len > 4 && string_equal(".png", string_sub(input, len-4, len)))) {
+    error("Input file does not end with .png");
+  }
+
+  string res = string_sub(input, 0, len-4);
+  res = string_join(res, "_");
+  res = string_join(res, name);
+  res = string_join(res, ".png");
+
+  return res;
+}
+
+// Compare whether two images are same, other output their different
+// pixels into an empty image
+int main() {
+  string *image1 = alloc(string);
+  string *image2 = alloc(string);
+
+  args_string("-i1", image1);
+  args_string("-i2", image2);
+  args_parse();
+
+  if (string_equal("", *image1)) {
+    error("Usage: imagediff -i1 <input image1> -i2 <input image2>");
+  }
+
+  string *output = alloc(string);
+  *output = default_output(*image1, "diff");
+
+  image_diff(*image1, *image2, *output);
+
+  return 0;
+
+}
