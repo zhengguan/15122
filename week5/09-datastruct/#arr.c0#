@@ -1,0 +1,70 @@
+/* 
+ * An interface to arrays
+ * 
+ * 15-122 Principles of Imperative Computation
+ */
+
+#use <string>
+
+/* Interface */
+
+typedef struct arr_header* arr; // typedef _______ arr;
+int    arr_len(arr A);
+arr    arr_new(int limit)
+  /*@requires 0 <= limit; @*/
+  /*@ensures arr_len(\result) == limit; @*/ n;
+string arr_get(arr A, int i)
+  /*@requires 0 <= i && i < arr_len(A); @*/;
+void   arr_set(arr A, int i, string x)
+  /*@requires 0 <= i && i < arr_len(A); @*/;
+
+/* Implementation */
+
+struct arr_header {
+  int limit;
+  string[] data;
+};
+
+bool is_arr_expected_length(string[] A, int length) {
+  //@assert \length(A) == length;
+  return true;
+}
+
+bool is_arr(struct arr_header* AH) {
+  return AH != NULL 
+    && is_arr_expected_length(AH->data, AH->limit);
+}
+
+arr arr_new(int limit) 
+//@requires 0 <= limit;
+//@ensures is_arr(\result);
+{
+  struct arr_header* AH = alloc(struct arr_header);
+  AH->limit = limit;
+  AH->data = alloc_array(string, limit);
+  return AH;
+}
+
+int arr_len(arr A) 
+//@requires is_arr(A);
+//@ensures \result == \length(A->data);
+{
+  return A->limit;
+}
+
+string arr_get(arr A, int i) 
+//@requires is_arr(A);
+//@requires 0 <= i && i < arr_len(A);
+{
+  return A->data[i];
+}
+
+void arr_set(arr A, int i, string x)
+//@requires is_arr(A);
+//@requires 0 <= i && i < arr_len(A);
+//@ensures is_arr(A);
+//@ensures string_equal(arr_get(A, i), x);
+{
+  A->data[i] = x;
+}
+

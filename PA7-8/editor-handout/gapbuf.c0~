@@ -1,0 +1,41 @@
+/*
+ * Gap Buffers
+ * 
+ * A gap buffer data structure is represented by an array of chars
+ * stored along with its size (limit) and two integers representing
+ * the beginning (inclusive, gap start) and end (exclusive, gap end)
+ * of the gap.
+ * 
+ * 15-122 Principles of Imperative Computation */
+
+#use <string>
+
+typedef struct gapbuf_header* gapbuf;
+typedef gapbuf elem; // The data in linked lists will be gap buffers
+
+/*** Interface ***/
+
+struct gapbuf_header {
+  int limit;     /* limit > 0                      */
+  char[] buffer; /* \length(buffer) == limit       */
+  int gap_start; /* 0 <= gap_start                 */
+  int gap_end;   /* gap_start  <= gap_end <= limit */
+};
+
+bool is_gapbuf(struct gapbuf_header* G);
+
+bool gapbuf_empty(gapbuf G);    /* Returns true if the buffer is empty */
+bool gapbuf_full(gapbuf G);     /* Returns true if the buffer is full  */
+bool gapbuf_at_left(gapbuf G);  /* Returns true if the gap is at the   */
+                                /*   left end of the buffer            */
+bool gapbuf_at_right(gapbuf G); /* Returns true if the gap is at the   */
+                                /*   right end of the buffer           */
+
+gapbuf gapbuf_new(int limit);   /* Create a new gapbuf of size limit  */
+void gapbuf_forward(gapbuf G);  /* Move the gap forward, to the right */
+void gapbuf_backward(gapbuf G); /* Move the gap backward, to the left */
+void gapbuf_insert(gapbuf G, char c); /* Insert the char c before the gap    */
+void gapbuf_delete(gapbuf G);         /* Delete the character before the gap */
+
+/*** Implementation ***/
+

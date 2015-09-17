@@ -1,0 +1,67 @@
+//Ex 01~03
+
+
+// RETURNS: true iff all elements with index greater than or equal to
+// start are <= their parents
+bool is_heap_helper(heap H, int start)
+//@requires is_safe_heap(H);
+//@requires start >= 2;
+{
+  return (start >= H->next)
+    || (ok_above(H, start/2, start)
+        && is_heap_helper(H, start + 1));
+}
+
+bool is_heap(heap H)
+//@requires is_safe_heap(H);
+{
+  return is_heap_helper(H, 2);
+}
+
+
+// RETURNS: true iff all elements in H with index greater than or equal to
+// start(except the one with index n)  are <= their parent
+bool is_heap_except_up_helper(heap H, int n, int start)
+//@requires is_safe_heap(H);
+//@requires 1 <= n && n <H->next;
+{
+  if (start >= H->next) {
+    return true;
+  }
+  return
+    (start == n || ok_above(H, start / 2, start))
+    && is_heap_except_up_helper(H, n, start+1);
+}
+
+// RETURNS: true iff all elements in H  start(except the one with index n)
+// are <= their parent
+bool is_heap_except_up(heap H, int n)
+//@requires is_safe_heap(H);
+//@requires 1 <= n && n < H->next;
+{
+  return is_heap_except_up_helper(H, n, 2);
+}
+
+// RETURNS: true iff all elements in H with index greater than or equal to
+// start(except the one whose parent with index n) are <= their parent
+bool is_heap_except_down_helper(heap H, int n, int start)
+//@requires is_safe_heap(H);
+//@requires 1 <= n && n < H->next;
+{
+  if (start >= H->next) {
+    return true;
+  }
+
+  return
+    (start/2 == n || ok_above(H, start/2, start))
+    && is_heap_except_down_helper(H, n, start+1);
+}
+
+// RETURNS: true iff all elements in H (except the one whose parent with index
+//  n) are <= their parent
+bool is_heap_except_down(heap H, int n)
+//@requires is_safe_heap(H);
+//@requires 1 <= n && n < H->next;
+{
+  return is_heap_except_down(H, n, 2);
+}

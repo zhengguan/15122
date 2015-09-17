@@ -1,0 +1,5 @@
+void copy(tbuf B, dll * start_node, int start_index,
+          dll * end_node, int end_index)
+//@requires is_tbuf(B);
+//@requires id_dll_segment(start_node, end_node);
+//@ensures is_tbuf(B);

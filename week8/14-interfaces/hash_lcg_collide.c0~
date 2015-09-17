@@ -1,0 +1,15 @@
+// RETURNS: the hash_lcg value of the given string
+int hash_lcg(string s)
+{
+  int result = 0;
+  int len = string_length(s);
+
+  for(int i = 0; i < len; i++)
+    //@loop_invariant 0 <= i && i <= len;
+    // loop_invariant result equals to the hash_lcg value of
+    // string_sub(s, 0, i);
+    {
+      result = f(result) + char_order(string_charat(s, i));
+    }
+
+}

@@ -1,0 +1,86 @@
+/* 
+ * Testing the gap buffer implementation. 
+ * 
+ * Note that this is just for testing! This code allows the user's
+ * input to attempt removing things an empty buffer, adding things to
+ * a full buffer, and moving left or right off the end of an array.
+ * These should lead to a @requires violation.
+ *
+ * cc0 -d -w -x gapbuf.c0 gapbuf-test.c0
+ * 
+ * 15-122 Principles of Imperative Computation */
+
+#use <args>
+#use <conio>
+#use <parse>
+#use <string>
+
+void visualize_gapbuf(gapbuf G) {
+  for (int i = 0; i < G->gap_start; i++) printchar(G->buffer[i]);
+  printchar('[');
+  for (int i = G->gap_start; i < G->gap_end; i++) printchar('.');
+  printchar(']');
+  for (int i = G->gap_end; i < G->limit; i++) printchar(G->buffer[i]);
+}
+
+void process_char(gapbuf G, char c)  {
+  if (c == '<') {
+    print("<= : ");
+    gapbuf_backward(G);
+  } else if (c == '>') {
+    print("=> : ");
+    gapbuf_forward(G);
+  } else if (c == '^') {
+    print("del: ");
+    gapbuf_delete(G); 
+  } else {
+    print("'"); printchar(c); print("': ");
+    gapbuf_insert(G,c);
+  }
+}
+
+void process_string(gapbuf G, string s) {
+  int limit = string_length(s);
+  for(int i = 0; i < limit; i++) {
+    process_char(G, string_charat(s, i));
+    visualize_gapbuf(G);
+    println("");
+  }
+}
+
+void test() 
+{
+  int len = 16;
+  args_t args = args_parse();
+  if (args->argc == 1) {
+    int* i = parse_int(args->argv[0],10);
+    if (i == NULL || *i <= 0) error("Single argument must be a positive int");
+    len = *i;
+  } else if (args->argc > 1) error("Too many arguments");
+
+  gapbuf G = gapbuf_new(len);
+  print("Visualizing the "); printint(len); println("-element gap-buffer.");
+  println("The '<' character mimics going backwards (left arrow key)");
+  println("The '>' character mimics going forwards (right arrow key)");
+  println("The '^' character mimics deletion (delete key)");
+  println("All other characters just insert that character");
+  println("");
+  println("Give initial input (empty line quits):");
+
+  string s = readline();
+
+  while(!string_equal("", s)) {
+    print("     ");
+    visualize_gapbuf(G);
+    println("");
+    process_string(G, s);
+    println("Done. More input? (empty line quits):");
+    s = readline();
+  }
+}
+
+int main() {
+  test();
+  println("Goodbye.");
+  return 0;
+}

@@ -1,0 +1,214 @@
+/***************************************
+ ** E0: a hacky text editor front-end **
+ **                                   **
+ **         by William Lovas          **
+ **          using C0/curses          **
+ **                                   **
+ ** (some features not yet supported) **
+ ***************************************/
+
+ /******************************************************************************
+           Once you implement required functionality, run    cc0 -x lovas-E0.c0
+ ******************************************************************************/
+
+#use <conio>
+#use <curses>
+#use <string>
+
+/** render: print the text that a tbuf represents, along with a cursor **/
+
+/*
+ * during the display of a tbuf, a bool pointer "point" is set to true exactly
+ * once, just before the character that should be highlighted as the point.
+ * once that character is printed, the pointer is reset to false, ensuring
+ * that exactly one character is highlighted as the point.
+ */
+
+void render_char(char c, bool *point, WINDOW *w)
+//@ensures point == NULL || *point == false;
+{
+    if (point != NULL && *point) {
+        if (c == '\n') {
+            c_waddch(w, cc_highlight(char_ord(' ')));
+            c_waddch(w, char_ord('\n'));
+        } else {
+            c_waddch(w, cc_highlight(char_ord(c)));
+        }
+        *point = false;
+    } else {
+        c_waddch(w, char_ord(c));
+    }
+}
+
+void render_gapbuf(gapbuf G, bool *point, WINDOW *w)
+//@requires is_gapbuf(G);
+//@ensures is_gapbuf(G);
+{
+    for (int i = 0; i < G->gap_start; i++) render_char(G->buffer[i], NULL, w);
+    for (int i = G->gap_end; i < G->limit; i++)
+      render_char(G->buffer[i], point, w);
+}
+
+void render_tbuf(tbuf B, WINDOW *w)
+//@requires is_tbuf(B);
+//@ensures is_tbuf(B);
+{
+    bool *point = alloc(bool);
+    *point = false;
+
+    c_wmove(w, 0, 0);
+    c_werase(w);
+
+    for (dll* L = B->start->next; L != B->end; L = L->next) {
+        if (L == B->point) *point = true;
+        render_gapbuf(L->data, point, w);
+    }
+
+    /* if we haven't yet seen the point, it must be at the end of the buffer */
+    if (*point) render_char(' ', point, w);
+
+    c_wrefresh(w);
+}
+
+void render_topbar(WINDOW *w) {
+    c_werase(w);
+    for (int i = cc_getbegx(w); i < cc_getmaxx(w); i++)
+        c_waddch(w, cc_highlight(char_ord(' ')));
+    c_wmove(w, 0, 1);
+    cc_wreverseon(w);
+    c_waddstr(w, "E0, the minimalist editor -- ^X to exit, ^L to refresh");
+    cc_wreverseoff(w);
+}
+
+void render_botbar(WINDOW *w) {
+    c_werase(w);
+    for (int i = cc_getbegx(w); i < cc_getmaxx(w); i++)
+        c_waddch(w, cc_highlight(char_ord(' ')));
+}
+
+
+/** vrender: render a partial visualization of the text buffer's internals **/
+
+void vrender_char(WINDOW *w, char c) {
+    if (c == '\n') {
+        cc_wboldon(w); cc_wunderon(w);
+        c_waddch(w, char_ord('#'));
+        cc_wunderoff(w); cc_wboldoff(w);
+    } else if (c == '\t') {
+        cc_wboldon(w); cc_wunderon(w);
+        c_waddch(w, char_ord('>'));
+        cc_wunderoff(w); cc_wboldoff(w);
+    } else {
+        c_waddch(w, char_ord(c));
+    }
+}
+
+void vrender_gapbuf(gapbuf G, WINDOW *w)
+//@requires is_gapbuf(G);
+//@ensures is_gapbuf(G);
+{
+    for (int i = 0; i < G->gap_start; i++) vrender_char(w, G->buffer[i]);
+    cc_wboldon(w); cc_wunderon(w);
+    c_waddch(w, char_ord('['));
+    for (int i = G->gap_start; i < G->gap_end; i++) c_waddch(w, char_ord('.'));
+    c_waddch(w, char_ord(']'));
+    cc_wunderoff(w); cc_wboldoff(w);
+    for (int i = G->gap_end; i < G->limit; i++) vrender_char(w, G->buffer[i]);
+}
+
+void vrender_tbuf(tbuf B, WINDOW *w)
+//@requires is_tbuf(B);
+//@ensures is_tbuf(B);
+{
+    c_wclear(w);
+
+    if (B->point->prev == B->start || B->point->prev->prev == B->start) {
+        cc_wboldon(w);
+        c_waddstr(w, " **");
+        cc_wboldoff(w);
+    } else {
+        cc_wdimon(w);
+        c_waddstr(w, "<..");
+        cc_wdimoff(w);
+    }
+
+    dll* L = B->point;
+    if (L->prev != B->start) L = L->prev;
+    if (L->prev != B->start && L->next->next == B->end) L = L->prev;
+
+    for (int i = 0; i < 3 && L != B->end; i++) {
+        c_waddstr(w, " <-> ");
+        if (L == B->point) cc_wreverseon(w);
+        vrender_gapbuf(L->data, w);
+        if (L == B->point) cc_wreverseoff(w);
+        L = L->next;
+    }
+
+    c_waddstr(w, " <-> ");
+    if (B->point->next == B->end || B->point->next->next == B->end) {
+        cc_wboldon(w);
+        c_waddstr(w, "** ");
+        cc_wboldoff(w);
+    } else {
+        cc_wdimon(w);
+        c_waddstr(w, "..>");
+        cc_wdimoff(w);
+    }
+
+    c_wrefresh(w);
+}
+
+
+/** main: look the other way if you've ever programmed using curses **/
+
+int main() {
+    WINDOW *mainwin = c_initscr();
+    c_cbreak();
+    c_noecho();
+    c_keypad(mainwin, true);
+    int vis = c_curs_set(0);
+  
+    int ncols = cc_getmaxx(mainwin); 
+    int nlines = cc_getmaxy(mainwin);
+    int begx = cc_getbegx(mainwin); 
+    int begy = cc_getbegy(mainwin);
+  
+    WINDOW *canvas = c_subwin(mainwin,
+                              nlines - 3  /* lines: save 3 for status info */,
+                              ncols       /* cols: same as main window */,
+                              begy + 1    /* begy: skip top status bar */,
+                              begx        /* begx: same as main window */);
+
+    WINDOW *topbar = c_subwin(mainwin, 1 /* lines */, ncols, begy, begx);
+    WINDOW *botbar = c_subwin(mainwin, 1 /* lines */, ncols, nlines - 2, begx);
+    WINDOW *minibuf = c_subwin(mainwin, 1 /* lines */, ncols, nlines - 1, begx);
+
+    tbuf B = tbuf_new();
+
+    render_topbar(topbar);
+    render_botbar(botbar);
+
+    bool go = true;
+    while (go) {
+        render_tbuf(B, canvas);
+        vrender_tbuf(B, minibuf);
+        int c = c_getch();
+        if (c == 24) /* ^X */ { go = false; }
+        else if (c == 12) /* ^L */ { c_wclear(mainwin);
+                                     render_topbar(topbar);
+                                     render_botbar(botbar);
+                                     c_wrefresh(mainwin); }
+        else if (cc_key_is_backspace(c)) { tbuf_delete(B); }
+        else if (cc_key_is_left(c))  { tbuf_backward(B); }
+        else if (cc_key_is_right(c)) { tbuf_forward(B); }
+        else if (cc_key_is_enter(c)) { tbuf_insert(B, '\n'); }
+        else if (0 <= c && c <= 127) { tbuf_insert(B, char_chr(c)); }
+    }
+
+    c_curs_set(vis);
+    c_endwin();
+
+    print("thanks for flying E !\b\b"); /* <- wing commander homage -wjl */
+
+    return 0;
+}

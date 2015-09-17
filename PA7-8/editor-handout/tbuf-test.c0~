@@ -1,0 +1,91 @@
+/*
+ * Testing the text buffer implementation: doubly-linked list of gap
+ * buffers.
+ * 
+ * This code is just for testing, but it should still be impossible
+ * for user input here to cause any @requires violations or other
+ * errors: operations that don't make sense should be ignored, as the
+ * writeup specifies.
+ * 
+ * 15-122 Principles of Imperative Computation */
+
+#use <conio>
+#use <string>
+
+void visualize_gapbuf(gapbuf G)
+{
+  for (int i = 0; i < G->gap_start; i++) printchar(G->buffer[i]);
+  printchar('[');
+  for (int i = G->gap_start; i < G->gap_end; i++) printchar('.');
+  printchar(']');
+  for (int i = G->gap_end; i < G->limit; i++) printchar(G->buffer[i]);
+}
+
+void visualize_tbuf(tbuf B)
+{
+  print("START");
+  for (dll* L = B->start->next; L != B->end; L = L->next) {
+    print(" <--> ");
+    if (L == B->point) print("_");
+    printchar('\''); visualize_gapbuf(L->data); printchar('\'');
+    if (L == B->point) print("_");
+  }
+  println(" <--> END");
+}
+
+void process_char(tbuf B, char c) {
+  if (c == '<') {
+    print("<= : ");
+    tbuf_backward(B);
+  } else if (c == '>') {
+    print("=> : ");
+    tbuf_forward(B);
+  } else if (c == '^') {
+    print("del: ");
+    tbuf_delete(B); 
+  } else {
+    print("'"); printchar(c); print("': ");
+    tbuf_insert(B, c);
+  }
+}
+
+void process_string(tbuf B, string s)
+{
+  int limit = string_length(s);
+  for(int i = 0; i < limit; i++) {
+    process_char(B, string_charat(s, i));
+    visualize_tbuf(B);
+  }
+}
+
+void test() {
+  int len = 16;
+
+  tbuf B = tbuf_new();
+  print("Visualizing text buffers:");
+  println(" doubly linked lists of 16-element gap buffers.");
+  println("The '<' character mimics going backwards (left arrow key)");
+  println("The '>' character mimics going forwards (right arrow key)");
+  println("The '^' character mimics deletion (delete key)");
+  println("All other characters just insert that character");
+  println("");
+  println("Give initial input (empty line quits):");
+
+  string s = readline();
+
+  while(!string_equal("", s)) {
+    print("     ");
+    visualize_tbuf(B);
+    println("");
+    process_string(B, s);
+    println("Done. More input? (empty line quits):");
+    s = readline();
+  }
+}
+
+int main() {
+  test();
+  println("Goodbye");
+  return 0;
+}
+ 

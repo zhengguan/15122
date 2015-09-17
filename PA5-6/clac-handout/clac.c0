@@ -1,0 +1,225 @@
+/*
+ * Clac, stack-based calculator language
+ *
+ * 15-122 Principles of Imperative Computation
+ */
+
+#use <string>
+#use <parse>
+#use <conio>
+#use <args>
+#use <util>
+
+/* From the perspective of the clac-main.c0 file, state is an abstract
+ * type. This file contains the implementation of the clacstate type;
+ * which you will change by adding fields to this struct when you do
+ * task 4. */
+struct state_header {
+  /* Nothing in here initially */
+  qstack result_stack;
+  dict definitions;
+};
+typedef struct state_header* clacstate;
+clacstate init_state()
+//@ensures \result != NULL;
+{
+  clacstate state =  alloc(struct state_header);
+  state->result_stack = qstack_new();
+  state->definitions = dict_new();
+  return state;
+}
+
+// EFFECT: check whether S is empty and pop the top element from S
+int check_and_pop(stack S)
+//@requires S != NULL;
+{
+  if(stack_empty(S)) {
+    error("pop empty stack");
+  }
+  return pop(S);
+}
+
+// EFFECT: swap the two top elements of S if exists, otherwise
+// signal error
+void swap(stack S)
+//@requires S != NULL;
+{
+  int y = check_and_pop(S);
+  int x = check_and_pop(S);
+  push(S, y);
+  push(S, x);
+}
+
+// EFFECT: rotate the top three elements of S if exists, otherwise
+// signal error
+// EXAMPLES: (rot (stack_from_string "1 2 3")) == (stack_from_string "2 3 1")
+void rot(stack S)
+//@requires S != NULL;
+{
+  int z = check_and_pop(S);
+  int y = check_and_pop(S);
+  int x = check_and_pop(S);
+  push(S, y);
+  push(S, z);
+  push(S, x);
+}
+
+// EFFECT: dequeue the first element of Q if exists, otherwise signal error
+// RETURNS: the first element of Q
+string check_and_deq(queue Q)
+//@requires Q != NULL;
+{
+  if(queue_empty(Q)) {
+    error("deq emptu queeu");
+  }
+  return deq(Q);
+}
+
+// RETURNS: the nth element of S(counted top down, start from 1) if exists
+// otherwise signal error
+int pick(stack S, int n)
+//@requires S != NULL;
+{
+  if(n <= 0) {
+    error("pick element with non-positive counter");
+  }
+  //@assert n >= 1;
+  stack B = stack_new();
+  for(int i = 0; i < n - 1; i++)
+    //@loop_invariant 0 <= i && i < n;
+    {
+      push(B, check_and_pop(S));
+    }
+  int x = check_and_pop(S);
+  push(S, x);
+
+  for(int i = 0; i < n - 1; i++)
+    //@loop_invariant 0 <= i && i < n;
+    {
+      push(S, pop(B));
+    }
+  return x;
+}
+
+// RETURNS: true iff s is a defined in ST
+bool is_defined(string s, clacstate ST)
+//@requires ST != NULL;
+{
+  return dict_lookup(ST->definitions, s) != NULL;
+}
+
+// GIVNE: the input queue
+// EFFECT: read the body of a definition from Q
+// RETURNS: the body of a definition
+queue get_definition(queue Q)
+//@requires is_queue(Q);
+//@ensures is_queue(\result);
+{
+  string s;
+  queue q = queue_new();
+  s = check_and_deq(Q);
+  while(!string_equal(s, ";")) {
+    enq(q, s);
+    s = check_and_deq(Q);
+  }
+  return q;
+}
+
+/* Main clac interpreter. */
+/* Return true: clac top-level interpreter will expect more input */
+/* Return false: clac top-level interpreter will exit */
+bool eval(queue Q, stack S, clacstate ST)
+//@requires ST != NULL;
+//@ensures \result == false || queue_empty(Q);
+{
+  while (!queue_empty(Q)) {
+    string tok = deq(Q); /* Is this dequeue safe? */
+    // Uncommenting these lines might help with debugging:
+    // print("Read: "); print(tok); print("\n");
+    if (string_equal(tok, "print")) {
+      int x = check_and_pop(S); /* This line is unsafe and must be fixed! */
+      printint(x); print("\n");
+    } else if (string_equal(tok, "quit")) {
+      return false;
+    } else if (string_equal(tok, "+")) {
+      int y = check_and_pop(S);
+      int x = check_and_pop(S);
+      push(S, x + y);
+    } else if (string_equal(tok, "-")) {
+      int y = check_and_pop(S);
+      int x = check_and_pop(S);
+      push(S, x - y);
+    } else if (string_equal(tok, "*")) {
+      int y = check_and_pop(S);
+      int x = check_and_pop(S);
+      push(S, x * y);
+    } else if (string_equal(tok, "/")) {
+      int y = check_and_pop(S);
+      int x = check_and_pop(S);
+      if(y == 0) {
+        error("division by 0");
+      }
+      if((x == int_min()) && (y == -1)) {
+        error("division of int_min() by -1");
+      }
+      push(S, x / y);
+    } else if (string_equal(tok, "%")) {
+      int y = check_and_pop(S);
+      int x = check_and_pop(S);
+      if(y == 0) {
+        error("modulus by 0");
+      }
+      if((x == int_min()) && (y == -1)) {
+        error("modulus of int_min() by -1");
+      }
+      push(S, x % y);
+    } else if (string_equal(tok, "<")) {
+      int y = check_and_pop(S);
+      int x = check_and_pop(S);
+      if(x < y) {
+        push(S, 1);
+      } else {
+        push(S, 0);
+      }
+    } else if (string_equal(tok, "drop")) {
+      check_and_pop(S);
+    } else if (string_equal(tok, "swap")) {
+      swap(S);
+    } else if (string_equal(tok, "rot")) {
+      rot(S);
+    } else if (string_equal(tok, "if")) {
+      int x = check_and_pop(S);
+      if(x == 0) {
+        check_and_deq(Q);
+        check_and_deq(Q);
+      }
+    } else if (string_equal(tok, "else")) {
+      check_and_deq(Q);
+    } else if (string_equal(tok, "pick")) {
+      int n = check_and_pop(S);
+      int x = pick(S, n);
+      push(S, x);
+    } else if (string_equal(tok, ":")) {
+      tok = check_and_deq(Q);
+      queue def = get_definition(Q);
+      dict_insert(ST->definitions, tok, def);
+    } else if (is_defined(tok, ST)) {
+      queue def = dict_lookup(ST->definitions, tok);
+      def = queue_read_only_copy(def);
+      eval(def, S, ST);
+    } else {
+      /* Not defined as an operation name, should be an int */
+      int* p = parse_int(tok, 10);
+      if (p == NULL) { /* not an int */
+        /* call error(msg) which prints msg and aborts */
+        error(string_join("undefined token ", tok));
+      }
+      push(S, *p);
+    }
+  }
+
+  /* When you return "true", don't pop anything off the stack! When we
+   * grade your function, we'll check that the stack contains the
+   * integers we expect. */
+  return true;
+}

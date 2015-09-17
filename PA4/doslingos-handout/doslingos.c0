@@ -1,0 +1,149 @@
+int count_vocab(string[] vocab, int[] freq, int v,
+                string tweetfile,
+                bool fast)
+//@requires v == \length(vocab) && v == \length(freq);
+//@requires is_sorted(vocab, 0, v);
+// requires all_distinct(vocab, v);
+{
+  string_bundle* sb = read_words(tweetfile);
+  string[] words = string_bundle_array(sb);
+  int len = string_bundle_length(sb);
+  int count = 0;
+  for (int i = 0; i < len; i++)
+    //@loop_invariant 0 <= i && i <= len;
+    {
+      int index;
+      if (fast) {
+        index = binsearch(words[i], vocab, v);
+      }
+      else {
+        index = linsearch(words[i], vocab, v);
+      }
+
+      if (index == -1) {
+        count = count + 1;
+      }
+      else {
+        freq[index] = freq[index] + 1;
+      }
+    }
+  return count;
+}
+
+// REUTRNS: true iff n less than or equal to all elements in A[start, end)
+bool le_seg_int(int n, int[] A, int start, int end)
+//@requires 0 <= start && start <= end && end <= \length(A);
+{
+  for (int i = start; i < end; i++)
+    //@loop_invariant start <= i && i <= end;
+    {
+      if (n > A[i]) {
+        return false;
+      }
+    }
+  return true;
+}
+
+// GIVEN: two sub-arrays A[start1, end1), B[start2, end2)
+// RETURNS: true iff all elements in A[start1, end1) are less than or equal to
+// all elements in B[start2, end2)
+bool le_segs_int(int[] A, int start1, int end1, int[] B, int start2, int end2)
+//@requires 0 <= start1 && start1 <= end1 && end1 <= \length(A);
+//@requires 0 <= start2 && start2 <= end2 && end2 <= \length(B);
+{
+  for (int i = start1; i < end1; i++)
+    //@loop_invariant start1 <= i && i <= end1;
+    {
+      if (! le_seg_int(A[i], B, start2, end2)) {
+        return false;
+      }
+    }
+  return true;
+}
+
+
+
+// GIVEN: vocab[start, mid) and vocab[mid, end) are two sub-arrays that contain
+// vocabulary, freq[start, mid) and freq[mid, end) are two sub-arrays that
+// contain the frequency count of each vocabulary
+// WHERE: the four sub-arrays has been sorted by each vocabulary's count
+// EFFECT: merge the two sub-arrays of vocab and the two sub-arrays of freq,
+// by each vocabulary's frequency count
+void merge_by_freq(string[] vocab, int[] freq, int start, int mid, int end)
+//@requires 0 <= start && start <= mid && mid <= end && end <= \length(vocab);
+//@requires \length(vocab) == \length(freq);
+//@requires is_sorted_int(freq, start, mid) && is_sorted_int(freq, mid, end);
+//@ensures is_sorted_int(freq, start, end);
+{
+  string[] ss = alloc_array(string, end - start);
+  int[] ints = alloc_array(int, end - start);
+  int i = start;
+  int j = mid;
+  int k = 0;
+  while(i < mid && j < end)
+    //@loop_invariant start <= i && i <= mid;
+    //@loop_invariant mid <= j && j <= end;
+    //@loop_invariant is_sorted_int(freq, 0, k);
+    //@loop_invariant le_segs_int(ints, 0, k, freq, i, mid);
+    //@loop_invariant le_segs_int(ints, 0, k, freq, j, end);
+    //@loop_invariant k == i - start + j - mid;
+    {
+      if (freq[i] <= freq[j]) {
+        ints[k] = freq[i];
+        ss[k] = vocab[i];
+        i++; k++;
+      }
+      else {
+        //@assert freq[i] > freq[j];
+        ints[k] = freq[j];
+        ss[k] = vocab[j];
+        j++; k++;
+      }
+    }
+  //@assert (i == mid) || (j == end);
+  while(i < mid)
+    //@loop_invariant start <= i && i <= mid;
+    {
+      ints[k] = freq[i];
+      ss[k] = vocab[i];
+      i++; k++;
+    }
+  while(j < end)
+    //@loop_invariant start <= j && j <= end;
+    {
+      ints[k] = freq[j];
+      ss[k] = vocab[j];
+      j++; k++;
+    }
+  for (k = 0; k < end -start; k++) {
+    freq[start+ k] = ints[k];
+    vocab[start + k] = ss[k];
+  }
+  return;
+}
+
+// GIVEN: two sub-array a list of vocabulary vocab[start, end)
+// and a frequency count of each vocabulary freq[start, end)
+// EFFECT: merge-sort the two given sub-array by the frequency count of
+// each vocabulary
+void merge_sort_by_freq(string[] vocab, int[] freq, int start, int end)
+//@requires 0 <= start && start <= end && end <= \length(vocab);
+//@requires \length(vocab) == \length(freq);
+//@ensures is_sorted_int(freq, start, end);
+{
+  if (end - start <= 1) return;
+  int mid = start + (end - start) / 2;
+  //@assert start <= mid && mid < end;
+  merge_sort_by_freq(vocab, freq, start, mid);
+  merge_sort_by_freq(vocab, freq, mid, end);
+  merge_by_freq(vocab, freq, start, mid, end);
+  return;
+}
+
+
+void sort_by_freq(string[] vocab, int[] freq, int v)
+//@requires v == \length(vocab) && v == \length(freq);
+//@ensures is_sorted_int(freq, 0, v);
+{
+  merge_sort_by_freq(vocab, freq, 0, v);
+}

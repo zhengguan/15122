@@ -1,0 +1,112 @@
+/* 
+ * Queues of string
+ *
+ * 15-122 Principles of Imperative Computation */
+
+/*** Interface ***/
+
+// typedef _______ queue;
+typedef struct queue_header* queue;
+
+bool queue_empty(queue Q);           /* O(1) */
+bool queue_is_read_only(queue Q);    /* O(1) */
+queue queue_new();                   /* O(1) */
+
+void enq(queue Q, string e)          /* O(1) */
+/*@requires !queue_is_read_only(Q); @*/ ;
+
+string deq(queue Q)                  /* O(1) */
+/*@requires !queue_empty(Q); @*/ ;
+
+/* O(1) operation to create a copy of the queue that can only be
+ * dequeued from, not enqueued onto. */
+queue queue_read_only_copy(queue Q) 
+/*@ensures queue_is_read_only(\result); @*/ ;
+
+
+/*** Implementation ***/
+
+/* Aux structure of linked lists of strings */
+struct slist_node {
+  string data;
+  struct slist_node* next;
+};
+typedef struct slist_node slist;
+
+/* is_segment(start, end) will diverge if list is circular! */
+bool is_segment_slist(slist* start, slist* end) {
+  if (start == NULL) return false;
+  if (start == end) return true;
+  return is_segment_slist (start->next, end);
+}
+
+/* Queues */
+
+struct queue_header {
+  bool is_read_only;
+  slist* front;
+  slist* back;
+};
+
+bool is_queue(queue Q) {
+  return Q != NULL
+    && is_segment_slist(Q->front, Q->back);
+}
+
+bool queue_empty(queue Q)
+//@requires is_queue(Q);
+{
+  return Q->front == Q->back;
+}
+
+bool queue_is_read_only(queue Q)
+//@requires is_queue(Q);
+{
+  return Q->is_read_only;
+}
+
+queue queue_new()
+//@ensures is_queue(\result);
+//@ensures queue_empty(\result);
+{
+  queue Q = alloc(struct queue_header);
+  slist* l = alloc(struct slist_node);
+  Q->is_read_only = false;
+  Q->front = l;
+  Q->back = l;
+  return Q;
+}
+
+void enq(queue Q, string s)
+//@requires is_queue(Q);
+//@ensures is_queue(Q);
+{
+  slist* l = alloc(struct slist_node);
+  Q->back->data = s;
+  Q->back->next = l;
+  Q->back = l;
+  return;
+}
+
+string deq(queue Q)
+//@requires is_queue(Q);
+//@requires !queue_empty(Q);
+//@ensures is_queue(Q);
+{
+  string s = Q->front->data;
+  Q->front = Q->front->next;
+  return s;
+}
+
+queue queue_read_only_copy(queue Q) 
+//@requires is_queue(Q);
+//@ensures is_queue(Q);
+//@ensures is_queue(\result);
+//@ensures queue_is_read_only(\result); 
+{
+  queue QC = alloc(struct queue_header);
+  QC->is_read_only = true;
+  QC->front = Q->front;
+  QC->back = Q->back;
+  return QC;
+}

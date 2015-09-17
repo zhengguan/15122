@@ -1,0 +1,4 @@
+// Declares the elem to be char
+// Only used to run text-buffer-test.c0
+
+typedef char elem;

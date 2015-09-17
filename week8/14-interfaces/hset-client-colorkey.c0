@@ -1,0 +1,35 @@
+/* 
+ * Clients of hash-table-based sets
+ * 
+ */
+
+#use <string>
+
+struct produce {
+  string color; // Key
+  string fruit;
+};
+
+typedef struct produce* elem;
+
+// f(x, y) returns true if x and y contain equal keys
+bool elem_equal(elem x, elem y)
+/*@requires x != NULL && y != NULL; @*/
+{
+  return string_equal(x->color, y->color);
+}
+
+// f(x) returns the hash value of x's key
+int elem_hash(elem x)
+/*@ requires x != NULL; @*/ 
+{
+  int h = 0;
+  string key = x->color;
+
+  for (int i = 0; i < string_length(key); i++) {
+    h = h*31;
+    h = h + char_ord(string_charat(key, i));
+  }
+
+  return h;
+}

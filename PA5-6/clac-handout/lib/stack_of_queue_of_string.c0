@@ -1,0 +1,89 @@
+/* 
+ * Stacks of queues of strings
+ * 
+ * 15-122 Principles of Imperative Computation */
+
+#use "queue_of_string.c0"
+// The above line lets us use types from queue_of_string.c0 even if we
+// don't include queue_of_string.c0 on the command line. It can
+// sometimes cause problems with the autograder if you do this in your
+// code, but it can also be a useful way of splitting your code into
+// multiple files.
+
+
+/*** Interface to stacks of queues of strings ***/
+
+// typedef _______ qstack;
+typedef struct stack_of_queue_header* qstack;
+
+bool qstack_empty(qstack S);     /* O(1) */
+qstack qstack_new();             /* O(1) */
+void qpush(qstack S, queue x);   /* O(1) */
+queue qpop(qstack S)             /* O(1) */
+/*@requires !qstack_empty(S); @*/ ;
+
+
+/*** Implementation of stacks of queues of strings ***/
+
+/* Aux structure of linked lists of queues of strings */
+struct qlist_node {
+  queue data;
+  struct qlist_node* next;
+};
+typedef struct qlist_node qlist;
+
+/* is_segment_qlist(start, end) will diverge if list is circular! */
+bool is_segment_qlist(qlist* start, qlist* end) {
+  if (start == NULL) return false;
+  if (start == end) return true;
+  return is_segment_qlist (start->next, end);
+}
+
+/* Stacks of queues of strings */
+
+struct stack_of_queue_header {
+  qlist* top;
+  qlist* bottom;
+};
+
+bool is_qstack(qstack S) {
+  return S != NULL
+    && is_segment_qlist(S->top, S->bottom);
+}
+
+bool qstack_empty(qstack S)
+//@requires is_qstack(S);
+{
+  return S->top == S->bottom;
+}
+
+qstack qstack_new()
+//@ensures is_qstack(\result);
+//@ensures qstack_empty(\result);
+{
+  qstack S = alloc(struct stack_of_queue_header);
+  qlist* l = alloc(struct qlist_node); /* does not need to be initialized! */
+  S->top = l;
+  S->bottom = l;
+  return S;
+}
+
+void qpush(qstack S, queue x)
+//@requires is_qstack(S);
+//@ensures is_qstack(S);
+{
+  qlist* l = alloc(struct qlist_node);
+  l->data = x;
+  l->next = S->top;
+  S->top = l;
+}
+
+queue qpop(qstack S)
+//@requires is_qstack(S);
+//@requires !qstack_empty(S);
+//@ensures is_qstack(S);
+{
+  queue e = S->top->data;
+  S->top = S->top->next;
+  return e;
+}

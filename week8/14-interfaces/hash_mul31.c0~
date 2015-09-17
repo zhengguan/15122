@@ -1,0 +1,24 @@
+#use <string>
+
+int hash_mul31(string s)
+{
+  int result = 0;
+  int len = string_length(s);
+
+  for(int i = 0; i < len; i++)
+    //@loop_invariant 0 <= i && i <= len;
+    // loop_invariant result equals to the hash_mul31 of string_sub(s, 0, i);
+    {
+      result = result * 31 + char_ord(string_charat(s, i));
+    }
+  return result;
+}
+
+
+int main()
+{
+  assert(hash_mul31("zgs") == 120550);
+  assert(hash_mul31("fd") == 3262)
+
+  return 0;
+}

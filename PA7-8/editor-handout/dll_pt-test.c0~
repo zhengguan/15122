@@ -1,0 +1,136 @@
+/*
+ * Testing the text buffer implementation; instead of using a
+ * doubly-linked list of gap buffers, uses a doubly-linked list of
+ * chars.
+ *
+ * Note that this is just for testing! This code allows the user's
+ * input to attempt removing things an empty buffer, adding things to
+ * a full buffer, and moving left or right off the end of an
+ * array. These should lead to a @requires violation.
+ *
+ * cc0 -d -w -x elem-char.c0 dll_pt.c0 dll_pt-test.c0
+ *
+ * 15-122 Principles of Imperative Computation */
+
+#use <conio>
+#use <string>
+
+void visualize_dll_pt(dll_pt B)
+{
+  print("START");
+  for (dll* L = B->start->next; L != B->end; L = L->next) {
+    print(" <--> ");
+    if (L == B->point) print("_");
+    printchar('\''); printchar(L->data); printchar('\'');
+    if (L == B->point) print("_");
+  }
+  println(" <--> END");
+}
+
+dll_pt construct_char_buffer(string s)
+//@requires string_length(s) > 0;
+//@ensures is_dll_pt(\result);
+//@ensures dll_pt_at_right(\result);
+{
+  int limit = string_length(s);
+  dll_pt B = alloc(struct dll_pt_header);
+
+  B->start = alloc(struct dll_node);
+
+  dll* last = B->start;
+  for(int i = 0; i < limit; i++)
+    //@loop_invariant 0 <= i && i <= limit;
+    {
+      last->next = alloc(struct dll_node);
+      last->next->prev = last;
+      last->next->data = string_charat(s,i);
+      last = last->next;
+    }
+
+  last->next = alloc(struct dll_node);
+  last->next->prev = last;
+
+  B->point = last;
+  B->end = last->next;
+
+  return B;
+}
+
+void process_char(dll_pt B, char c)
+{
+  if (c == '<') {
+    print("<= : ");
+    dll_pt_backward(B);
+  } else if (c == '>') {
+    print("=> : ");
+    dll_pt_forward(B);
+  } else if (c == '^') {
+    print("del: ");
+    dll_pt_delete(B);
+  } else {
+    error("This only supports '<' (left), '>' (right), and '^' (delete)");
+  }
+}
+
+void process_string(dll_pt B, string s)
+{
+  int limit = string_length(s);
+  for(int i = 0; i < limit; i++) {
+    process_char(B, string_charat(s, i));
+    visualize_dll_pt(B);
+  }
+}
+
+// tests wrote by zgs
+void mytest()
+{
+  println("Starting my test.\n");
+  dll_pt d = construct_char_buffer("abcd");
+
+  assert(is_dll_pt(d));
+
+
+  println("Existing my test.\n");
+  return;
+}
+
+
+
+
+
+void test()
+{
+  mytest();
+
+  println("Visualizing the text buffer with elem as char.");
+  print("Give an initial input for the buffer (empty line quits): "); flush();
+
+  string s = readline();
+  if(string_equal("", s)) return;
+  dll_pt B = construct_char_buffer(s);
+
+  print("Initial buffer: ");
+  visualize_dll_pt(B);
+  println("");
+  println("Now you can edit the buffer:");
+  println("The '<' character mimics going backwards (left arrow key)");
+  println("The '>' character mimics going forwards (right arrow key)");
+  println("The '^' character mimics deletion (delete key)");
+  println("");
+  print("Give actions (empty line quits): "); flush();
+  s = readline();
+
+  while(!string_equal("", s)) {
+    print("     ");
+    visualize_dll_pt(B);
+    process_string(B, s);
+    print("Done. More actions? (empty line quits): "); flush();
+    s = readline();
+  }
+}
+
+int main() {
+  test();
+  println("Goodbye.");
+  return 0;
+}

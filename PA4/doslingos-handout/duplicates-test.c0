@@ -1,0 +1,23 @@
+int main()
+{
+  // tests for method all_distinct
+  string[] ss = alloc_array(string, 5);
+  ss[0] = "is";
+  ss[1] = "my";
+  ss[2] = "name";
+  ss[3] = "zgs";
+  ss[4] = "zgs";
+
+  assert(all_distinct(ss, 5) == false);
+  assert(all_distinct(alloc_array(string, 0), 0) == true);
+
+  // tests for method count_distinct
+  assert(count_distinct(alloc_array(string, 0), 0) == 0);
+  assert(count_distinct(ss, 5) == 4);
+
+  // tests for method remove_duplicate
+  remove_duplicates(ss, 5);
+
+  return 0;
+
+}

@@ -1,0 +1,97 @@
+/* Solution for exercise 4 of lab07
+   The function compute three strings that collide with each other
+   when stored in a table of size 1024 using hash_lcg.
+ */
+
+#use <string>
+#use <conio>
+
+// a helper function of hash_lcg
+int f(int x)
+{
+  return 1664525 * x + 1013904223;
+}
+
+// RETURNS: the hash_lcg value of the given string
+int hash_lcg(string s)
+{
+  int result = 0;
+  int len = string_length(s);
+
+  for(int i = 0; i < len; i++)
+    //@loop_invariant 0 <= i && i <= len;
+    // loop_invariant result equals to the hash_lcg value of
+    // string_sub(s, 0, i);
+    {
+      result = f(result) + char_ord(string_charat(s, i));
+    }
+  return result;
+}
+
+// RETURNS: the next string of s in lexicographical order
+string next(string s)
+{
+  int min = 32; // value of ' '
+  int max = 126; // value of '~'
+  int len = string_length(s);
+  char[] cs = string_to_chararray(s);
+
+  int carry = 1;
+  for(int i = len - 1; i >= 0 && carry == 1; i--)
+    //@loop_invariant -1 <= i && i <= len - 1;
+    {
+      if(char_ord(cs[i]) == max) {
+        cs[i] = char_chr(min);
+      }
+      else {
+        cs[i] = char_chr(char_ord(cs[i]) + 1);
+        carry = 0;
+      }
+    }
+  return string_from_chararray(cs);
+}
+
+bool is_collide(string s1, string s2)
+{
+  return (hash_lcg(s1) % 1024) == (hash_lcg(s2) % 1024);
+}
+
+//RETURNS: the first string in [start, end) that collide with target
+string find_collide_string(string target, string start, string end)
+//@requires string_compare(start, end) <= 0;
+{
+  for(string s = start; string_compare(s, end) == -1; s = next(s)) {
+    if(is_collide(s, target)) {
+        return s;
+    }
+  }
+  return "";
+}
+
+int main()
+{
+  int len = 3; // number of characters in string
+  int min = 32; // minimum value of characters in string
+  int max = 126; // maximum value of characters in string
+  string min_string = "   ";
+
+  string s = min_string;
+  while(string_compare(s, "~~~") <= 0)
+    {
+      string collide_string = find_collide_string(s, min_string, s);
+      if(string_length(collide_string) != 0) {
+        string collide_string2 =
+          find_collide_string(s, next(collide_string), s);
+        if(string_length(collide_string2) != 0) {
+          print("Three collide strings collide at position:");
+          printint(hash_lcg(s) % 1024);   println("");
+          println(s);
+          println(collide_string);
+          println(collide_string2);
+          return 0;
+        }
+      }
+      s = next(s);
+    }
+  return 0;
+}

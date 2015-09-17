@@ -1,0 +1,14 @@
+: comment fact : S, n => S, fact(n) ;
+: dup 1 pick ; 
+: fact 1 swap fact_return? ;
+: fact_return? dup if fact_body else drop ;
+: fact_body dup rot * swap 1 - fact_return? ;
+
+: comment some unit tests, quit if not satisfied ;
+: comment just continue if satisfied ;
+
+: noop ;
+0 fact 1 - if quit else noop
+1 fact 1 - if quit else noop
+5 fact 120 - if quit else noop
+6 fact 720 - if quit else noop

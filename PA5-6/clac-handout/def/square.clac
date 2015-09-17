@@ -1,0 +1,6 @@
+: comment square : S, n => S, n*n ;
+: dup 1 pick ;
+: square dup * ;
+
+: comment sum-of-squares : S, x, y => S, x*x+y*y ;
+: sum-of-squares square swap square + ;

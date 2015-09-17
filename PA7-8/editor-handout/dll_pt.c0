@@ -1,0 +1,151 @@
+/*
+ * Doubly linked lists with point
+ *
+ * A text buffer is a doubly linked list (dll), where one of the
+ * elements in the dll is designated as containing the point.  The
+ * list is terminated on both ends with dummy nodes whose contents are
+ * never inspected.
+ *
+ * 15-122 Principles of Imperative Computation */
+
+/*** Interface ***/
+
+#use <conio>
+
+typedef struct dll_node dll;
+struct dll_node {
+  elem data; /* This is defined elsewhere (gapbuf.c0 or elem-char.c0) */
+  dll* next;
+  dll* prev;
+};
+typedef struct dll_pt_header* dll_pt;
+struct dll_pt_header {
+  dll* start; /* the fist node of the list (on the left)  */
+  dll* point; /* the current node (where the cursor is)   */
+  dll* end;   /* the last node of the list (on the right) */
+};
+
+bool is_dll_pt(struct dll_pt_header* B);
+bool is_circular_dll_segment(dll* start, dll* end);
+bool is_dll_segment(dll* start, dll* end);
+
+bool dll_pt_at_left(dll_pt B);  /* Returns true if the point is the        */
+                                /*   first (non-terminal) node of the list */
+bool dll_pt_at_right(dll_pt B); /* Returns true if the point is the        */
+                                /*   last (non-terminal) node of the list  */
+
+void dll_pt_forward(dll_pt B);  /* Moves the point forward, to the right   */
+void dll_pt_backward(dll_pt B); /* Moves the point backward, to the left   */
+void dll_pt_delete(dll_pt B);   /* Remove the point node from the list     */
+
+/*** Implementation ***/
+// RETURNS: true iff the two given dll nodes form circularity
+bool is_circular_dll_segment(dll* start, dll* end)
+{
+  if (start == NULL) return false;
+
+  dll* h = start->next;  // hare
+  dll* t = start;        // tortoise
+
+  while (h != t)
+    // loop_invariant is_dll_segment(t, h);
+    {
+      if (h == NULL || h->next == NULL) return false;
+      if (h == end || h->next == end) return false;
+      h = h->next->next;
+      t = t->next;
+    }
+  return true;
+}
+
+
+
+bool is_dll_segment(dll* start, dll* end)
+{
+  if (is_circular_dll_segment(start, end)) return false;
+
+  if ((start == NULL) || (end == NULL)) return false;
+
+  dll* pre = start;
+  dll* d = start;
+  while (d != NULL)
+    // loop_invariant [start, d) is legal dll segment
+    {
+    if (! (pre == d || (pre->next == d && d->prev == pre)))
+      return false;
+    if (d == end) return true;
+    pre = d;
+    d = d->next;
+  }
+  return false;
+}
+
+// RETURNS: true iff the given one is a valid doublely-linked list
+// with a point
+bool is_dll_pt(struct dll_pt_header* B)
+{
+  return
+    (B != NULL) && (B->start != B->point) && (B->point != B->end)
+    && (B->start != B->end) && is_dll_segment(B->start, B->point)
+    && is_dll_segment(B->point, B->end);
+}
+
+
+/* Returns true if the point is the        */
+/*   first (non-terminal) node of the list */
+bool dll_pt_at_left(dll_pt B)
+//@requires is_dll_pt(B);
+{
+  return B->start->next == B->point;
+}
+
+/* Returns true if the point is the        */
+/*   last (non-terminal) node of the list  */
+bool dll_pt_at_right(dll_pt B)
+//@requires is_dll_pt(B);
+{
+  return B->point->next == B->end;
+}
+
+/* Moves the point forward, to the right   */
+void dll_pt_forward(dll_pt B)
+//@requires is_dll_pt(B);
+//@requires !dll_pt_at_right(B);
+//@ensures is_dll_pt(B);
+{
+  B->point = B->point->next;
+  return;
+}
+
+/* Moves the point backward, to the left   */
+void dll_pt_backward(dll_pt B)
+//@requires is_dll_pt(B);
+//@requires !dll_pt_at_left(B);
+//@ensures is_dll_pt(B);
+{
+  B->point = B->point->prev;
+  return;
+}
+
+
+/* Remove the point node from the list     */
+void dll_pt_delete(dll_pt B)
+//@requires !(dll_pt_at_left(B) && dll_pt_at_right(B));
+//@ensures is_dll_pt(B);
+{
+  if (!dll_pt_at_right(B)) {
+    dll* prev = B->point->prev;
+    prev->next = B->point->next;
+    B->point = B->point->next;
+    B->point->prev = prev;
+    return;
+  }
+  else {
+    //@assert !dll_pt_at_left(B);
+    dll* next = B->point->next;
+    next->prev = B->point->prev;
+    B->point = B->point->prev;
+    B->point->next = next;
+    return;
+  }
+}

@@ -1,0 +1,134 @@
+#use <conio>
+
+// GIVEN: an int order that represents the occurency frequency order
+// of word, count represents the frequency count of the given word
+// EFFECT: print one line about the given most common word
+void print_one_most_common_word(int order, string word, int count)
+{
+  printint(order);
+  print(". ");
+  print(word);
+  print(" (appears ");
+  printint(count);
+  println(" times)");
+  return;
+}
+
+
+// EFFECT: print the n most common words
+void print_most_common_words(string[] vocab, int[] freq, int v, int n)
+//@requires \length(vocab) == \length(freq);
+//@requires \length(vocab) == v;
+//@requires is_sorted_int(freq, 0, v);
+//@requires v >= n;
+{
+  string s = "The four most common words in the Twitter corpus are:";
+  for (int i = 0; i < n; i++)
+    //@loop_invariant 0 <= i && i <= n;
+    {
+      print_one_most_common_word(i + 1, vocab[v - 1 - i], freq[v - 1 - i]);
+    }
+  return;
+}
+
+// EFFECT: print the word that occurs the given amount of times
+void print_word_by_frequency(string[] vocab, int[] freq, int v, int count)
+//@requires \length(vocab) == \length(freq);
+//@requires \length(vocab) == v;
+{
+  print("These words appears ");
+  printint(count);
+  println(" times in the given file.");
+  for (int i = 0; i < v && freq[i] <= count; i++)
+    //@loop_invariant 0 <= i && i <= v;
+    {
+      if (freq[i] == count)
+        println(vocab[i]);
+    }
+  return;
+}
+
+// RETURNS: the number of words that appears the count times
+int count_word_of_frequency(string[] vocab, int[] freq, int v, int count)
+//@requires \length(vocab) == \length(freq);
+//@requires \length(vocab) == v;
+{
+  int n = 0;
+  for(int i = 0; i < v && freq[i] <= count; i++)
+    //@loop_invariant 0 <= i && i <= v;
+    {
+      if (freq[i] == count) n++;
+    }
+  return n;
+}
+
+// GIVEN: a sorted sub-array of ints nums[0, len)
+// WHERE: nums is sorted
+// RETURNS: the number of distinct ints in the given array
+int count_distinct_int(int[] nums, int len)
+//@requires 0 <= len && len <= \length(nums);
+//@requires is_sorted_int(nums, 0, len);
+{
+  if (len == 0) {
+    return 0;
+  }
+  else {
+    int count = 1;
+    for (int i = 1; i < len; i++)
+      //@loop_invariant 1 <= i && i <= len;
+      {
+        if (nums[i] != nums[i - 1]) count++;
+      }
+    return count;
+  }
+}
+
+
+
+int main()
+{
+  println("Entering: ");
+
+  string dictionary_file = "texts/news_vocab_sorted.txt";
+  string input_file = "texts/shakespeare.txt";
+  //  string input_file = "texts/sonnets.txt";
+
+  println("Start reading dictionary.");
+
+  string_bundle* sb = read_words(dictionary_file);
+  string[] dictionary = string_bundle_array(sb);
+  int dictionary_length = string_bundle_length(sb);
+
+  int[] freq = alloc_array(int, dictionary_length);
+  for (int i = 0; i < dictionary_length; i++)
+    //@loop_invariant 0 <= i && i <= dictionary_length;
+    {
+      freq[i] = 0;
+    }
+
+  println("Start counting frequency of each word.");
+
+  count_vocab(dictionary, freq, dictionary_length,
+              input_file, true);
+  sort_by_freq(dictionary, freq, dictionary_length);
+
+  println("Start analyzing.");
+
+  // print 4 most common words
+  print_most_common_words(dictionary, freq, dictionary_length, 4);
+
+  // print words appeared 128 times
+  print_word_by_frequency(dictionary, freq, dictionary_length, 128);
+
+  // print number of singleton
+  print("There are ");
+  printint(count_word_of_frequency(dictionary, freq, dictionary_length, 1));
+  println(" singletons in the corpus.");
+
+  // print number of distinct frequency counts in the corpus
+  print("There are ");
+  printint(count_distinct_int(freq, dictionary_length));
+  println(" distinct frequency in the corpus.");
+
+  return 0;
+}

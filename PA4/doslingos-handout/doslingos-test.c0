@@ -1,0 +1,30 @@
+#use <string>
+
+int main() {
+  string[] vocab = alloc_array(string, 4);
+  vocab[0] = "his";
+  vocab[1] = "is";
+  vocab[2] = "of";
+  vocab[3] = "out";
+
+  /* tests for method count_vocab() */
+  assert(is_sorted(vocab, 0, 4));
+  assert(count_vocab(vocab, alloc_array(int, 4), 4, "texts/scott_tweet.txt",
+                     false)
+         == 2);
+
+  /* tests for method sort_by_freq */
+  int[] freq = alloc_array(int, 4);
+  freq[0] = 2;
+  freq[1] = 3;
+  freq[2] = 1;
+  freq[3] = 0;
+  sort_by_freq(vocab, freq, 4);
+  assert(is_sorted_int(freq, 0, 4));
+  assert(string_equal(vocab[0], "out"));
+  assert(string_equal(vocab[1], "of"));
+  assert(string_equal(vocab[2], "his"));
+  assert(string_equal(vocab[3], "is"));
+
+  return 0;
+}

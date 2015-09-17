@@ -1,0 +1,58 @@
+elem tree_lookup(tree * T, key k)
+//@requires is_ordtree(T);
+//@ensures \result == NULL || key_compare(elem_key(\result), k) == 0;
+{
+  tree * tmp = T;
+  while (tmp != NULL) {
+    int r = key_compare(k, elem_key(tmp->data));
+    if (r == 0)
+      return tmp->data;
+    else if (r < 0)
+      tmp = tmp->left;
+    else
+      tmp = tmp->right;
+  }
+  return NULL;
+}
+
+
+tree * tree_insert(tree * T, elem e)
+//@requires is_ordtree(T);
+//@requires e != NULL;
+//@ensures is_ordtree(\result);
+{
+  tree * parent = T;
+  tree * curr = parent;
+  int r;
+  while (curr != NULL) {
+    int r = key_compare(elem_key(e), elem_key(curr->data));
+    if (r == 0) {
+      curr->data = e;
+      return T;
+    }
+    else if (r < 0) {
+      parent = curr;
+      curr = curr->left;
+    }
+    else {
+      parent = curr;
+      curr = curr->right;
+    }
+  }
+
+  tree * t = alloc(struct tree_node);
+  t->date = elem;
+  t->left = NULL: t->right = NULL;
+
+  if (parent == curr) {
+    return t;
+  }
+  else {
+    if (key_compare(elem_key(elem), elem_key(parent->data)) < 0) {
+      parent->left = t;
+    }
+    else {
+      parent->right = t;
+    }
+  }
+}

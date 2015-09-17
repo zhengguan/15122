@@ -1,0 +1,16 @@
+/* tests for heapsort of ex06 of lecture 16 */
+#use <rand>
+
+int main()
+{
+  rand_t r = init_rand(0xc0c0ffee);
+  int size = 100;
+  int[] nums = alloc_array(int, size);
+  for(int i = 0; i < size; i++)
+    //@loop_invariant 0 <= i && i <= size;
+    {
+      nums[i] = rand(r);
+    }
+  heapsort(nums, size);
+  return 0;
+}

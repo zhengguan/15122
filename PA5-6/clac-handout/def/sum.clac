@@ -1,0 +1,5 @@
+: comment sum S, x1, x2, ... xn, n => S, (x1+x2+...+xn) ;
+: dup 1 pick ;
+: sum 0 swap sum_ret? ;
+: sum_ret? dup if sum_body else drop ;
+: sum_body swap rot + swap 1 - sum_ret? ;

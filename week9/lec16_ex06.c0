@@ -1,0 +1,186 @@
+// Ex 06
+
+// GIVEN: the index of an element in an array(index start from 0) that
+// stores a heap
+// RETURNS: the index of its parent
+int parent_index(int i)
+//@requires 1 <= i;
+{
+  return (i+1) / 2 - 1;
+}
+
+int lchild_index(int i)
+//@requires 0 <= i;
+{
+  return (i+1) * 2 - 1;
+}
+
+int rchild_index(int i)
+//@requires 0 <= i;
+{
+  return lchild_index(i) + 1;
+}
+
+// RETURNS: true iff nums[stat, end) is heapsorted (in max heap)
+bool is_heapsorted(int[] nums, int start, int end)
+//@requires 0 <= start && start <= end && end <= \length(nums);
+{
+  if (end - start <= 1) {
+    return true;
+  }
+  for (int i = 1; i < end - start; i++)
+    //@loop_invariant start + i <= end;
+    {
+      if (nums[i] > nums[parent_index(i) + start]) {
+        return false;
+      }
+    }
+  return true;
+}
+
+// RETURNS: true iff the grandparent of i (if exists) is greater than
+// or equal to the children of i (if exists)
+bool grandparent_check(int[] nums, int start, int end, int i)
+//@requires 0 <= start && start < end && end <= \length(nums);
+//@requires start <= i && i < end;
+{
+  if (i == start) return true;
+
+  int p_index = parent_index(i) + start;
+  int l_index = lchild_index(i) + start;
+  int r_index = rchild_index(i) + start;
+  if (l_index >= end) return true;
+  if (r_index >= end) return nums[p_index] >= nums[l_index];
+  else {
+    return (nums[p_index] >= nums[l_index]) && (nums[p_index] >= nums[r_index]);
+  }
+}
+
+// RETURNS: true iff nums[start, end) is heapsorted except the node with index
+// nth elem and its parent could violate the order (if exists)
+bool is_heapsorted_except_up(int[] nums, int start, int end, int n)
+//@requires 0 <= start && start <= end && end <= \length(nums);
+//@requires 0 <= n && n < end;
+{
+  for (int i = 1; i < end - start; i++) {
+    if (!(i == n || nums[i] <= nums[parent_index(i)])) return false;
+  }
+  return true;
+}
+/*
+void swap(int[] nums, int i, int j)
+//@requires 0 <= i && i < \length(nums);
+//@requires 0 <= j && j < \length(nums);
+{
+  int tmp = nums[i];
+  nums[i] = nums[j];
+  nums[j] = tmp;
+  return;
+}
+*/
+
+
+void sift_up(int[] nums, int i)
+//@requires 0 <= i && i + 1 <= \length(nums);
+//@requires is_heapsorted(nums, 0, i);
+//@ensures is_heapsorted(nums, 0, i+1);
+{
+  for(int j = i; j != 0 && nums[parent_index(j)] < nums[j]; j = parent_index(j))
+    //@loop_invariant 0 <= j && j <= i;
+    //@loop_invariant is_heapsorted_except_up(nums, 0, i+1, j);
+    //@loop_invariant grandparent_check(nums, 0, i + 1, j);
+    {
+      swap(nums, j, parent_index(j));
+    }
+  return;
+}
+
+// RETURNS: true iff nums[start, end) is heapsorted except that the
+// nth ele and its children could violate the order (if exists)
+bool is_heapsorted_except_down(int[] nums, int start, int end, int n)
+//@requires 0 <= start && start <= n && n < end && end <= \length(nums);
+{
+  for (int i = 1; i < end - start; i++)
+    //@loop_invariant i >= 1 && start + i <= end;
+    {
+      if(!(start + parent_index(i) == n || nums[parent_index(i)] > nums[i]))
+        return false;
+    }
+  return true;
+}
+
+
+void sift_down(int[] nums, int i)
+//@requires 0 <= i && i <= \length(nums);
+//@requires is_heapsorted_except_down(nums, 0, i, 0);
+//@ensures is_heapsorted(nums, 0, i);
+{
+  int j = 0;
+
+  while(lchild_index(j) < i)
+    //@loop_invariant 0 <= j && j < i;
+    //@loop_invariant is_heapsorted_except_down(nums, 0, i, j);
+    //@loop_invariant grandparent_check(nums, 0, i, j);
+    {
+      int l_index = lchild_index(j);
+      int r_index = rchild_index(j);
+      if (nums[j] >= nums[l_index]
+          && (r_index >= i || nums[j] >= nums[r_index]))
+        return;
+      if (r_index >= i || nums[l_index] >= nums[r_index]) {
+        swap(nums, j, l_index);
+        j = l_index;
+      }
+      else {
+        //@assert l_index < i && nums[l_index] < nums[r_index];
+        swap(nums, j, r_index);
+        j = r_index;
+      }
+    }
+
+  //@assert j < i && lchild_index(j) >= i;
+  //@assert is_heapsorted_except_down(nums, 0, i, j);
+  return;
+}
+
+/*
+// RETURNS:
+bool is_sorted(int[] nums, int start, int end)
+//@requires 0 <= start && start <= end && end <= \length(nums);
+{
+  for(int i = start + 1; i < end; i++)
+    //@loop_invariant start < i;
+    {
+      if (nums[i] < nums[i-1]) return false;
+    }
+  return true;
+}
+*/
+
+
+// EFFECT: sort nums by heapsort in place
+void heapsort(int[] nums, int len)
+//@requires \length(nums) == len;
+//@ensures is_sorted(nums, 0, len);
+{
+  if(len <= 1) {
+    return;
+  }
+
+  for(int i = 1; i < len; i++)
+    //@loop_invariant is_heapsorted(nums, 0, i);
+    //@loop_invariant 0 <= i && i <= len;
+    {
+      sift_up(nums, i);
+    }
+
+  for(int i = len; i > 1; i--)
+    //@loop_invariant is_sorted(nums, i, len);
+    //@loop_invariant gt_segs(nums, i, len, nums, 0, i);
+    {
+      swap(nums, 0, i - 1);
+      sift_down(nums, i - 1);
+    }
+
+  return;
+}

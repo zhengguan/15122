@@ -1,0 +1,6 @@
+: comment fib : S, n => S, fib(n) ;
+: noop ;
+: dup 1 pick ; 
+: fib dup if fib1 else noop ;
+: fib1 dup 1 - if fib_body else noop ;
+: fib_body dup 1 - fib swap 2 - fib + ;

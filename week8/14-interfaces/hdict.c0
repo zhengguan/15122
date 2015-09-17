@@ -1,0 +1,138 @@
+/* 
+ * Hash sets, implemented with separate chaining
+ * 
+ */
+
+#use <util>
+#use <conio>
+
+/*************************/
+/*** Client Interface ****/
+/*************************/
+
+// typedef ________ key;
+// typedef _______* value;
+
+// f(x, y) returns true if x and y contain equal keys
+bool key_equal(key x, key y);
+
+// f(x) returns the hash value of key x
+int key_hash(key x);
+
+
+/**************************/
+/*** Library Interface ****/
+/**************************/
+
+// typedef ________ hdict;
+typedef struct hdict_header* hdict;
+
+int hdict_size(hdict H);
+
+hdict hdict_new(int capacity)
+/*@requires capacity > 0; @*/ ;
+
+// Returns the value associated with the key x, if it exists.
+// Otherwise returns NULL.
+value hdict_lookup(hdict H, key k);
+
+void hdict_insert(hdict H, key k, value v)
+/*@requires v != NULL; @*/ ;
+
+
+/******************/
+/* Implementation */
+/******************/
+
+struct chain_node {
+  key k;
+  value v;
+  struct chain_node* next;
+};
+typedef struct chain_node chain;
+
+struct hdict_header {
+  int size;
+  int capacity;               /* 0 < capacity */
+  chain*[] table;             /* \length(table) == capacity */
+};
+
+int hashindex(hdict H, key x) 
+//@requires H != NULL && H->capacity > 0;
+//@ensures 0 <= \result && \result < H->capacity;
+{
+  return abs(key_hash(x) % H->capacity);
+}
+
+// All hash values are correct for the current index
+bool is_chain(hdict H, chain* p, int i) {
+  if (p == NULL) return true;
+  return hashindex(H, p->k) == i
+    && p->v != NULL 
+    && is_chain(H, p->next, i);
+}
+
+bool is_table_expected_length(chain*[] table, int length) {
+  //@assert \length(table) == length;
+  return true;
+}
+
+bool is_hdict(hdict H) {
+  return  H != NULL
+    && H->capacity > 0
+    && H->size >= 0 
+    && is_table_expected_length(H->table, H->capacity);
+  // What else?
+}
+
+hdict hdict_new(int capacity)
+//@requires capacity > 0;
+//@ensures is_hdict(\result);
+{
+  hdict H = alloc(struct hdict_header);
+  H->size = 0;
+  H->capacity = capacity;
+  H->table = alloc_array(chain*, capacity);
+  return H;
+}
+
+value hdict_lookup(hdict H, key k)
+//@requires is_hdict(H);
+{
+  int i = hashindex(H, k);
+  for (chain* p = H->table[i]; p != NULL; p = p->next)
+  //@loop_invariant is_chain(H, p, i);
+  {
+    if (key_equal(p->k, k)) {
+      return p->v;
+    }
+  }
+
+  return NULL;
+}
+
+void hdict_insert(hdict H, key k, value v) 
+//@requires is_hdict(H);
+//@requires v != NULL;
+//@ensures is_hdict(H);
+//@ensures v == hdict_lookup(H, k);
+{
+  int i = hashindex(H, k);
+  for (chain* p = H->table[i]; p != NULL; p = p->next)
+  //@loop_invariant is_chain(H, p, i);
+  {
+    if (key_equal(p->k, k)) {
+      p->v = v;
+      return;
+    }
+  }
+  
+  // prepend new element
+  chain* p = alloc(chain);
+  p->k = k;
+  p->v = v;
+  p->next = H->table[i];
+  H->table[i] = p;
+  (H->size)++;
+}
+

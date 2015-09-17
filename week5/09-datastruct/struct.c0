@@ -1,0 +1,19 @@
+struct point2d_header {
+  int x;
+  int y;
+};
+typedef struct point2d_header point;
+
+struct image_header {
+  int width;
+  int height;
+  pixel[] data;
+};
+typedef struct image_header image;
+
+struct array_header {
+  int limit;
+  string[] data;
+};
+typedef struct array_header array;
+

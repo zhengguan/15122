@@ -1,0 +1,40 @@
+// GIVEN: an int order that represents the occurency frequency order
+// of word, count represents the frequency count of the given word
+// EFFECT: print one line about the given most common word
+void print_one_most_common_word(int order, string word, int count)
+{
+  printint(order);
+  print(". ");
+  print(word);
+  print(" (appears ");
+  println(" times)");
+  return;
+}
+
+
+// EFFECT: print the n most common words
+void print_most_common_words(string[] vocab, int[] freq, int v, int n)
+//@requires \length(vocab) == \length(freq);
+//@requires \lenght(vocab) == v;
+//@requires is_sorted(freq);
+//@requires v >= n;
+{
+  string s = "The four most common words in the Twitter corpus are:";
+  for (int i = 0; i < n; i++)
+    //@loop_invariant 0 <= i && i <= n;
+    {
+      print_one_most_common_word(i + 1, vocab[v - 1 - i], freq[v - 1 - i]);
+    }
+
+  return;
+}
+
+
+
+int main()
+{
+  string dictionary = "texts/news_vocab_sorted.txt";
+  string input_file = "texts/shakespeare.txt";
+
+
+}

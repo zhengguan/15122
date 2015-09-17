@@ -1,0 +1,128 @@
+/*
+ * Testing Clac
+ *
+ * This code answers a question a lot of people have asked: how do I
+ * test that my program returns the correct right answers but that it
+ * fails in the right way?
+ *
+ * The main function that you start with in this file reads in an
+ * argument from the command line. If you run
+ *
+ *  % clac-test
+ *
+ * then you will be testing all the functions that you expect to
+ * succeed. However, if you run
+ *
+ *  % clac-test err1
+ *
+ * then you will be testing one particular test that you expect to
+ * fail with a call to error().
+ *
+ * Of course, you can also use the test_prog function in Coin.
+ *
+ * 15-122 Principles of Imperative Computation */
+
+#use <args>
+#use <string>
+#use <parse>
+#use <conio>
+
+// Turns a string of whitespace-separated integers into a stack
+// The top of the stack is to the right
+stack stack_from_string(string s);
+
+// Check that two stacks of integers are equal
+bool stacks_eq(stack S1, stack S2);
+
+// The master test function. Checks that a clac program starting with
+// the given initial stack ends up with the given final stack and the
+// expected result.
+bool test_prog(string clac_program, clacstate ST,
+               string initial_stack, string final_stack,
+               bool result)
+{
+  queue Q = queue_new();
+  input_string(clac_program, Q);
+  stack S1 = stack_from_string(initial_stack);
+  stack S2 = stack_from_string(final_stack);
+
+  if (result != eval(Q, S1, ST)) return false;
+
+  return stacks_eq(S1, S2);
+}
+
+int main() {
+  args_t args = args_parse();
+  clacstate ST = init_state();
+
+  if (args->argc == 0) {
+    // These are the tests we expect to succeed
+    assert(test_prog("1 2 3 4",                 ST, "",    "1 2 3 4", true));
+    assert(test_prog("3 4",                     ST, "1 2", "1 2 3 4", true));
+    assert(test_prog("1 2 print 3 4 print 5 6", ST, "",    "1 3 5 6", true));
+    assert(test_prog("quit",                    ST, "",    "",        false));
+    assert(test_prog("1 2 quit 3 4",            ST, "0",   "0 1 2",   false));
+
+    // Tests for +, -, *, /, %
+    assert(test_prog("1 2 +",   ST, "", "3", true));
+    assert(test_prog("1 2 -",   ST, "", "-1", true));
+    assert(test_prog("1 2 *",   ST, "", "2", true));
+    assert(test_prog("6 2 /",   ST, "", "3", true));
+    assert(test_prog("7 2 %",   ST, "", "1", true));
+
+    // Tests for drop, swap, rot, if else, pick
+    assert(test_prog("1 2 drop", ST, "", "1", true));
+    assert(test_prog("1 2 swap", ST, "", "2 1", true));
+    assert(test_prog("1 2 3 rot", ST, "", "2 3 1", true));
+    assert(test_prog("1 if 2 3 4", ST, "", "2 3 4", true));
+    assert(test_prog("0 if 2 3 4", ST, "", "4", true));
+    assert(test_prog("0 else 2 3 4", ST, "", "0 3 4", true));
+    assert(test_prog("4 3 2 1 0 4 pick", ST, "", "4 3 2 1 0 3", true));
+
+    println("All tests passed!");
+    return 0;
+
+  } else if (args->argc == 1) {
+    // These are the tests we expect to fail
+    string arg = args->argv[0];
+    if (string_equal(arg, "err1")) {
+      test_prog("1 2 adsfsdfadfas", ST, "", "", true);
+    } else if (string_equal(arg, "err2")) {
+      test_prog("1 2 120000201020121012999000", ST, "", "", true);
+    } else if (string_equal(arg, "err3")) {
+      test_prog("1 2 print print print print print", ST, "", "", true);
+    } else if (string_equal(arg, "err4")) {
+      test_prog("print", ST, "", "", true);
+    }
+
+    println("Failed test: should have called error()!");
+    return 1;
+
+  } else {
+    println("Bad call to the testing program: wrong number of arguments");
+    return 1;
+  }
+}
+
+/* This is the implementation of some of the functions mentioned
+   above */
+
+stack stack_from_string(string s) {
+  queue Q = queue_new();
+  input_string(s, Q);
+  stack S = stack_new();
+  while (!queue_empty(Q)) {
+    int* p = parse_int(deq(Q), 10);
+    if (p == NULL) error("Bad test: there was a non-integer on the queue");
+    push(S, *p);
+  }
+  return S;
+}
+
+bool stacks_eq(stack S1, stack S2) {
+  while (!stack_empty(S1)) {
+    if (stack_empty(S2)) return false;
+    if (pop(S1) != pop(S2)) return false;
+  }
+  return stack_empty(S2);
+}

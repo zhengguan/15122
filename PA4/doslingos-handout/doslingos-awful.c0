@@ -1,0 +1,25 @@
+/* Really, really broken implementations of count_vocab and
+ * sort_by_freq. Still satisfies all contracts. 
+ */
+
+int count_vocab(string[] vocab, int[] freq, int v,
+                string tweetfile,
+                bool fast)
+//@requires v == \length(vocab) && v == \length(freq);
+//@requires is_sorted(vocab, 0, v);
+// requires all_distinct(vocab, v);
+{
+  return 10;
+}
+
+void sort_by_freq(string[] vocab, int[] freq, int v) 
+//@requires v == \length(vocab) && v == \length(freq);
+//@ensures is_sorted_int(freq, 0, v);
+{
+  for (int i = 0; i < v; i++) 
+  //@loop_invariant 0 <= v;
+  //@loop_invariant is_sorted_int(freq, 0, i);
+  {
+    freq[i] = i - v; // told you it was awful
+  }
+}

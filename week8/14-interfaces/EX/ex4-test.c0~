@@ -1,0 +1,25 @@
+int main()
+{
+  hset H = hset_new(2);
+  assert(H->capacity == 2);
+
+  int size = 5;
+  int *[] ps = alloc_array(int *, size);
+  for(int i = 0; i < size; i++)
+    {
+      ps[i] = alloc(int);
+      *ps[i] = i;
+    }
+
+  hset_insert(H, ps[0]);
+  hset_insert(H, ps[1]);
+  assert(H->capacity == 4);
+  assert(H->size == 2);
+
+  assert(hset_lookup(H, ps[0]) != NULL);
+  hset_delete(H, ps[0]);
+  assert(hset_lookup(H, ps[0]) == NULL);
+  assert(H->size == 1);
+
+  return 0;
+}

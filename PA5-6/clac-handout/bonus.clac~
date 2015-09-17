@@ -1,0 +1,8 @@
+: comment max : S, x, y => S, max(x, y) ;
+: choose1 swap drop
+: choose2 drop
+: max 2 pick 1 pick < if choose1 else choose2
+
+; comment some unit tests
+1 2 max 2 - if quit else noop
+2 2 max 2 - if quit else noop

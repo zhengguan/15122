@@ -1,0 +1,32 @@
+
+// Ex 06
+
+
+void sift_up(int[] nums, int i)
+//@loop_invariant 0 <= i && i < \length(nums);
+  ;
+
+// EFFECT: sort nums by heapsort in place
+void heapsort(int[] nums, int len)
+//@requires \length(nums) == len;
+//@ensures is_sorted(nums);
+{
+  if(len <= 1) {
+    return;
+  }
+
+  for(int i = 0; i < len; i++)
+    //@loop_invariant 0 <= i && i <= len;
+    {
+      sift_up(nums, i);
+    }
+
+  for(int i = len; i > 0; i--)
+    //@loop_invariant is_sorted(nums, i, len);
+    //@loop_invariant gt_segs(nums, i, len, nums, 0, i);
+    {
+      swap(nums, 0, i - 1);
+      sift_down(nums, i - 1);
+    }
+  return;
+}

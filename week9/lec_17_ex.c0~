@@ -1,0 +1,13 @@
+elem tree_lookup(tree * T, key k)
+//@requires is_ordtree(T);
+//@ensures \result == NULL || key_compare(elem_key(\result), k) == 0;
+{
+  if (T == NULL) return NULL;
+
+  tree * tmp = T;
+  while (tmp != NULL) {
+    int r = key_compare(k, elem_key(tmp->data));
+    if (r == 0)
+      return tmp->data;
+  }
+}

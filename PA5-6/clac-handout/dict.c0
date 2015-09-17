@@ -1,0 +1,141 @@
+/*
+ * Dictionaries, implemented as assocation lists
+ *
+ * 15-122 Principles of Imperative Computation
+ */
+
+#use <string>
+
+/* Interface to dictionaries.
+ *
+ * Lookup returns NULL if the name isn't in the dictionary, and a
+ * pointer to the queue if the name is in the dictionary.
+ */
+
+// typedef _____________ dict;
+typedef struct dict_header* dict;
+
+dict dict_new();
+queue dict_lookup(dict D, string name);
+void dict_insert(dict D, string name, queue def);
+
+/* Implementation of dictionaries as association lists */
+
+/* Association lists */
+struct alist_node {
+  string name;
+  queue def;
+  struct alist_node* next;
+};
+typedef struct alist_node alist;
+
+bool is_assoclist_segment(alist* start, alist* end) {
+  if (start == NULL) return false;
+  if (start == end) return true;
+  return is_assoclist_segment (start->next, end);
+}
+
+bool is_acyclic_assoclist(alist* p) {
+  if (p == NULL || p->next == NULL) return true;
+
+  alist* tortise = p;
+  alist* hare = p->next;
+  while (tortise != hare)
+  //@loop_invariant is_assoclist_segment(tortise, hare);
+  {
+    if (hare->next == NULL || hare->next->next == NULL) return true;
+    tortise = tortise->next;
+    hare = hare->next->next;
+  }
+
+  return false;
+}
+
+/* NULL is a valid (empty) association list; the only requirement we
+ * make on association lists is that they be acyclic. */
+
+/* Dictionaries */
+struct dict_header {
+  alist* assoclist;  /* data structure invariant elements in
+                        assoclist are sorted by name */
+};
+
+bool is_dict (dict D) {
+  return D != NULL && is_acyclic_assoclist(D->assoclist);
+}
+
+/* Allocating a new dictionary */
+dict dict_new()
+//@ensures is_dict(\result);
+{
+  dict D = alloc(struct dict_header);
+  D->assoclist = NULL;
+  return D;
+}
+
+queue dict_lookup(dict D, string name)
+//@requires is_dict(D);
+{
+
+  /* fill in correct implementation here */
+  alist* curr = D->assoclist;
+  while(curr != NULL)
+    {
+      int compare_result = string_compare(curr->name, name);
+      if(compare_result == 0) {
+        return curr->def;
+      }
+      else if(compare_result == 1) {
+        return NULL;
+      }
+      curr = curr->next;
+    }
+  return NULL;
+}
+
+void dict_insert(dict D, string name, queue def)
+//@requires is_dict(D);
+//@ensures is_dict(D);
+//@ensures dict_lookup(D, name) != NULL;
+{
+
+  /* fill in correct implementation here */
+  alist* node = alloc(alist);
+  node->name = name;
+  node->def = def;
+  node->next = NULL;
+
+  if(D->assoclist == NULL) {
+    D->assoclist = node;
+    return;
+  }
+  else {
+    alist* curr = D->assoclist;
+    alist* prev = curr;
+    while((curr != NULL) && (string_compare(curr->name, name) == -1))
+      {
+        prev = curr;
+        curr = curr->next;
+      }
+
+    if(curr == NULL) {
+      prev->next = node;
+    } else if(string_compare(curr->name, name) == 0) {
+      curr->def = def;
+      return;
+    } else {
+      //@assert string_compare(curr->name, name) == 1;
+      if(prev == curr) {
+        node->next = curr;
+        D->assoclist = node;
+        return;
+      } else {
+        node->next = curr;
+        prev->next = node;
+        return;
+      }
+    }
+  }
+
+  return;
+}

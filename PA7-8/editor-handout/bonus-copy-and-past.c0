@@ -1,0 +1,82 @@
+#use <util>
+#use <conio>
+
+int min(int a, int b)
+{
+  if (a < b) return a;
+  else return b;
+}
+
+int max(int a, int b)
+{
+  if (a > b) return a;
+  else return b;
+}
+
+// EFFECT: copy all chars in gb->buffer[start, end) and insert into the
+// position of current cursor of B
+void copy_and_insert_gapbuf(tbuf B, gapbuf gb, int start, int end)
+//@requires is_tbuf(B);
+//@requires is_gapbuf(gb);
+//@requires 0 <= start && start <= end && end <= gb->limit;
+//@ensures is_tbuf(B);
+{
+  int i = start;
+  char[] buffer = gb->buffer;
+
+  //copy chars in the intersection of buffer[start, end) and
+  //buffer[0, gp->gap_start)
+  while (i < min(gb->gap_start, end)) {
+    //@assert start < gb->gap_start;
+    tbuf_insert(B, buffer[i]);
+    i++;
+  }
+
+  //copy chars in the intersection of buffer[start, end) and
+  //buffer[gb->gap_end, gb->limit)
+  i = max(i, gb->gap_end);
+  while (i < end) {
+    //@assert end > gb->gap_end;
+    tbuf_insert(B, buffer[i]);
+    i++;
+  }
+  return;
+}
+
+
+// WHERE: B->point should not in [start_node, end_node]
+// EFFECT: copy all chars between start_node->data->buffer[start_index](
+// inclusive) and end_node->data->buffer[end_index](exclusive), and insert into
+// the cursor position of B
+void copy(tbuf B, dll * start_node, int start_index,
+          dll * end_node, int end_index)
+//@requires is_tbuf(B);
+//@requires is_dll_segment(start_node, end_node);
+//@ensures is_tbuf(B);
+{
+  dll * curr = start_node;
+  int index = start_index;
+  while (curr != end_node) {
+    println("Copying chars of first node");
+    copy_and_insert_gapbuf(B, curr->data, index, curr->data->limit);
+    curr = curr->next;
+    index = 0;
+  }
+
+  copy_and_insert_gapbuf(B, curr->data, index, end_index);
+  return;
+}
+
+
+void copy_and_insert(tbuf B, dll * start_node, int start_index,
+                     dll * end_node, int end_index)
+//@requires is_tbuf(B);
+//@requires is_dll_segment(start_node, end_node);
+//@ensures is_tbuf(B);
+{
+  tbuf clipboard = tbuf_new();
+  copy(clipboard, start_node, start_index, end_node, end_index);
+  copy(B, clipboard->start->next, 0, clipboard->end->prev,
+       clipboard->end->prev->data->limit);
+  return;
+}

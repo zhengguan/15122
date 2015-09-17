@@ -1,0 +1,127 @@
+/* 
+ * An interface to arrays
+ * 
+ * 15-122 Principles of Imperative Computation
+ */
+
+#use <string>
+#use <util>
+
+/* Interface */
+
+typedef struct arr_header* arr; // typedef _______ arr;
+int    arr_len(arr A);                         /* O(1) */
+arr    arr_new(int size)                       /* O(1), sorta */
+  /*@requires 0 <= size; @*/
+  /*@ensures arr_len(\result) == size; @*/;
+string arr_get(arr A, int i)                   /* O(1) */
+  /*@requires 0 <= i && i < arr_len(A); @*/;
+void   arr_set(arr A, int i, string x)         /* O(1) */
+  /*@requires 0 <= i && i < arr_len(A); @*/;
+
+void   arr_add(arr A, string x);               /* O(1), amortized */
+void   arr_rem(arr A)                          /* O(1), amortized */
+  /*@requires arr_len(A) > 0; @*/;
+
+/* Implementation */
+
+struct arr_header {
+  int size;
+  int limit;
+  string[] data;
+};
+
+bool is_arr_expected_length(string[] A, int limit) {
+  //@assert \length(A) == limit;
+  return true;
+}
+
+bool is_arr(struct arr_header* AH) {
+  return AH != NULL 
+    && is_arr_expected_length(AH->data, AH->limit)
+    && AH->limit/4 <= AH->size && AH->size < AH->limit;
+}
+
+arr arr_new(int size) 
+//@requires 0 <= size;
+//@ensures is_arr(\result);
+{
+  struct arr_header* AH = alloc(struct arr_header);
+  assert(size < int_max() / 2); // Can't handle bigger
+  AH->size = size;
+  AH->limit = size == 0 ? 1 : 2 * size;
+  AH->data = alloc_array(string, AH->limit);
+  return AH;
+}
+
+int arr_len(arr A) 
+//@requires is_arr(A);
+//@ensures 0 <= \result && \result <= \length(A->data);
+{
+  return A->size;
+}
+
+string arr_get(arr A, int i) 
+//@requires is_arr(A);
+//@requires 0 <= i && i < arr_len(A);
+{
+  return A->data[i];
+}
+
+void arr_set(arr A, int i, string x)
+//@requires is_arr(A);
+//@requires 0 <= i && i < arr_len(A);
+//@ensures is_arr(A);
+//@ensures string_equal(arr_get(A, i), x);
+{
+  A->data[i] = x;
+}
+
+void arr_resize(arr A)
+//@requires A != NULL;
+//@requires \length(A->data) == A->limit;
+//@requires A->limit/4 - 1 <= A->size && A->size <= A->limit;
+//@ensures is_arr(A);
+{
+  int new_limit;
+  if (A->size == A->limit) {
+    assert(A->limit < int_max() / 2); // Can't handle bigger
+    new_limit = A->limit * 2;
+    
+  } else if (2 <= A->limit && A->size < A->limit/4) {
+    new_limit = A->limit / 2;
+
+  } else {
+    return;
+  }
+
+  //@assert 0 <= A->size && A->size < new_limit;
+  string[] B = alloc_array(string, new_limit);
+
+  for (int i = 0; i < A->size; i++) 
+  //@loop_invariant 0 <= i && i <= A->size;
+  {
+    B[i] = A->data[i];
+  }
+
+  A->limit = new_limit;
+  A->data = B;
+}
+
+void arr_add(arr A, string x) 
+//@requires is_arr(A);
+//@ensures is_arr(A);
+{
+  A->data[A->size] = x;
+  (A->size)++;
+  arr_resize(A);
+}
+
+void arr_rem(arr A)
+//@requires is_arr(A);
+//@requires 0 < arr_len(A);
+//@ensures is_arr(A);
+{
+  (A->size)--;
+  arr_resize(A);
+}

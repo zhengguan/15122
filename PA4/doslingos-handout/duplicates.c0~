@@ -1,0 +1,73 @@
+// GIVEN: a sorted array that contains strings
+// RETURNS: true iff A contains no repeated strings
+bool all_distinct(string[] A, int n)
+//@requires 0 <= n && n <= \length(A);
+//@requires is_sorted(A, 0, n);
+{
+  if (n <= 1) {
+    return true;
+  }
+  //@assert n > 1;
+  for (int i = 0; i < n - 1; i++)
+    //@loop_invariant 0 <= i && i <= n - 1;
+    //@loop_invariant gt_seg(A[i], A, 0, i);
+    {
+      if (string_equal(A[i], A[i + 1])) {
+        return false;
+      }
+    }
+  return true;
+}
+
+// GIVEN: a sorted array that contains strings
+// RETURNS: the number of distinct strings in the given array
+int count_distinct(string[] A, int n)
+//@requires 0 <= n && n <= \length(A);
+//@requires is_sorted(A, 0, n);
+{
+  if (n == 0) return 0;
+  else {
+    int count = 1;
+    for (int i = 1; i < n; i++)
+      //@loop_invariant 1 <= i && i <= n;
+      // loop_invariant count equal to the number of distinct strings
+      // in A[0, i)
+      {
+        if (!string_equal(A[i], A[i - 1])) {
+          count++;
+        }
+      }
+    return count;
+  }
+}
+
+// GIVEN: a sorted array that contains strings and its size
+// RETURNS: an sorted array that contains all strings in the given array
+// but without diplicate
+string[] remove_duplicates(string[] A, int n)
+//@requires 0 <= n && n <= \length(A);
+//@requires is_sorted(A, 0, n);
+//@ensures all_distinct(\result, \length(\result));
+//@ensures \length(\result) == count_distinct(A, n);
+//@ensures is_sorted(\result, 0, \length(\result));
+{
+  int count = count_distinct(A, n);
+  string[] B = alloc_array(string, count);
+  int i = 0;
+  int j = 0;
+  while(i < n)
+    //@loop_invariant 0 <= i && i <= n;
+    //@loop_invariant is_sorted(B, 0, j);
+    //@loop_invariant all_distinct(B, j);
+    //@loop_invariant (j == 0) || gt_seg(B[j - 1], B, 0, j - 1);
+    {
+      if (i == 0 || !string_equal(A[i], A[i - 1])) {
+        B[j] = A[i];
+        j++; i++;
+      }
+      else {
+        i++;
+      }
+    }
+  return B;
+}

@@ -1,0 +1,14 @@
+int main()
+{
+  // tests for method all_distinct
+  string[] ss = alloc_array(5);
+  ss[0] = "my";
+  ss[1] = "name";
+  ss[2] = "is";
+  ss[3] = "zgs";
+  ss[4] = "zgs";
+  assert(all_distinct(ss, 5) == 4);
+
+  return 0;
+
+}

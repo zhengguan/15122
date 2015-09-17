@@ -1,0 +1,12 @@
+int main() {
+  string[] vocat = alloc_array(string, 4);
+  vocat[0] = "is";
+  vocat[1] = "out";
+  vocat[2] = "his";
+  vocat[3] = "of";
+
+  assert(count_vocab(vocab, alloc_array(int, 4), 4, "texts/scott_tweet.txt"
+                     false),
+         2);
+
+}

@@ -1,0 +1,86 @@
+#use <dict>
+
+// RETURNS: the size of the given segment from start to end
+int segment_slist_size(slist * start, slist * end)
+//@requires is_segment_slist(start, end);
+{
+  if(start == end) {
+    return 0;
+  }
+  else {
+    return 1 + segment_slist_size(start->next, end);
+  }
+}
+
+// RETURNS: the size of Q
+int queue_size(queue Q)
+//@requires Q != NULL;
+{
+  return segment_slist_size(Q->front, Q->back);
+}
+
+// RETURNS: the size of the alist segment
+int assoclist_segment_size(alist * start, alist* end)
+//@requires is_assoclist_segment(start ,end);
+{
+  if(start == end) {
+    return 0;
+  }
+  else {
+    return 1 + assoclist_segment_size(start->next, end);
+  }
+}
+
+// RETURNS: true iff the two given slist segments are equal
+bool segment_slist_eq(slist* start1, slist* end1, start* start2, slist* end2)
+//@requires is_segment_slist(start1, end1) && is_segment_slit(start2, end2);
+{
+  if((start1 == end1) && start2 == end2) {
+    return true;
+  }
+  else {
+    return string_equal(start1->data, start2->data)
+      && segment_slist_eq(start1->next, end1, start2->next, end2);
+  }
+}
+
+// RETURNS: true iff the two given queues are equal
+bool queue_eq(queue q1, queue q2)
+//@requires is_queue(q1) && is_queue(q2);
+{
+  if(queue_size(q1) == queue_size(q2)) {
+    return segment_slist_eq(start1, end1, start2, end2);
+  }
+  return false;
+}
+
+
+// RETURNS: the size of d
+int dict_size(dict d)
+//@requires is_dict(d);
+{
+  if(d->assoclist == NULL) {
+    return 0;
+  }
+  else {
+    return assoclist_size(d->assoclist, NULL);
+  }
+}
+
+int main()
+{
+  dict d = dict_new();
+
+  // tests for dict_loopup()
+  assert(dict_lookup(d, "zgs") == NULL);
+  dict_insert(d, "zgs", queue_new());
+  assert(dict_lookup(d, "zgs") != NULL);
+  dict_insert(d, "abc", queue_new());
+  assert(dict_size(d) == 2);
+
+  queue q = queue_new();
+  enq(q, "hello");
+  dict_insert(d, "zgs", q);
+  assert(dict_size(d) == 2);
+
+}
