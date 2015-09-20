@@ -1,0 +1,16 @@
+typedef int * elem;
+typedef int * key;
+
+
+
+void test()
+{
+
+}
+
+
+int main()
+{
+  test();
+  return 0;
+}

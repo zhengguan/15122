@@ -1,0 +1,117 @@
+/* Testing binary search trees
+ * 15-122 Principles of Imperative Computation, Fall 2010
+ * Frank Pfenning
+ */
+
+#use <string>
+#use <conio>
+#use <rand>
+
+elem elem_fromint(int k) {
+  string s = string_fromint(k);
+  struct wcount * wc = alloc(struct wcount);
+  wc->word = s;
+  wc->count = k;
+  return wc;
+}
+
+int main() {
+  {
+    println("Testing with Lecture 1's black-box testing code");
+    elem E1 = alloc(struct wcount); E1->word = "a";
+    elem E2 = alloc(struct wcount); E2->word = "c";
+    elem E3 = alloc(struct wcount); E3->word = "a";
+    elem E4 = alloc(struct wcount); E4->word = "c";
+    elem E5 = alloc(struct wcount); E5->word = "b";
+    
+    bst B = bst_new();
+    assert(B != NULL);
+    assert(bst_lookup(B, alloc(struct wcount)) == NULL);
+    assert(bst_lookup(B, E5) == NULL);
+    
+    bst_insert(B, E1);
+    assert(bst_lookup(B, E1) == E1);
+    assert(bst_lookup(B, E3) == E1);
+    assert(bst_lookup(B, E5) == NULL);
+    assert(bst_lookup(B, alloc(struct wcount)) == NULL);
+    
+    bst_insert(B, E2);
+    assert(bst_lookup(B, E1) == E1);
+    assert(bst_lookup(B, E3) == E1);
+    assert(bst_lookup(B, E2) == E2);
+    assert(bst_lookup(B, E4) == E2);
+    assert(bst_lookup(B, E5) == NULL);
+    assert(bst_lookup(B, alloc(struct wcount)) == NULL);
+    
+    bst_insert(B, E3);
+    assert(bst_lookup(B, E1) == E3);
+    assert(bst_lookup(B, E3) == E3);
+    assert(bst_lookup(B, E2) == E2);
+    assert(bst_lookup(B, E4) == E2);
+    assert(bst_lookup(B, E5) == NULL);
+
+    bst_insert(B, E4);
+    assert(bst_lookup(B, E1) == E3);
+    assert(bst_lookup(B, E3) == E3);
+    assert(bst_lookup(B, E2) == E4);
+    assert(bst_lookup(B, E4) == E4);
+    assert(bst_lookup(B, E5) == NULL);
+  }
+
+  {
+    println("Testing with Lecture 2's black-box testing code");
+    elem E1 = alloc(struct wcount); E1->word = "waffles";
+    elem E2 = alloc(struct wcount); E2->word = "waffles";
+    elem E3 = alloc(struct wcount); E3->word = "fruit";
+    elem E4 = alloc(struct wcount); E4->word = "";
+    elem E5 = alloc(struct wcount); E5->word = "pancakes";
+
+    bst B = bst_new();
+    assert(NULL == bst_lookup(B, E4));
+    assert(NULL == bst_lookup(B, E5));
+    
+    bst_insert(B, E1);
+    assert(bst_lookup(B, E1) == E1);
+    assert(bst_lookup(B, E2) == E1);
+    assert(bst_lookup(B, E4) == NULL);
+    assert(bst_lookup(B, E5) == NULL);
+    
+    bst_insert(B, E2);
+    assert(bst_lookup(B, E1) == E2);
+
+    bst_insert(B, E3);
+    assert(bst_lookup(B, E1) == E2);
+    assert(bst_lookup(B, E3) == E3);
+    assert(bst_lookup(B, E4) == NULL);
+    assert(bst_lookup(B, E5) == NULL);
+    
+    bst_insert(B, E4);
+    assert(bst_lookup(B, E4) == E4);
+    assert(bst_lookup(B, E1) == E2);
+    assert(bst_lookup(B, E3) == E3);
+    assert(bst_lookup(B, E5) == NULL);
+  }
+
+  int n = (1<<9)-1;		// 1<<9 for -d; 1<<13 for timing
+  int num_tests = 10;		// 10 for -d;  100 for timing
+  int seed = 0xc0c0ffee;
+  rand_t gen = init_rand(seed);
+  elem[] A = alloc_array(elem, n);
+  for (int i = 0; i < n; i++)
+    A[i] = elem_fromint(rand(gen));
+  
+  assert(n+num_tests > 0);
+  print("Testing bst of size "); printint(n);
+  print(" "); printint(num_tests); print(" times\n");
+  for (int j = 0; j < num_tests; j++) {
+    bst B = bst_new();
+    for (int i = 0; i < n; i++) {
+      elem e = A[(j+i) % n];
+      bst_insert(B, e);
+      assert(bst_lookup(B, e) == e); /* insert ok? */
+    }
+    /* next line violates interface... */
+    assert(is_bst(B)); /* repeated insert failed to preserve order */
+  }
+  return 0;
+}

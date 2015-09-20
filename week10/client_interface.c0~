@@ -1,0 +1,2 @@
+typedef int elem;
+typedef int key;

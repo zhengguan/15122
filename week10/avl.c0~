@@ -1,0 +1,228 @@
+#use <conio>
+#use <util>
+
+/****************************************************/
+// client interface
+
+// typedef ___ * elem;
+// typedef ___ * key;
+key elem_key(elem e);
+int key_compare(key k1, key k2);
+
+/****************************************************/
+
+struct tree_node {
+  elem data;
+  int height;
+  struct tree_node * left;
+  struct tree_node * right;
+};
+
+typedef struct tree_node tree;
+
+int height(tree * T);
+int elem_compare(elem e1, elem e2);
+int max(int a, int b);
+bool is_specified_height(tree * T);
+bool is_balanced(tree* T);
+bool is_ordered(tree *T, elem lower, elem upper);
+bool is_tree(tree * T);
+tree * leaf(elem e);
+tree* rotate_left(tree * T);
+tree * rotate_right(tree* T);
+elem tree_lookup(tree * T, key k);
+tree* tree_insert(tree* T, elem x);
+tree* rebalance_left(tree* T);
+tree* rebalance_right(tree* T);
+void fix_height(tree* T);
+/****************************************************/
+
+
+int height(tree * T){
+    return T == NULL ? 0 : T->height;
+}
+
+int elem_compare(elem e1, elem e2)
+//@requires e1 != NULL && e1 != NULL;
+{
+  return key_compare(elem_key(e1), elem_key(e2));
+}
+
+int max(int a, int b)
+{
+  return a>b ? a : b;
+}
+
+// RETURNS: true iff each node in the given tree has correct height
+bool is_specified_height(tree * T) {
+  if (T == NULL) return true;
+  int computed_height = max(height(T->left), height(T->right)) + 1;
+  return computed_height == T->height
+    && is_specified_height(T->left)
+    && is_specified_height(T->right);
+}
+
+// RETURNS: true iff each subtree of T(inclusive) is balanced
+bool is_balanced(tree* T) {
+  if (T == NULL) return true;
+  return abs(height(T->left) - height(T->right)) <= 1
+    && is_balanced(T->left) && is_balanced(T->right);
+}
+
+// RETURNS: true iff T is an avl tree and all elements in T are in
+// the range (lower, upper)
+bool is_ordered(tree *T, elem lower, elem upper)
+/*@requires lower == NULL || upper == NULL
+  || key_compare(elem_key(lower), elem_key(upper)) == -1; @*/
+{
+  if (T == NULL) return true;
+  return T->data != NULL
+    && (lower == NULL || elem_compare(lower, T->data) < 0)
+    && (upper == NULL || elem_compare(T->data, upper) < 0)
+    && is_ordered(T->left, lower, T->data)
+    && is_ordered(T->right, T->data, upper);
+}
+
+bool is_tree(tree * T) {
+  return is_ordered(T, NULL, NULL)
+    && is_specified_height(T)
+    && is_balanced(T);
+}
+
+tree * leaf(elem e)
+//@requires e != NULL;
+//@ensures is_tree(\result);
+{
+  tree* T = alloc(tree);
+  T->data = e;
+  T->height = 1;
+  T->left = NULL;
+  T->right = NULL;
+  return T;
+}
+
+tree* rotate_left(tree * T)
+//@requires T != NULL && T->right != NULL;
+{
+  tree * R = T->right;
+  T->right = R->left;
+  R->left = T;
+  fix_height(T);
+  fix_height(R);
+  return R;
+}
+
+tree * rotate_right(tree* T)
+//@requires T != NULL && T->left != NULL;
+{
+  tree * L = T->left;
+  T->left = L->right;
+  L->right = T;
+  fix_height(T);
+  fix_height(L);
+  return L;
+}
+
+elem tree_lookup(tree * T, key k)
+//@requires is_tree(T);
+//@ensures \result == NULL || key_compare(elem_key(\result), k) == 0;
+{
+  if (T == NULL) return NULL;
+  int r = key_compare(elem_key(T->data), k);
+  if (r == 0) return T->data;
+  else if (r < 0)
+    return tree_lookup(T->right, k);
+  else
+    return tree_lookup(T->left, k);
+}
+
+// GIVEN: an avl tree T and a element x
+// EFFECT: if there is an element that has the same key as x, replace it with
+// x, otherwise insert x into T
+// RETURNS: the new T
+tree* tree_insert(tree* T, elem x)
+//@requires is_tree(T) && x != NULL;
+//@ensures is_tree(\result);
+//@ensures tree_lookup(\result, elem_key(x)) != NULL;
+//@ensures elem_compare(tree_lookup(\result, elem_key(x)), x) == 0;
+{
+  if (T == NULL) return leaf(x);
+
+  int r = elem_compare(x, T->data);
+  if (r == 0) {
+    T->data = x;
+  }
+  else if (r < 0) {
+    T->left = tree_insert(T->left, x);
+    T = rebalance_left(T);
+  }
+  else {
+    T->right = tree_insert(T->right, x);
+    T = rebalance_right(T);
+  }
+
+  return T;
+}
+
+
+// GIVEN: an avl tree T
+// WHERE: T has been just inserted a new element in its left sub-tree
+// EFFECT: adjust T so that it is balance again
+// RETURNS: the new tree after adjusting
+tree* rebalance_left(tree* T)
+//@requires T != NULL && T->left != NULL;
+//@requires is_tree(T->left) && is_tree(T->right);
+/*@requires (height(T->left) - height(T->right) <= 1)
+  || (height(T->left->left) != height(T->left->right)); @*/
+//@ensures is_tree(\result);
+{
+  if (height(T->left) - height(T->right) == 2) {
+    if (height(T->left->left) > height(T->left->right)) {
+      T = rotate_right(T);
+    } else {
+      //@assert height(T->left->left) < height(T->left->right);
+      T->left = rotate_left(T->left);
+      T = rotate_right(T);
+    }
+  } else {
+    fix_height(T);
+  }
+  return T;
+}
+
+// GIVEN: an avl tree T
+// WHERE: T has been just inserted a new element in its right sub-tree
+// EFFECT: adjust T so that it is balance again
+// RETURNS: the new tree after adjusting
+tree* rebalance_right(tree* T)
+//@requires T != NULL && T->right != NULL;
+//@requires is_tree(T->left) && is_tree(T->right);
+/*@requires (height(T->right) - height(T->left) < 2)
+  || (height(T->right->left) != height(T->right->right)); @*/
+//@ensures is_tree(\result);
+{
+  if (height(T->right) - height(T->left) == 2) {
+    if (height(T->right->right) > height(T->right->left)) {
+      rotate_left(T);
+    } else {
+      //@assert height(T->right->right) < height(T->right->left);
+      T->right = rotate_right(T->right);
+      T = rotate_left(T);
+    }
+  } else {
+    fix_height(T);
+  }
+  return T;
+}
+
+// GIVEN: an tree T whose left and right children have correct height value
+// EFFECT: update T's height value
+void fix_height(tree* T)
+//@requires T != NULL;
+//@requires is_specified_height(T->left);
+//@requires is_specified_height(T->right);
+//@ensures is_specified_height(T);
+{
+  T->height = max(height(T->left), height(T->right)) + 1;
+  return;
+}
