@@ -1,0 +1,27 @@
+/**********************************/
+/* Client implementation for hset */
+/**********************************/
+
+// You're not obligated to respect the interface of ropes
+// here, because you're using this client implementation as part of
+// your ropes implementation. However, you can't access the fields of
+// ropes in this file because the struct rope_node has been declared
+// (in ropes.c0) but not defined.
+
+// You'll need to change this client interface.
+
+// typedef _____________* elem
+typedef int* elem; 
+
+int elem_hash(elem x) 
+//@requires x != NULL;
+{
+  return *x * 1664525 + 1013904223;
+}
+
+bool elem_equal(elem x, elem y) 
+//@requires x != NULL && y != NULL;
+{
+  return *x == *y;
+}
+

@@ -1,0 +1,217 @@
+#use <string>
+#use <util>
+
+
+/******************************************************************************/
+//interface
+
+bool is_rope(rope_t R);
+bool is_leaf(rope_t R);
+bool is_concatenation_node(rope_t R);
+
+/******************************************************************************/
+// Implementation
+
+typedef struct rope_node rope;
+struct rope_node {
+  int len;
+  rope* left;
+  rope* right;
+  string data;
+};
+
+
+// RETURNS: true iff R is a leaf rope
+bool is_leaf(rope_t R)
+{
+  return R != NULL
+    && string_length(R->data) != 0
+    && string_length(R->data) == R->len
+    && R->left == NULL
+    && R->right == NULL;
+
+}
+
+// RETURNS: true iff R is a concatenation node
+bool is_concatenation_node(rope_t R)
+{
+  return R != NULL
+    && R->left != NULL && is_rope(R->left)
+    && R->right != NULL && is_rope(R->right)
+    && R->len == R->left->len + R->right->len;
+}
+
+// RETURNS: true iff R is a valid rope (circularity is uncheched)
+bool is_rope(rope_t R)
+{
+  return (R == NULL)
+    || is_leaf(R)
+    || is_concatenation_node(R);
+}
+
+int rope_length(rope_t R)
+//@requires is_rope(R);
+{
+  if (R == NULL) {
+    return 0;
+  } else {
+    return R->len;
+  }
+}
+
+rope_t rope_new(string s)
+//@requires string_length(s) != 0;
+{
+  rope_t R = alloc(rope);
+  R->data = s;
+  R->len = string_length(s);
+  R->left = NULL;
+  R->right = NULL;
+  return R;
+}
+
+rope_t rope_join(rope_t R, rope_t S)
+//@requires is_rope(R) && is_rope(S);
+//@requires rope_length(R) <= int_max() - rope_length(S);
+//@ensures is_rope(\result);
+{
+  rope_t result = alloc(rope);
+  result->len = rope_length(R) + rope_length(S);
+  result->left = R;
+  result->right = S;
+  return result;
+}
+
+
+
+char rope_charat(rope_t R, int i)
+//@requires is_rope(R);
+//@requires 0 <= i && i < rope_length(R);
+{
+  if (is_leaf(R)) {
+    return string_charat(R->data, i);
+  } else {
+    //@assert is_concatenation_node(R);
+    if (i < rope_length(R->left)) {
+      return rope_charat(R->left, i);
+    } else {
+      return rope_charat(R->right, i - rope_length(R->left));
+    }
+  }
+}
+
+
+string rope_tostring(rope_t R)
+//@requires is_rope(R);
+//@ensures string_length(\result) == rope_length(R);
+{
+  if (R == NULL) {
+    return "";
+  } else if (is_leaf(R)) {
+    return R->data;
+  } else {
+    //@assert is_concatenation_node(R);
+    return string_join(rope_tostring(R->left), rope_tostring(R->right));
+  }
+}
+
+
+rope_t leaf_sub(rope_t R, int start, int end)
+//@requires is_leaf(R);
+//@requires 0 <= start && start <= end && end <= rope_length(R);
+//@ensures is_leaf(\result);
+//@ensures rope_length(\result) == end - start;
+{
+  if (start == 0 && end == rope_length(R)) {
+    return R;
+  } else {
+    rope_t result = alloc(rope);
+    result->data = string_sub(R->data, start,end);
+    result->len = end - start;
+    result->left = NULL;
+    result->right = NULL;
+    return result;
+  }
+}
+
+// RETURNS: the sub rope of the concatenation node R[start, end)
+rope_t concatenation_node_sub(rope_t R, int start, int end)
+//@requires is_concatenation_node(R);
+//@requires 0 <= start && start <= end && end <= rope_length(R);
+//@ensures is_rope(\result);
+//@ensures rope_length(\result) == end - start;
+{
+  int left_len = rope_length(R->left);
+  int right_len = rope_length(R->right);
+  if (end <= left_len) {
+    return rope_sub(R->left, start, end);
+  } else if (start < left_len) {
+    rope_t result = alloc(rope);
+    result->left = rope_sub(R->left, start, left_len);
+    result->right = rope_sub(R->right, 0, end - left_len);
+    result->len = rope_length(result->left) + rope_length(result->right);
+    return result;
+  } else {
+    //@assert start >= left_len;
+    return rope_sub(R->right, start - left_len, end - left_len);
+  }
+}
+
+// RETURNS: the sub-rope R[start,end)
+rope_t rope_sub(rope_t R, int start, int end)
+//@requires is_rope(R);
+//@requires 0 <= start && start <= end && end <= rope_length(R);
+//@ensures is_rope(\result);
+//@ensures rope_length(\result) == end - start;
+{
+  if (R == NULL) {
+    //@assert start == 0 && end == 0;
+    return NULL;
+  } else if (is_leaf(R)) {
+    return leaf_sub(R, start, end);
+  } else {
+    //@assert is_concatenation_node(R);
+    return concatenation_node_sub(R, start, end);
+  }
+}
+
+
+// GIVEN: a rope r and a hset h of existing ropes
+// EFFECT: reduce r utilizing ropes in h and insert sub-ropes of h(include
+// itself) in to h
+void rope_reduce_helper(rope_t r, hset h)
+//@requires is_rope(r);
+{
+  if (r == NULL) {
+    return;
+  } else if (is_leaf(r)) {
+    if (hset_lookup(h, r) == NULL) {
+      hset_insert(h, r);
+    }
+    return;
+  } else {
+    //@assert is_concatenation_node(r);
+    rope_reduce_helper(r->left, h);
+    rope_reduce_helper(r->right, h);
+    r->left = hset_lookup(h, r->left);
+    r->right = hset_lookup(h, r->right);
+    if (hset_lookup(h, r) == NULL) {
+      hset_insert(h, r);
+    }
+    return;
+  }
+}
+
+// GIVEN: n ropes
+// EFFECT: reduce the given ropes as a whole
+void   rope_reduce(rope_t[] A, int n)
+//@requires n == \length(A);
+{
+  hset h = hset_new(n * 10);
+  for (int i = 0; i < n; i++)
+    //@loop_invariant 0 <= i;
+    {
+      rope_reduce_helper(A[i], h);
+    }
+  return;
+}

@@ -1,0 +1,17 @@
+/*******************/
+/* Ropes interface */
+/*******************/
+
+// typedef ______________ rope_t;
+typedef struct rope_node* rope_t;
+
+int    rope_length(rope_t R);
+rope_t rope_new(string s);
+rope_t rope_join(rope_t R, rope_t S);
+string rope_tostring(rope_t R);
+char   rope_charat(rope_t R, int i) 
+  /*@requires 0 <= i && i < rope_length(R); @*/ ;
+rope_t rope_sub(rope_t R, int lo, int hi)
+  /*@requires 0 <= lo && lo <= hi && hi <= rope_length(R); @*/ ;
+void   rope_reduce(rope_t[] A, int n)
+  /*@requires n == \length(A); @*/ ;

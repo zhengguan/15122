@@ -1,0 +1,47 @@
+int main()
+{
+  //tests for rope_new()
+  rope_t r = rope_new("hello");
+
+  //tests for is_rope
+  assert(is_rope(NULL));
+  assert(is_rope(r));
+  r->right = rope_new("world");
+  assert(!is_rope(r));
+  r->right = NULL;
+  assert(is_rope(r));
+
+  //tests for rope_length()
+  assert(rope_length(NULL) == 0);
+  assert(rope_length(r) == 5);
+
+  //tests for rope_join()
+  assert(rope_length(rope_join(r, r)) == 10);
+
+  // tests for rope_charat()
+  r = rope_join(r, r);
+  assert(rope_charat(r, 0) == 'h');
+  assert(rope_charat(r, 5) == 'h');
+
+  // tests for rope_tostring()
+  assert(string_equal(rope_tostring(r), "hellohello"));
+
+  // tests for rope_sub()
+  assert(rope_sub(NULL, 0, 0) == NULL);
+  assert(string_equal(rope_tostring(rope_sub(r, 0, 5)), "hello"));
+  assert(string_equal(rope_tostring(rope_sub(r, 5, 10)), "hello"));
+  assert(string_equal(rope_tostring(rope_sub(r, 0, 10)), "hellohello"));
+
+  // tests for rope_reduce()
+  rope_t[] ropes = alloc(rope_t, 3);
+
+  ropes[0] = rope_join(rope_new("hello"), rope_new("hello"));
+  assert(is_rope(ropes[0]));
+  assert(r->left != r->right);
+  rope_reduce(ropes, 1);
+  assert(r->left == r->right);
+
+
+
+  return 0;
+}

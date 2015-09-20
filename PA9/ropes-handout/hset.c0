@@ -1,0 +1,146 @@
+/* 
+ * Hash sets, implemented with separate chaining
+ * 
+ */
+
+#use <util>
+#use <conio>
+
+/*************************/
+/*** Client Interface ****/
+/*************************/
+
+// typedef _______* elem;
+
+// f(x, y) returns true if x and y contain equal keys
+bool elem_equal(elem x, elem y)
+/*@requires x != NULL && y != NULL; @*/ ;
+
+// f(x) returns the hash value of x's key
+int elem_hash(elem x)
+/*@ requires x != NULL; @*/ ;
+
+
+/**************************/
+/*** Library Interface ****/
+/**************************/
+
+// typedef ________ hset;
+typedef struct hset_header* hset;
+
+int hset_size(hset H);
+
+hset hset_new(int capacity)
+/*@requires capacity > 0; @*/ ;
+
+// Returns the element of H with the same key as x, if it exists.
+// Otherwise returns NULL.
+elem hset_lookup(hset H, elem x)
+/*@requires x != NULL; @*/ ;
+
+void hset_insert(hset H, elem x)
+/*@requires x != NULL; @*/ ;
+
+
+/******************/
+/* Implementation */
+/******************/
+
+struct chain_node {
+  elem data;
+  struct chain_node* next;
+};
+typedef struct chain_node chain;
+
+struct hset_header {
+  int size;
+  int capacity;               /* 0 < capacity */
+  chain*[] table;             /* \length(table) == capacity */
+};
+
+int hashindex(hset H, elem x) 
+//@requires H != NULL && H->capacity > 0;
+//@requires x != NULL;
+//@ensures 0 <= \result && \result < H->capacity;
+{
+  return abs(elem_hash(x) % H->capacity);
+}
+
+// All hash values are correct for the current index
+bool is_chain(hset H, chain* p, int i) 
+//@requires H != NULL && H->capacity > 0;
+{
+  if (p == NULL) return true;
+  return p->data != NULL 
+    && hashindex(H, p->data) == i
+    && is_chain(H, p->next, i);
+}
+
+bool is_chains(hset H, int lo, int hi) 
+//@requires H != NULL && H->capacity > 0;
+//@requires \length(H->table) == H->capacity;
+//@requires 0 <= lo && lo <= hi && hi <= H->capacity;
+{
+  if (lo == hi) return true;
+  return is_chain(H, H->table[lo], lo) 
+    && is_chains(H, lo+1, hi);
+}
+
+bool is_hset(hset H) {
+  return  H != NULL
+    && H->capacity > 0
+    && H->size >= 0 
+    && is_chains(H, 0, H->capacity);
+}
+
+hset hset_new(int capacity)
+//@requires capacity > 0;
+//@ensures is_hset(\result);
+{
+  hset H = alloc(struct hset_header);
+  H->size = 0;
+  H->capacity = capacity;
+  H->table = alloc_array(chain*, capacity);
+  return H;
+}
+
+elem hset_lookup(hset H, elem x)
+//@requires is_hset(H);
+//@requires x != NULL;
+{
+  int i = hashindex(H, x);
+  for (chain* p = H->table[i]; p != NULL; p = p->next)
+  //@loop_invariant is_chain(H, p, i);
+  {
+    if (elem_equal(p->data, x)) {
+      return p->data;
+    }
+  }
+
+  return NULL;
+}
+
+void hset_insert(hset H, elem x) 
+//@requires is_hset(H);
+//@requires x != NULL;
+//@ensures is_hset(H);
+//@ensures x == hset_lookup(H, x);
+{
+  int i = hashindex(H, x);
+  for (chain* p = H->table[i]; p != NULL; p = p->next)
+  //@loop_invariant is_chain(H, p, i);
+  {
+    if (elem_equal(p->data, x)) {
+      p->data = x;
+      return;
+    }
+  }
+  
+  // prepend new element
+  chain* p = alloc(chain);
+  p->data = x;
+  p->next = H->table[i];
+  H->table[i] = p;
+  (H->size)++;
+}
+

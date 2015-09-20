@@ -1,0 +1,6 @@
+int main()
+{
+  rope_t = rope_new("hello");
+  assert
+
+}
