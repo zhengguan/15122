@@ -1,0 +1,220 @@
+#use <args>
+#use <conio>
+#use <rand>
+#use <string>
+
+void fill(char[] C, char x, int start, int end) 
+//@requires 0 <= start && start <= end && end <= \length(C);
+{
+  for (int i = start; i < end; i++) 
+  //@loop_invariant start <= i;
+  {
+    C[i] = x;
+  }
+}
+
+bool arrmatch(char[] X, char x0, char x1, char x2, char x3,
+              char[] Y, char y0, char y1, char y2, char y3, char y4) 
+//@requires \length(X) == 4;
+//@requires \length(Y) == 5;
+{
+  if (!(X[0] == x0)) return false;
+  if (!(X[1] == x1)) return false;
+  if (!(X[2] == x2)) return false;
+  if (!(X[3] == x3)) return false;
+  if (!(Y[0] == y0)) return false;
+  if (!(Y[1] == y1)) return false;
+  if (!(Y[2] == y2)) return false;
+  if (!(Y[3] == y3)) return false;
+  if (!(Y[4] == y4)) return false;
+  return true;
+}
+
+int main() {
+  string arg = "";
+  args_t args = args_parse();
+  if (args->argc > 1) error("Too many args");
+  else if (args->argc == 1) arg = args->argv[0];
+
+  // Arrays initialized to '\0'
+  char[] C0 = alloc_array(char, 0);
+  char[] C4 = alloc_array(char, 4);
+  char[] C5 = alloc_array(char, 5);
+
+  /*** is_cstring ***/
+
+  assert(!is_cstring(C0, 0, 0));
+  assert(!is_cstring(C0, -1, 0));
+  assert(!is_cstring(C4, 0, 0));
+  assert(!is_cstring(C4, -1, 0));
+  assert(!is_cstring(C4, -1, 4));
+  assert(!is_cstring(C4, 1, 1));
+  assert(!is_cstring(C4, 1, 0));
+  assert(!is_cstring(C4, 4, 4));
+  assert(!is_cstring(C4, 4, 0));
+  assert(is_cstring(C4, 0, 1));
+  assert(is_cstring(C4, 0, 4));
+  
+  fill(C5, 'x', 1, 3); // C5 = {'\0', 'x',  'x',  '\0', 'x'}
+  C5[4] = 'x';
+  assert(!is_cstring(C5, 0, 0));
+  assert( is_cstring(C5, 0, 1));
+  assert( is_cstring(C5, 0, 2));
+  assert( is_cstring(C5, 0, 3));
+  assert( is_cstring(C5, 0, 4));
+  assert( is_cstring(C5, 0, 5));
+  assert(!is_cstring(C5, 1, 0));
+  assert(!is_cstring(C5, 1, 1));
+  assert(!is_cstring(C5, 1, 2));
+  assert(!is_cstring(C5, 1, 3));
+  assert( is_cstring(C5, 1, 4));
+  assert( is_cstring(C5, 1, 5));
+  assert(!is_cstring(C5, 2, 0));
+  assert(!is_cstring(C5, 2, 1));
+  assert(!is_cstring(C5, 2, 2));
+  assert(!is_cstring(C5, 2, 3));
+  assert( is_cstring(C5, 2, 4));
+  assert( is_cstring(C5, 2, 5));
+  assert(!is_cstring(C5, 3, 0));
+  assert(!is_cstring(C5, 3, 1));
+  assert(!is_cstring(C5, 3, 2));
+  assert(!is_cstring(C5, 3, 3));
+  assert( is_cstring(C5, 3, 4));
+  assert( is_cstring(C5, 3, 5));
+  assert(!is_cstring(C5, 4, 0));
+  assert(!is_cstring(C5, 4, 1));
+  assert(!is_cstring(C5, 4, 2));
+  assert(!is_cstring(C5, 4, 3));
+  assert(!is_cstring(C5, 4, 4));
+  assert(!is_cstring(C5, 4, 5));
+  assert(!is_cstring(C5, 5, 0));
+  assert(!is_cstring(C5, 5, 1));
+  assert(!is_cstring(C5, 5, 2));
+  assert(!is_cstring(C5, 5, 3));
+  assert(!is_cstring(C5, 5, 4));
+  assert(!is_cstring(C5, 5, 5));
+
+  /*** TODO: strlen unit tests ***/
+
+  /*** strcmp random tests ***/
+
+  rand_t r = init_rand(0xDEADBEEF);
+  char[] emp = alloc_array(char, 1);
+  for (int i = 0; i < 2000; i++) {
+    string s1 = string_fromint(rand(r));
+    string s2 = string_fromint(rand(r));
+    assert(strcmp(string_to_chararray(s1), 0, string_to_chararray(s2), 0) 
+           == string_compare(s1, s2));
+    assert(strcmp(emp, 0, string_to_chararray(s1), 0) 
+           == string_compare("", s1));
+    assert(strcmp(string_to_chararray(s1), 0, emp, 0) 
+           == string_compare(s1, ""));
+  }
+
+  /*** strcpy unit tests ***/
+
+  fill(C5, 'x', 0, 5);
+  fill(C4, '\0', 0, 4);
+  fill(C4, 'y', 0, 3);
+  strcpy(C5, 0, C4, 0);
+  assert(arrmatch(C4,'y','y','y','\0', C5,'y','y','y','\0','x'));
+
+  fill(C5, 'x', 0, 5);
+  fill(C4, '\0', 0, 4);
+  fill(C4, 'y', 0, 3);
+  strcpy(C5, 1, C4, 0);
+  assert(arrmatch(C4,'y','y','y','\0', C5,'x','y','y','y','\0'));
+
+  fill(C5, 'x', 0, 5);
+  fill(C4, '\0', 0, 4);
+  fill(C4, 'y', 0, 3);
+  strcpy(C5, 3, C4, 2);
+  assert(arrmatch(C4,'y','y','y','\0', C5,'x','x','x','y','\0'));
+
+  fill(C5, '\0', 0, 5);
+  fill(C5, 'x', 0, 4);
+  fill(C4, '\0', 0, 4);
+  fill(C4, 'y', 0, 3);
+  strcpy(C4, 1, C5, 2);
+  assert(arrmatch(C4,'y','x','x','\0', C5,'x','x','x','x','\0'));
+
+  // Some cases where we want to strcpy fail the precondition:
+  fill(C5, 'x', 0, 4);
+  fill(C4, 'y', 0, 4);
+  C4[3] = '\0';
+  if (string_equal(arg, "strcpy1")) {
+    strcpy(C5, 2, C4, 0);
+    error("expected assertion failure did not occur");
+  } else if (string_equal(arg, "strcpy2")) {
+    strcpy(C5, 3, C4, 1);
+    error("expected assertion failure did not occur");    
+  } else if (string_equal(arg, "strcpy3")) {
+    C5[4] = '\0';
+    strcpy(C4, 0, C5, 0);
+    error("expected assertion failure did not occur");    
+  }
+
+  /*** strncpy unit tests ***/
+
+  fill(C5, 'x', 0, 5);
+  fill(C4, 'y', 0, 3);
+  C4[3] = '\0';
+  strncpy(C5, 0, C4, 0, 0);
+  assert(arrmatch(C4,'y','y','y','\0', C5,'x','x','x','x','x'));
+
+  fill(C5, 'x', 0, 5);
+  strncpy(C5, 0, C4, 0, 1);
+  assert(arrmatch(C4,'y','y','y','\0', C5,'y','x','x','x','x'));
+
+  fill(C5, 'x', 0, 5);
+  strncpy(C5, 0, C4, 0, 2);
+  assert(arrmatch(C4,'y','y','y','\0', C5,'y','y','x','x','x'));
+
+  fill(C5, 'x', 0, 5);
+  strncpy(C5, 0, C4, 0, 3);
+  assert(arrmatch(C4,'y','y','y','\0', C5,'y','y','y','x','x'));
+
+  fill(C5, 'x', 0, 5);
+  strncpy(C5, 0, C4, 0, 4);
+  assert(arrmatch(C4,'y','y','y','\0', C5,'y','y','y','\0','x'));
+
+  fill(C5, 'x', 0, 5);
+  strncpy(C5, 0, C4, 0, 5);
+  assert(arrmatch(C4,'y','y','y','\0', C5,'y','y','y','\0','\0'));
+
+  fill(C5, 'x', 0, 5);
+  fill(C4, 'y', 0, 4);
+  C4[3] = '\0';
+  strncpy(C5, 0, C4, 0, 2);
+  assert(arrmatch(C4,'y','y','y','\0', C5,'y','y','x','x','x'));
+
+  fill(C5, 'x', 0, 5);
+  fill(C4, 'y', 0, 4);
+  C4[3] = '\0';
+  strncpy(C5, 1, C4, 0, 4);
+  assert(arrmatch(C4,'y','y','y','\0', C5,'x','y','y','y','\0'));
+
+  fill(C5, 'x', 0, 5);
+  fill(C4, 'y', 0, 4);
+  C4[3] = '\0';
+  strncpy(C5, 3, C4, 2, 1);
+  assert(arrmatch(C4,'y','y','y','\0', C5,'x','x','x','y','x'));
+
+  fill(C5, 'x', 0, 4);
+  C5[4] = '\0';
+  fill(C4, 'y', 0, 4);
+  strncpy(C4, 1, C5, 2, 3);
+  assert(arrmatch(C4,'y','x','x','\0', C5,'x','x','x','x','\0'));
+
+  // TODO: some cases where we want strncpy to fail the precondition:
+
+  /*** TODO: strcat unit tests ***/
+
+  // TODO: some cases where we want strcat to fail the precondition:
+
+  /*** TODO: strncat unit tests ***/
+
+  // TODO: some cases where we want strncat to fail the precondition:
+
+  return 0;
+}

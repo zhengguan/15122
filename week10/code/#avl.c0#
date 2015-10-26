@@ -1,0 +1,253 @@
+/* 
+ * Binary search tree without balancing
+ *
+ * 15-122 Principles of Imperative Computation
+ */
+
+#use <conio>
+#use <string>
+#use <util>
+
+/******************************/
+/* Client-side implementation */
+/******************************/
+
+struct wcount {
+  string word;  /* key */
+  int count;    /* data = wordcount */
+};
+
+int elem_compare(struct wcount* wc1, struct wcount* wc2)
+//@requires wc1 != NULL && wc2 != NULL;
+{
+  return string_compare(wc1->word, wc2->word);
+}
+
+/*************************/
+/* Client-side interface */
+/*************************/
+
+typedef struct wcount* elem;
+typedef string key;
+
+int elem_compare(elem e1, elem e2)
+/*@requires e1 != NULL && e2 != NULL; @*/   
+/*@ensures -1 <= \result && \result <= 1; @*/ ;
+
+/*********************/
+/* Library interface */
+/*********************/
+
+// typedef ________ bst;
+typedef struct bst_header* bst;
+
+bst bst_new();
+void bst_insert(bst B, elem x)  /* replace if elem with same key as x in B */
+/*@requires x != NULL; @*/ ;
+elem bst_lookup(bst B, elem x)  /* return NULL if not in tree */
+/*@requires x != NULL; @*/ ;
+/**************************/
+/* Library implementation */
+/**************************/
+
+struct tree_node {
+  elem data;
+  int height;
+  struct tree_node* left;
+  struct tree_node* right;
+};
+typedef struct tree_node tree;
+
+struct bst_header {
+  tree* root;
+};
+
+int height(tree* T) {
+  return T == NULL ? 0 : T->height;
+}
+
+/* is_ordered(T, lower, upper) checks if all elements in T
+ * are strictly in the interval (elem_key(lower),elem_key(kupper)).
+ * lower = NULL represents -infinity; upper = NULL represents +infinity
+ */
+bool is_ordered(tree* T, elem lower, elem upper) {
+  if (T == NULL) return true;
+  return T->data != NULL
+    && (lower == NULL || elem_compare(lower, T->data) < 0)
+    && (upper == NULL || elem_compare(T->data, upper) < 0)
+    && is_ordered(T->left, lower, T->data)
+    && is_ordered(T->right, T->data, upper);
+}
+
+bool is_specified_height(tree* T) {
+  if (T == NULL) return true;
+  int computed_height =
+    height(T->left) > height(T->right) 
+    ? height(T->left) + 1 
+    : height(T->right) + 1;
+  return computed_height == T->height 
+    && is_specified_height(T->left)
+    && is_specified_height(T->right);
+}
+
+bool is_balanced(tree* T) {
+  if (T == NULL) return true;
+  return abs(height(T->left) - height(T->right)) <= 1
+    && is_balanced(T->left) && is_balanced(T->right);
+}
+
+bool is_tree(tree* T) {
+  return is_ordered(T, NULL, NULL)
+    && is_specified_height(T)
+    && is_balanced(T);
+}
+
+bool is_bst(bst B) {
+  return B != NULL && is_tree(B->root);
+}
+
+void fix_height(tree* T)
+//@requires T != NULL;
+//@requires is_specified_height(T->left) && is_specified_height(T->right);
+{
+  int hl = height(T->left);
+  int hr = height(T->right);
+  T->height = (hl > hr ? hl+1 : hr+1);
+  return;
+}
+
+bst bst_new()
+//@ensures is_bst(\result);
+{
+  bst B = alloc(struct bst_header);
+  B->root = NULL;
+  return B;
+}
+
+elem tree_lookup(tree* T, elem x)
+//@requires is_tree(T);
+//@ensures \result == NULL || elem_compare(\result, x) == 0;
+{
+  if (T == NULL) return NULL;
+  int r = elem_compare(x, T->data);
+  if (r == 0) {
+    return T->data;
+  } else if (r < 0) {
+    return tree_lookup(T->left, x);
+  } else {
+    //@assert r > 0;
+    return tree_lookup(T->right, x);
+  }
+}
+
+elem bst_lookup(bst B, elem x)
+//@requires is_bst(B);
+//@ensures \result == NULL || elem_compare(\result, x) == 0;
+{
+  return tree_lookup(B->root, x);
+}
+
+tree* rotate_left(tree* T)
+//@requires T != NULL && T->right != NULL;
+//@requires is_specified_height(T->left);
+//@requires is_specified_height(T->right);
+//@ensures is_specified_height(\result);
+{
+  tree* temp = T->right;
+  T->right = T->right->left;
+  temp->left = T;
+  fix_height(T);
+  fix_height(temp);
+  return temp;
+}
+
+tree* rotate_right(tree* T)
+//@requires T != NULL && T->left != NULL;
+//@requires is_specified_height(T->left);
+//@requires is_specified_height(T->right);
+//@ensures is_specified_height(\result);
+{
+  tree* temp = T->left;
+  T->left = T->left->right;
+  temp->right = T;
+  fix_height(T);
+  fix_height(temp);
+  return temp;
+}
+
+tree* rebalance_left(tree* T) 
+//@requires T != NULL && T->left != NULL;
+//@requires is_tree(T->left) && is_tree(T->right);
+//@ensures is_tree(\result);
+{
+  if (height(T->left) - height(T->right) == 2) {
+    if (height(T->left->left) > height(T->left->right)) {
+      T = rotate_right(T);
+    } else {
+      //@assert height(T->left->right) > height(T->left->left);
+      T->left = rotate_left(T->left);
+      T = rotate_right(T);
+    }
+  } else {
+    fix_height(T);
+  }
+
+  return T;
+}
+
+tree* rebalance_right(tree* T) 
+//@requires T != NULL && T->right != NULL;
+//@requires is_tree(T->left) && is_tree(T->right);
+//@ensures is_tree(\result);
+{
+  if (height(T->right) - height(T->left) == 2) {
+    if (height(T->right->right) > height(T->right->left)) {
+      T = rotate_left(T);
+    } else {
+      //@assert height(T->right->left) > height(T->right->right);
+      T->right = rotate_right(T->right);
+      T = rotate_left(T);
+    }
+  } else {
+    fix_height(T);
+  }
+  return T;
+}
+
+tree* tree_insert(tree* T, elem x)
+//@requires is_tree(T);
+//@requires x != NULL;
+//@ensures is_tree(\result);
+{
+  if (T == NULL) {
+    tree* R = alloc(tree);
+    R->height = 1;
+    R->data = x;
+    R->left = NULL;
+    R->right = NULL;
+    return R;
+  }
+
+  int r = elem_compare(x, T->data);
+  if (r == 0) {       // x == T->data
+    T->data = x;
+  } else if (r < 0) { // x < T->data
+    T->left = tree_insert(T->left, x);
+    T = rebalance_left(T);
+  } else if (r > 0) { // x > T->data
+    T->right = tree_insert(T->right, x);
+    T = rebalance_right(T);
+  }
+
+  return T;
+}
+
+void bst_insert(bst B, elem x)
+//@requires is_bst(B);
+//@requires x != NULL;
+//@ensures is_bst(B);
+{
+  B->root = tree_insert(B->root, x);
+  return;
+}
+

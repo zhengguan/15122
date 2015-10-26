@@ -1,0 +1,216 @@
+/* 
+ * A C0 library meant to resemble string.h in C
+ * Implementation guided by FreeBSD implementation of string.h
+ * 
+ * 15-122 Principles of Imperative Computation */
+
+/*** Interface ***/
+
+// Check that the array span str[off..limit) represents a valid
+// C-style string. (This basically only requires that '\0' be
+// encountered before we reach limit).
+bool is_cstring(char[] str, int off, int limit)
+/*@requires limit <= \length(str); @*/ ;
+
+// Computes the length of the string str+off up to but not including
+// the terminating NUL character. 
+//
+// Returns the number of characters in the string.
+//
+// Takes time proporitional to the length of the string.
+int strlen(char[] str, int off) 
+/*@requires is_cstring(str, off, \length(str)); @*/ ;
+
+// Computes the asciibetical comparison of str1+off1 and str2+off2
+int strcmp(char[] str1, int off1, char[] str2, int off2)
+/*@requires is_cstring(str1, off1, \length(str1)); @*/
+/*@requires is_cstring(str2, off2, \length(str2)); @*/ ;
+
+// Appends the string pointed to by str2+off2 to the end of the string
+// pointed to by str1+off1. The terminating NUL character of str1+off1
+// is overwritten. Copying stops once the terminating NUL character of
+// str2 is copied.
+// 
+// Takes time proportional to the combined lengths of the strings.
+// Returns str1/
+char[] strcat(char[] str1, int off1, char[] str2, int off2)
+/*@requires is_cstring(str1, off1, \length(str1)); @*/
+/*@requires is_cstring(str2, off2, \length(str2)); @*/
+/*@requires off1 + strlen(str1, off1) + strlen(str2, off2) < \length(str1); @*/
+/*@requires str1 != str2; @*/ ; 
+
+// Appends the string pointed to by str2+off2 to the end of the string
+// pointed to by str1+off1 up to n characters long. The terminating
+// NUL character of str1+off1 is overwritten. Copying stops once n
+// characters are copied or the terminating NUL character of str2+off2
+// is copied. A terminating NUL character is always appended to
+// str1+off1.
+//
+// Takes time proportional to the combined length of the strings.
+// Returns str1.
+char[] strncat(char[] str1, int off1, char[] str2, int off2, int n)
+/*@requires is_cstring(str1, off1, \length(str1)); @*/
+/*@requires is_cstring(str2, off2, \length(str2)); @*/
+/*@requires 0 <= n; @*/
+/*@requires off1 + strlen(str1, off1) + n < \length(str1); @*/
+/*@requires str1 != str2; @*/ ; 
+
+// Copies the string pointed to by str2+off2 to str1+off1. Copies up
+// to and including the NUL character of str2+off1.
+//
+// Takes time proportional to the length of the string being copied.
+// Returns str1.
+char[] strcpy(char[] str1, int off1, char[] str2, int off2) 
+/*@requires is_cstring(str2, off2, \length(str2)); @*/
+/*@requires off1 + strlen(str2, off2) < \length(str1); @*/ 
+/*@requires str1 != str2; @*/ ;
+
+// Copies up to n characters from the string pointed to by str2+off2
+// to str1+off1. Copying stops when n characters are copied or the
+// terminating NIL character in str2+off2 is reached. If the NIL
+// character is reached, then NIL characters are continually written
+// to str1 until n characters have been written in total.
+char[] strncpy(char[] str1, int off1, char[] str2, int off2, int n) 
+/*@requires is_cstring(str2, off2, \length(str2)); @*/
+/*@requires off1 + n <= \length(str1); @*/
+/*@requires str1 != str2; @*/ ;
+
+/*** Implementation ***/
+  
+bool is_cstring(char[] str, int off, int limit)
+//@requires limit <= \length(str); 
+{
+  if (!(0 <= off)) return false;
+  for (int i = off; i < limit; i++) 
+    //@loop_invariant 0 <= i;
+    if (str[i] == '\0') return true;
+
+  return false;
+}
+
+int strlen(char[] str, int off) 
+//@requires is_cstring(str, off, \length(str)); 
+{
+  int i = off;
+
+  while (str[i] != '\0') 
+    //@loop_invariant is_cstring(str, i, \length(str));
+    i++;
+
+  return i - off;
+}
+
+int strcmp(char[] str1, int off1, char[] str2, int off2)
+//@requires is_cstring(str1, off1, \length(str1)); 
+//@requires is_cstring(str2, off2, \length(str2)); 
+{
+  while (str1[off1] == str2[off2]) 
+  //@loop_invariant is_cstring(str1, off1, \length(str1)); 
+  //@loop_invariant is_cstring(str2, off2, \length(str2)); 
+  {
+    if (str1[off1] == '\0') return 0;
+    off1++;
+    off2++;
+  }
+
+  if (str1[off1] < str2[off2]) return -1;
+  return 1;
+}
+           
+char[] strcat(char[] str1, int off1, char[] str2, int off2) 
+//@requires is_cstring(str1, off1, \length(str1)); 
+//@requires is_cstring(str2, off2, \length(str2)); 
+//@requires off1 + strlen(str1, off1) + strlen(str2, off2) < \length(str1); 
+//@requires str1 != str2;
+{
+  int dst = off1;
+  int src = off2;
+
+  while (str1[dst] != '\0')
+  //@loop_invariant is_cstring(str1, dst, \length(str1));
+  {
+    dst++;
+  }
+
+  while (str2[src] != '\0') 
+  //@loop_invariant is_cstring(str2, src, \length(str2));
+  {
+    str1[dst] = str2[src];
+    dst++;
+    src++;
+  }
+
+  str1[dst] = '\0';
+  return str1;
+}
+
+char[] strncat(char[] str1, int off1, char[] str2, int off2, int n)
+//@requires is_cstring(str1, off1, \length(str1));
+//@requires is_cstring(str2, off2, \length(str2));
+//@requires 0 <= n;
+//@requires off1 + strlen(str1, off1) + n < \length(str1); 
+//@requires str1 != str2; 
+{
+  int dst = off1;
+  int src = off2;
+  
+  while (str1[dst] != '\0')
+  //@loop_invariant is_cstring(str1, dst, \length(str1));
+  { 
+    dst++;
+  }
+
+  //@assert dst == off1 + strlen(str1, off1);
+
+  while (n != 0) 
+  //@loop_invariant is_cstring(str2, src, \length(str2));
+  {
+    str1[dst] = str2[src];
+    if (str1[dst] == '\0') return str1;
+    dst++;
+    src++;
+    n--;
+  }
+
+  str1[dst] = '\0';
+  return str1;
+}
+
+char[] strcpy(char[] str1, int off1, char[] str2, int off2) 
+//@requires is_cstring(str2, off2, \length(str2));
+//@requires off1 + strlen(str2, off2) < \length(str1);
+//@requires str1 != str2;
+{
+  int dst = off1;
+  int src = off2;
+
+  while (str2[src] != '\0') 
+  //@loop_invariant is_cstring(str2, src, \length(str2));
+  {
+    str1[dst] = str2[src];
+    dst++;
+    src++;
+  }
+
+  str1[dst] = '\0';
+  return str1;
+}
+
+char[] strncpy(char[] str1, int off1, char[] str2, int off2, int n)
+//@requires is_cstring(str2, off2, \length(str2));
+//@requires off1 + n <= \length(str1);
+//@requires str1 != str2;
+{
+  int dst = off1;
+  int src = off2;
+
+  for (int i = 0; i < n; i++) 
+  //@loop_invariant is_cstring(str2, src, \length(str2));
+  {
+    str1[dst] = str2[src];
+    dst++;
+    if (str2[src] != '\0') src++;
+  }
+  
+  return str1;
+}

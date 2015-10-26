@@ -1,0 +1,15 @@
+bst_test: bst_test.o bst.o xalloc.o
+	gcc -o bst_test xalloc.o bst.o bst_test.o -lm -DDEBUG
+
+bst.o: bst.c
+	gcc -c bst.c -lm -DDEBUG
+
+bst_test.o: bst_test.c
+	gcc -c bst_test.c  -DDEBUG
+
+xalloc.o: ../21-code/lib/xalloc.c
+	gcc -c ../21-code/lib/xalloc.c -DDEBUG
+
+
+clean:
+	rm *.o

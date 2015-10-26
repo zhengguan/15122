@@ -1,0 +1,99 @@
+/*
+ * String Buffer Library
+ *
+ * 15-122 Principles of Imperative Computation
+ * This version exposes the externals, requires
+ * discipline from client! */
+
+#use "lib/cstring.c0"
+#use <conio>
+
+/*** Interface ***/
+
+struct strbuf {
+  int limit;
+  int len;
+  char[] buf;
+};
+bool is_strbuf(struct strbuf* sb);
+
+struct strbuf* strbuf_new(int init_limit);
+char[] strbuf_str(struct strbuf* sb);
+void strbuf_add(struct strbuf* sb, char[] str, int len);
+void strbuf_addstr(struct strbuf* sb, char[] str);
+
+
+/*** Implementation ***/
+
+// GIVEN: an array and an int
+// REUTNRS: true iff the given int is the given array's length
+bool is_specified_length(char[] buf, int len) {
+  //@assert \length(buf) == len;
+  return true;
+}
+
+bool is_strbuf(struct strbuf* sb) {
+  return sb != NULL
+    && is_specified_length(sb->buf, sb->limit)
+    && sb->len < sb->limit // one byte for '\0'
+    && strlen(sb->buf, 0) == sb->len;
+}
+
+struct strbuf* strbuf_new(int initial_limit)
+//@requires initial_limit > 0;
+//@ensures is_strbuf(\result);
+{
+  struct strbuf* sb = alloc(struct strbuf);
+  sb->limit = initial_limit;
+  sb->len = 0;
+  sb->buf = alloc_array(char, initial_limit);
+  sb->buf[0] = '\0';
+  return sb;
+}
+
+
+// RETURNS: a copy of string in the given string buffer
+char[] strbuf_str(struct strbuf* str)
+//@requires is_strbuf(str);
+//@ensures strlen(\result, 0) == str->len;
+{
+  char[] arr = alloc_array(char, str->len + 1);
+  strncpy(arr, 0, str->buf, 0, str->len + 1);
+  return arr;
+}
+
+// EFFECT: concate the first str_len characters in str
+// to the string in sb,
+void strbuf_add(struct strbuf* sb, char[] str, int str_len)
+//@requires is_strbuf(sb);
+//@ensures is_strbuf(sb);
+{
+  if (sb->len + str_len >= sb->limit) {
+    int new_limit = (sb->len + str_len) * 2;
+    char[] buf = alloc_array(char, new_limit);
+    strcpy(buf, 0, sb->buf, 0);
+    sb->buf = buf;
+    sb->limit = new_limit;
+  }
+  //@assert sb->len + str_len < sb->limit;
+  strncpy(sb->buf, sb->len, str, 0, str_len);
+  sb->len = sb->len + str_len;
+  sb->buf[sb->len] = '\0';
+  /*
+  print("strlen(sb->buf, 0) = ");
+  printint(strlen(sb->buf, 0));
+  println("");
+  print("sb->len = ");
+  printint(sb->len);
+  println("");
+  assert(strlen(sb->buf, 0) == sb->len);
+  */
+  return;
+}
+
+void strbuf_addstr(struct strbuf* sb, char[] str)
+//@requires is_strbuf(sb);
+//@ensures is_strbuf(sb);
+{
+  strbuf_add(sb, str, strlen(str, 0));
+}

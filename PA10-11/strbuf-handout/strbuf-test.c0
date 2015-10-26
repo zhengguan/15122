@@ -1,0 +1,36 @@
+#use <conio>
+#use <string>
+
+
+void test()
+{
+  // tests for strbuf_new
+  struct strbuf* sb = strbuf_new(2);
+  println("strbuf_new() passes tests");
+
+  // tests for strbuf_add
+  strbuf_add(sb, string_to_chararray("H"), 1);
+  assert(sb->len == 1);
+  assert(sb->limit == 2);
+  strbuf_add(sb, string_to_chararray("ello"), 4);
+  assert(sb->len == 5);
+  strbuf_addstr(sb, string_to_chararray(",world!"));
+  assert(sb->len == 12);
+  println("strbuf_add() and strbuf_addstr() passes tests");
+
+  assert(strcmp(strbuf_str(sb),
+                0,
+                string_to_chararray("Hello,world!"),
+                0)
+         == 0);
+  println("strbuf_str() passes tests");
+
+  return;
+}
+
+
+int main()
+{
+  test();
+  return 0;
+}
