@@ -21,11 +21,6 @@ void tst_free(tst t);
 ******************************************************************************/
 
 /* predicate */
-bool is_end_of_word(tree *root) {
-  REQUIRES(root != NULL);
-
-  return (*(char *)root->data == '\0');
-}
 
 int height(tree* root) {
   if (root == NULL) {
@@ -35,7 +30,6 @@ int height(tree* root) {
   }
 }
 
-// RETURNS: true iff all elements in root are in range (lower, upper);
 bool is_ordered(tree* root, elem lower, elem upper, elem_compare_fn cmp) {
   if (root == NULL) {
     return true;
@@ -44,8 +38,7 @@ bool is_ordered(tree* root, elem lower, elem upper, elem_compare_fn cmp) {
       && (lower == NULL || cmp(lower, root->data) < 0)
       && (upper == NULL || cmp(root->data, upper) < 0)
       && is_ordered(root->left, lower, root->data, cmp)
-      && is_ordered(root->right, root->data, upper, cmp)
-      && is_ordered(root->middle, NULL, NULL, cmp);
+      && is_ordered(root->right, root->data, upper, cmp);
   }
 }
 
@@ -59,8 +52,7 @@ bool is_specified_height(tree* root) {
   } else {
     return root->height == max(height(root->left), height(root->right)) + 1
       && is_specified_height(root->left)
-      && is_specified_height(root->right)
-      && is_specified_height(root->middle);
+      && is_specified_height(root->right);
   }
 }
 
@@ -70,8 +62,7 @@ bool is_balanced(tree* root) {
     return true;
   } else {
     return (abs(height(root->left) - height(root->right)) <= 1)
-      && is_balanced(root->left) && is_balanced(root->right)
-      && is_balanced(root->middle);
+      && is_balanced(root->left) && is_balanced(root->right);
   }
 }
 
@@ -79,11 +70,10 @@ bool is_valid_count(tree* root) {
   if (root == NULL) {
     return true;
   } else {
-    return is_end_of_word(root) ? (root->count > 0) : (root->count == 0)
+    return root->is_end_of_word ? (root->count > 0) : (root->count == 0)
       && is_valid_count(root->left)
       && is_valid_count(root->middle)
-      && is_valid_count(root->right)
-      && is_valid_count(root->middle);
+      && is_valid_count(root->right);
   }
 }
 
@@ -93,7 +83,6 @@ bool is_tree(tree* root, elem_compare_fn cmp) {
     && is_specified_height(root)
     && is_balanced(root)
     && is_valid_count(root);
-
   /*
   ASSERT(is_ordered(root,NULL, NULL, cmp));
   ASSERT(is_specified_height(root));
@@ -242,28 +231,23 @@ tree* tree_insert(tree* t, char* s, elem_compare_fn cmp) {
     t->left = NULL;
     t->middle = NULL;
     t->right = NULL;
-    if (*s == '\0') {
+    if (strlen(s) == 1) {
+      t->is_end_of_word = true;
       t->count = 1;
     } else {
+      ASSERT(strlen(s) > 1);
+      t->is_end_of_word = false;
       t->count = 0;
       t->middle = tree_insert(t->middle, &s[1], cmp);
     }
-    return t;
   } else {
-    if (*s == '\0') {
-      if (is_end_of_word(t)) {
-        t->count++;
-        return t;
-      } else {
-        return tree_insert(NULL, s, cmp);
-      }
-    }
-
     int r = cmp(s, t->data);
     if (r == 0) {
-      if (*s == '\0') {
+      if (strlen(s) == 1) {
         t->count++;
+        t->is_end_of_word = true;
       } else {
+        ASSERT(strlen(s) > 1);
         t->middle = tree_insert(t->middle, &s[1], cmp);
       }
     } else if (r < 0) {
@@ -306,10 +290,10 @@ int tree_lookup(tree* root, char* s, elem_compare_fn cmp) {
   } else {
     int r = cmp(s, root->data);
     if (r == 0) {
-      if (*s == '\0') {
+      if (strlen(s) == 1) {
         return root->count;
       } else {
-        ASSERT(strlen(s) > 0);
+        ASSERT(strlen(s) > 1);
         return tree_lookup(root->middle, &s[1], cmp);
       }
     } else if (r < 0) {
@@ -355,7 +339,7 @@ void tst_free(tst T) {
 /******************************************************************************/
 // Ex 3 of lec 21
 
-// WHERE: 0 <= start && start <= strlen(s);
+// WHERE: 0 <= start && start < strlen(s);
 // EFFECT: for each member m of tn that matches s[start,)
 // add the concatenation of sb and m to q
 // DETAILS: the sb should have the same string as before afetr
@@ -365,49 +349,15 @@ void tree_lookup_generalized(tree *tn, char *s, size_t start,
                              struct strbuf *sb, Queue q, elem_compare_fn cmp) {
   REQUIRES(is_tree(tn, cmp));
   REQUIRES(s != NULL);
-  REQUIRES(start <= strlen(s));
+  REQUIRES(start < strlen(s));
   REQUIRES(is_strbuf(sb));
   REQUIRES(is_Queue(q));
 
-  if (tn == NULL) return;
-
   if (s[start] == '*') {
+    if (tn == NULL) return;
     tree_lookup_generalized(tn->left, s, start, sb, q, cmp);
     tree_lookup_generalized(tn->right, s, start, sb, q, cmp);
 
-    if (is_end_of_word(tn)) {
-      tree_lookup_generalized(tn, s, start + 1, sb, q, cmp);
-      return;
-    } else {
-      tree_lookup_generalized(tn, s, start + 1, sb, q, cmp);
-      strbuf_push(sb, *(char *)tn->data);
-      tree_lookup_generalized(tn->middle, s, start + 1, sb, q, cmp);
-      // tree_lookup_generalized(tn->middle, s, start, sb, q, cmp);
-      strbuf_pop(sb);
-      return;
-    }
-  } else {
-    int r = cmp(&s[start], tn->data);
-    if (r == 0) {
-      if (s[start] == '\0') {
-        Queue_insert(q, strbuf_str(sb));
-        return;
-      } else {
-        strbuf_push(sb, s[start]);
-        tree_lookup_generalized(tn->middle, s, start + 1, sb, q, cmp);
-        strbuf_pop(sb);
-        return;
-      }
-    } else if (r < 0) {
-      tree_lookup_generalized(tn->left, s, start, sb, q, cmp);
-      return;
-    } else {
-      ASSERT(r > 0);
-      tree_lookup_generalized(tn->right, s, start, sb, q, cmp);
-      return;
-    }
-  }
-  /*
     if (s[start + 1] == '\0' && tn->is_end_of_word) {
       strbuf_push(sb, *(char*)tn->data);
       Queue_insert(q, strbuf_str(sb));
@@ -444,7 +394,7 @@ void tree_lookup_generalized(tree *tn, char *s, size_t start,
       return;
     }
   }
-  */
+
   ENSURES(is_Queue(q));
 }
 

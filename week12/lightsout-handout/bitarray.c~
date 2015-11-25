@@ -1,0 +1,11 @@
+#include "lib/bitarray.h"
+
+/* Get a new bitarray with everything set to 'false' */
+bitarray bitarray_new();
+
+/* Get the ith bit of the bitarray n */
+bool bitarray_get(bitarray n, uint8_t i); // 0 <= i < BITARRAY_LIMIT
+
+/* Toggle the ith bit of the bitarray n, returning a new bitarray */
+/* The old bitarray remains unchanged (this is a persistent data structure) */
+bitarray bitarray_flip(bitarray n, uint8_t i); // 0 <= i < BITARRAY_LIMIT

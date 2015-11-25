@@ -1,0 +1,2827 @@
+Welcome to the Emacs shell
+
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst.c:340:50: error: unknown type name ‘Queue’
+                               struct strbuf *sb, Queue q) {
+                                                  ^
+tst.c:393:45: error: unknown type name ‘Queue’
+ void tst_member_generalized(tst T, char *s, Queue q) {
+                                             ^
+make: *** [tst.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst.c:341:38: error: ‘struct strbuf’ declared inside parameter list [-Werror]
+                               struct strbuf *sb, Queue q) {
+                                      ^
+tst.c:341:38: error: its scope is only this definition or declaration, which is probably not what you want [-Werror]
+tst.c: In function ‘tree_lookup_generalized’:
+tst.c:342:3: error: implicit declaration of function ‘is_tnode’ [-Werror=implicit-function-declaration]
+   REQUIRES(is_tnode(tn));
+   ^
+tst.c:343:3: error: comparison of unsigned expression >= 0 is always true [-Werror=type-limits]
+   REQUIRES(s != NULL && 0 <= start && start < strlen(s));
+   ^
+tst.c:344:3: error: implicit declaration of function ‘is_strbuf’ [-Werror=implicit-function-declaration]
+   REQUIRES(is_strbuf(sb));
+   ^
+tst.c:352:35: error: ‘tree’ has no member named ‘is_end’
+     if (s[start + 1] == '\0' && tn->is_end) {
+                                   ^
+tst.c:353:7: error: implicit declaration of function ‘strbuf_push’ [-Werror=implicit-function-declaration]
+       strbuf_push(sb, s[start]);
+       ^
+tst.c:354:7: error: implicit declaration of function ‘strbuf_str’ [-Werror=implicit-function-declaration]
+       Queue_insert(q, strbuf_str(sb));
+       ^
+tst.c:354:7: error: passing argument 2 of ‘Queue_insert’ makes pointer from integer without a cast [-Werror]
+In file included from tst.c:8:0:
+queue.h:25:6: note: expected ‘Queue_elem’ but argument is of type ‘int’
+ void Queue_insert(Queue q, Queue_elem ele);
+      ^
+tst.c:355:7: error: implicit declaration of function ‘strbuf_pop’ [-Werror=implicit-function-declaration]
+       strbuf_pop(sb);
+       ^
+In file included from lib/contracts.h:8:0,
+                 from queue.h:5,
+                 from tst.c:8:
+tst.c:360:43: error: ‘tree’ has no member named ‘is_end’
+       ASSERT((s[start + 1] != '\0') && !tn->is_end);
+                                           ^
+tst.c:360:7: note: in expansion of macro ‘ASSERT’
+       ASSERT((s[start + 1] != '\0') && !tn->is_end);
+       ^
+tst.c:369:11: error: ‘i’ undeclared (first use in this function)
+     if (s[i] < tn->c) {
+           ^
+tst.c:369:11: note: each undeclared identifier is reported only once for each function it appears in
+tst.c:369:18: error: ‘tree’ has no member named ‘c’
+     if (s[i] < tn->c) {
+                  ^
+tst.c:370:31: error: ‘T’ undeclared (first use in this function)
+       tree_lookup_generalized(T->left, s, i, sb, q);
+                               ^
+tst.c:372:25: error: ‘tree’ has no member named ‘c’
+     } else if (s[i] > tn->c) {
+                         ^
+tst.c:373:7: error: implicit declaration of function ‘tree_lookup_generalize’ [-Werror=implicit-function-declaration]
+       tree_lookup_generalize(T->right, s, i, sb, q);
+       ^
+tst.c:377:7: error: passing argument 2 of ‘Queue_insert’ from incompatible pointer type [-Werror]
+       Queue_insert(q, sb);
+       ^
+In file included from tst.c:8:0:
+queue.h:25:6: note: expected ‘Queue_elem’ but argument is of type ‘struct strbuf *’
+ void Queue_insert(Queue q, Queue_elem ele);
+      ^
+tst.c: In function ‘tst_member_generalized’:
+tst.c:399:10: error: implicit declaration of function ‘strbuf_new’ [-Werror=implicit-function-declaration]
+   struct strbuf *sb = strbuf_new(8);
+          ^
+tst.c:399:23: error: initialization makes pointer from integer without a cast [-Werror]
+   struct strbuf *sb = strbuf_new(8);
+                       ^
+tst.c:400:3: error: passing argument 4 of ‘tree_lookup_generalized’ makes pointer from integer without a cast [-Werror]
+   tree_lookup_generalized(T->root, s, 0, strlen(s), sb, q);
+   ^
+tst.c:340:6: note: expected ‘struct strbuf *’ but argument is of type ‘size_t’
+ void tree_lookup_generalized(tree *tn, char *s, size_t start,
+      ^
+tst.c:400:3: error: passing argument 5 of ‘tree_lookup_generalized’ from incompatible pointer type [-Werror]
+   tree_lookup_generalized(T->root, s, 0, strlen(s), sb, q);
+   ^
+tst.c:340:6: note: expected ‘Queue’ but argument is of type ‘struct strbuf *’
+ void tree_lookup_generalized(tree *tn, char *s, size_t start,
+      ^
+tst.c:400:3: error: too many arguments to function ‘tree_lookup_generalized’
+   tree_lookup_generalized(T->root, s, 0, strlen(s), sb, q);
+   ^
+tst.c:340:6: note: declared here
+ void tree_lookup_generalized(tree *tn, char *s, size_t start,
+      ^
+tst.c:401:3: error: implicit declaration of function ‘strbuf_dealloc’ [-Werror=implicit-function-declaration]
+   free(strbuf_dealloc(sb));
+   ^
+tst.c:401:3: error: passing argument 1 of ‘free’ makes pointer from integer without a cast [-Werror]
+In file included from tst.c:3:0:
+/usr/include/stdlib.h:483:13: note: expected ‘void *’ but argument is of type ‘int’
+ extern void free (void *__ptr) __THROW;
+             ^
+cc1: all warnings being treated as errors
+make: *** [tst.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst.c: In function ‘tree_lookup_generalized’:
+tst.c:343:3: error: too few arguments to function ‘is_tree’
+   REQUIRES(is_tree(tn));
+   ^
+tst.c:80:6: note: declared here
+ bool is_tree(tree* root, elem_compare_fn cmp) {
+      ^
+tst.c:344:3: error: comparison of unsigned expression >= 0 is always true [-Werror=type-limits]
+   REQUIRES(s != NULL && 0 <= start && start < strlen(s));
+   ^
+tst.c:353:35: error: ‘tree’ has no member named ‘is_end’
+     if (s[start + 1] == '\0' && tn->is_end) {
+                                   ^
+In file included from lib/contracts.h:8:0,
+                 from queue.h:5,
+                 from tst.c:8:
+tst.c:361:43: error: ‘tree’ has no member named ‘is_end’
+       ASSERT((s[start + 1] != '\0') && !tn->is_end);
+                                           ^
+tst.c:361:7: note: in expansion of macro ‘ASSERT’
+       ASSERT((s[start + 1] != '\0') && !tn->is_end);
+       ^
+tst.c:370:11: error: ‘i’ undeclared (first use in this function)
+     if (s[i] < tn->c) {
+           ^
+tst.c:370:11: note: each undeclared identifier is reported only once for each function it appears in
+tst.c:370:18: error: ‘tree’ has no member named ‘c’
+     if (s[i] < tn->c) {
+                  ^
+tst.c:371:31: error: ‘T’ undeclared (first use in this function)
+       tree_lookup_generalized(T->left, s, i, sb, q);
+                               ^
+tst.c:373:25: error: ‘tree’ has no member named ‘c’
+     } else if (s[i] > tn->c) {
+                         ^
+tst.c:374:7: error: implicit declaration of function ‘tree_lookup_generalize’ [-Werror=implicit-function-declaration]
+       tree_lookup_generalize(T->right, s, i, sb, q);
+       ^
+tst.c:378:7: error: passing argument 2 of ‘Queue_insert’ from incompatible pointer type [-Werror]
+       Queue_insert(q, sb);
+       ^
+In file included from tst.c:8:0:
+queue.h:25:6: note: expected ‘Queue_elem’ but argument is of type ‘struct strbuf *’
+ void Queue_insert(Queue q, Queue_elem ele);
+      ^
+tst.c: In function ‘tst_member_generalized’:
+tst.c:401:3: error: passing argument 4 of ‘tree_lookup_generalized’ makes pointer from integer without a cast [-Werror]
+   tree_lookup_generalized(T->root, s, 0, strlen(s), sb, q);
+   ^
+tst.c:341:6: note: expected ‘struct strbuf *’ but argument is of type ‘size_t’
+ void tree_lookup_generalized(tree *tn, char *s, size_t start,
+      ^
+tst.c:401:3: error: passing argument 5 of ‘tree_lookup_generalized’ from incompatible pointer type [-Werror]
+   tree_lookup_generalized(T->root, s, 0, strlen(s), sb, q);
+   ^
+tst.c:341:6: note: expected ‘Queue’ but argument is of type ‘struct strbuf *’
+ void tree_lookup_generalized(tree *tn, char *s, size_t start,
+      ^
+tst.c:401:3: error: too many arguments to function ‘tree_lookup_generalized’
+   tree_lookup_generalized(T->root, s, 0, strlen(s), sb, q);
+   ^
+tst.c:341:6: note: declared here
+ void tree_lookup_generalized(tree *tn, char *s, size_t start,
+      ^
+cc1: all warnings being treated as errors
+make: *** [tst.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst.c: In function ‘tree_lookup_generalized’:
+tst.c:343:3: error: too few arguments to function ‘is_tree’
+   REQUIRES(is_tree(tn));
+   ^
+tst.c:80:6: note: declared here
+ bool is_tree(tree* root, elem_compare_fn cmp) {
+      ^
+tst.c:344:3: error: comparison of unsigned expression >= 0 is always true [-Werror=type-limits]
+   REQUIRES(s != NULL && 0 <= start && start < strlen(s));
+   ^
+tst.c:353:35: error: ‘tree’ has no member named ‘is_end’
+     if (s[start + 1] == '\0' && tn->is_end) {
+                                   ^
+In file included from lib/contracts.h:8:0,
+                 from queue.h:5,
+                 from tst.c:8:
+tst.c:361:43: error: ‘tree’ has no member named ‘is_end’
+       ASSERT((s[start + 1] != '\0') && !tn->is_end);
+                                           ^
+tst.c:361:7: note: in expansion of macro ‘ASSERT’
+       ASSERT((s[start + 1] != '\0') && !tn->is_end);
+       ^
+tst.c:370:11: error: ‘i’ undeclared (first use in this function)
+     if (s[i] < tn->c) {
+           ^
+tst.c:370:11: note: each undeclared identifier is reported only once for each function it appears in
+tst.c:370:18: error: ‘tree’ has no member named ‘c’
+     if (s[i] < tn->c) {
+                  ^
+tst.c:371:31: error: ‘T’ undeclared (first use in this function)
+       tree_lookup_generalized(T->left, s, i, sb, q, cmp);
+                               ^
+tst.c:373:25: error: ‘tree’ has no member named ‘c’
+     } else if (s[i] > tn->c) {
+                         ^
+tst.c:374:7: error: implicit declaration of function ‘tree_lookup_generalize’ [-Werror=implicit-function-declaration]
+       tree_lookup_generalize(T->right, s, i, sb, q, cmp);
+       ^
+tst.c:378:7: error: passing argument 2 of ‘Queue_insert’ from incompatible pointer type [-Werror]
+       Queue_insert(q, sb);
+       ^
+In file included from tst.c:8:0:
+queue.h:25:6: note: expected ‘Queue_elem’ but argument is of type ‘struct strbuf *’
+ void Queue_insert(Queue q, Queue_elem ele);
+      ^
+cc1: all warnings being treated as errors
+make: *** [tst.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+In file included from lib/contracts.h:8:0,
+                 from queue.h:5,
+                 from tst.c:8:
+tst.c: In function ‘tree_lookup_generalized’:
+tst.c:361:43: error: ‘tree’ has no member named ‘is_end’
+       ASSERT((s[start + 1] != '\0') && !tn->is_end);
+                                           ^
+tst.c:361:7: note: in expansion of macro ‘ASSERT’
+       ASSERT((s[start + 1] != '\0') && !tn->is_end);
+       ^
+tst.c:370:11: error: ‘i’ undeclared (first use in this function)
+     if (s[i] < tn->c) {
+           ^
+tst.c:370:11: note: each undeclared identifier is reported only once for each function it appears in
+tst.c:370:18: error: ‘tree’ has no member named ‘c’
+     if (s[i] < tn->c) {
+                  ^
+tst.c:371:31: error: ‘T’ undeclared (first use in this function)
+       tree_lookup_generalized(T->left, s, i, sb, q, cmp);
+                               ^
+tst.c:373:25: error: ‘tree’ has no member named ‘c’
+     } else if (s[i] > tn->c) {
+                         ^
+tst.c:374:7: error: implicit declaration of function ‘tree_lookup_generalize’ [-Werror=implicit-function-declaration]
+       tree_lookup_generalize(T->right, s, i, sb, q, cmp);
+       ^
+tst.c:378:7: error: passing argument 2 of ‘Queue_insert’ from incompatible pointer type [-Werror]
+       Queue_insert(q, sb);
+       ^
+In file included from tst.c:8:0:
+queue.h:25:6: note: expected ‘Queue_elem’ but argument is of type ‘struct strbuf *’
+ void Queue_insert(Queue q, Queue_elem ele);
+      ^
+cc1: all warnings being treated as errors
+make: *** [tst.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+In file included from lib/contracts.h:8:0,
+                 from queue.h:5,
+                 from tst.c:8:
+tst.c: In function ‘tree_lookup_generalized’:
+tst.c:361:43: error: ‘tree’ has no member named ‘is_end’
+       ASSERT((s[start + 1] != '\0') && !tn->is_end);
+                                           ^
+tst.c:361:7: note: in expansion of macro ‘ASSERT’
+       ASSERT((s[start + 1] != '\0') && !tn->is_end);
+       ^
+tst.c:370:22: error: ‘tree’ has no member named ‘c’
+     if (s[start] < tn->c) {
+                      ^
+tst.c:371:31: error: ‘T’ undeclared (first use in this function)
+       tree_lookup_generalized(T->left, s, start, sb, q, cmp);
+                               ^
+tst.c:371:31: note: each undeclared identifier is reported only once for each function it appears in
+tst.c:373:18: error: ‘i’ undeclared (first use in this function)
+     } else if (s[i] > tn->c) {
+                  ^
+tst.c:373:25: error: ‘tree’ has no member named ‘c’
+     } else if (s[i] > tn->c) {
+                         ^
+tst.c:374:7: error: implicit declaration of function ‘tree_lookup_generalize’ [-Werror=implicit-function-declaration]
+       tree_lookup_generalize(T->right, s, start, sb, q, cmp);
+       ^
+tst.c:378:7: error: passing argument 2 of ‘Queue_insert’ from incompatible pointer type [-Werror]
+       Queue_insert(q, sb);
+       ^
+In file included from tst.c:8:0:
+queue.h:25:6: note: expected ‘Queue_elem’ but argument is of type ‘struct strbuf *’
+ void Queue_insert(Queue q, Queue_elem ele);
+      ^
+cc1: all warnings being treated as errors
+make: *** [tst.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+In file included from lib/contracts.h:8:0,
+                 from queue.h:5,
+                 from tst.c:8:
+tst.c: In function ‘tree_lookup_generalized’:
+tst.c:361:43: error: ‘tree’ has no member named ‘is_end’
+       ASSERT((s[start + 1] != '\0') && !tn->is_end);
+                                           ^
+tst.c:361:7: note: in expansion of macro ‘ASSERT’
+       ASSERT((s[start + 1] != '\0') && !tn->is_end);
+       ^
+tst.c:370:22: error: ‘tree’ has no member named ‘c’
+     if (s[start] < tn->c) {
+                      ^
+tst.c:371:31: error: ‘T’ undeclared (first use in this function)
+       tree_lookup_generalized(T->left, s, start, sb, q, cmp);
+                               ^
+tst.c:371:31: note: each undeclared identifier is reported only once for each function it appears in
+tst.c:373:25: error: comparison between pointer and integer [-Werror]
+     } else if (s[start] > tn->data) {
+                         ^
+tst.c:374:7: error: implicit declaration of function ‘tree_lookup_generalize’ [-Werror=implicit-function-declaration]
+       tree_lookup_generalize(T->right, s, start, sb, q, cmp);
+       ^
+tst.c:378:7: error: passing argument 2 of ‘Queue_insert’ from incompatible pointer type [-Werror]
+       Queue_insert(q, sb);
+       ^
+In file included from tst.c:8:0:
+queue.h:25:6: note: expected ‘Queue_elem’ but argument is of type ‘struct strbuf *’
+ void Queue_insert(Queue q, Queue_elem ele);
+      ^
+cc1: all warnings being treated as errors
+make: *** [tst.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst.c: In function ‘tree_lookup_generalized’:
+tst.c:370:22: error: ‘tree’ has no member named ‘c’
+     if (s[start] < tn->c) {
+                      ^
+tst.c:371:31: error: ‘T’ undeclared (first use in this function)
+       tree_lookup_generalized(T->left, s, start, sb, q, cmp);
+                               ^
+tst.c:371:31: note: each undeclared identifier is reported only once for each function it appears in
+tst.c:373:25: error: comparison between pointer and integer [-Werror]
+     } else if (s[start] > tn->data) {
+                         ^
+tst.c:374:7: error: implicit declaration of function ‘tree_lookup_generalize’ [-Werror=implicit-function-declaration]
+       tree_lookup_generalize(T->right, s, start, sb, q, cmp);
+       ^
+tst.c:378:7: error: passing argument 2 of ‘Queue_insert’ from incompatible pointer type [-Werror]
+       Queue_insert(q, sb);
+       ^
+In file included from tst.c:8:0:
+queue.h:25:6: note: expected ‘Queue_elem’ but argument is of type ‘struct strbuf *’
+ void Queue_insert(Queue q, Queue_elem ele);
+      ^
+cc1: all warnings being treated as errors
+make: *** [tst.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst.c: In function ‘tree_lookup_generalized’:
+tst.c:370:18: error: comparison between pointer and integer [-Werror]
+     if (s[start] < tn->data) {
+                  ^
+tst.c:373:25: error: comparison between pointer and integer [-Werror]
+     } else if (s[start] > tn->data) {
+                         ^
+cc1: all warnings being treated as errors
+make: *** [tst.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst.c: In function ‘is_ordered’:
+tst.c:37:23: error: comparison between pointer and integer [-Werror]
+     return root->data != NULL
+                       ^
+tst.c:38:17: error: comparison between pointer and integer [-Werror]
+       && (lower == NULL || cmp(lower, root->data) < 0)
+                 ^
+tst.c:39:17: error: comparison between pointer and integer [-Werror]
+       && (upper == NULL || cmp(root->data, upper) < 0)
+                 ^
+tst.c: In function ‘is_tree’:
+tst.c:82:3: error: passing argument 2 of ‘is_ordered’ makes integer from pointer without a cast [-Werror]
+   return is_ordered(root,NULL, NULL, cmp)
+   ^
+tst.c:33:6: note: expected ‘elem’ but argument is of type ‘void *’
+ bool is_ordered(tree* root, elem lower, elem upper, elem_compare_fn cmp) {
+      ^
+tst.c:82:3: error: passing argument 3 of ‘is_ordered’ makes integer from pointer without a cast [-Werror]
+   return is_ordered(root,NULL, NULL, cmp)
+   ^
+tst.c:33:6: note: expected ‘elem’ but argument is of type ‘void *’
+ bool is_ordered(tree* root, elem lower, elem upper, elem_compare_fn cmp) {
+      ^
+tst.c: In function ‘tree_insert’:
+tst.c:228:13: error: assignment makes integer from pointer without a cast [-Werror]
+     t->data = char_clone(s[0]);
+             ^
+tst.c:243:5: error: passing argument 1 of ‘cmp’ makes integer from pointer without a cast [-Werror]
+     int r = cmp(s, t->data);
+     ^
+tst.c:243:5: note: expected ‘elem’ but argument is of type ‘char *’
+In file included from lib/contracts.h:8:0,
+                 from queue.h:5,
+                 from tst.c:8:
+tst.c: In function ‘tst_insert’:
+tst.c:270:27: error: comparison between pointer and integer [-Werror]
+   REQUIRES(is_tst(T) && e != NULL);
+                           ^
+tst.c:270:3: note: in expansion of macro ‘REQUIRES’
+   REQUIRES(is_tst(T) && e != NULL);
+   ^
+tst.c:272:14: error: cast to pointer from integer of different size [-Werror=int-to-pointer-cast]
+   if (strlen((char*) e) == 0) {
+              ^
+tst.c:276:34: error: cast to pointer from integer of different size [-Werror=int-to-pointer-cast]
+   T->root = tree_insert(T->root, (char*) e, T->cmp);
+                                  ^
+tst.c: In function ‘tree_lookup’:
+tst.c:290:5: error: passing argument 1 of ‘cmp’ makes integer from pointer without a cast [-Werror]
+     int r = cmp(s, root->data);
+     ^
+tst.c:290:5: note: expected ‘elem’ but argument is of type ‘char *’
+tst.c: In function ‘tst_lookup’:
+tst.c:310:14: error: cast to pointer from integer of different size [-Werror=int-to-pointer-cast]
+   if (strlen((char*) e) == 0) {
+              ^
+tst.c:313:31: error: cast to pointer from integer of different size [-Werror=int-to-pointer-cast]
+   return tree_lookup(T->root, (char*) e, T->cmp);
+                               ^
+tst.c: In function ‘tree_free’:
+tst.c:321:5: error: passing argument 1 of ‘free’ makes pointer from integer without a cast [-Werror]
+     free(t->data);
+     ^
+In file included from tst.c:3:0:
+/usr/include/stdlib.h:483:13: note: expected ‘void *’ but argument is of type ‘elem’
+ extern void free (void *__ptr) __THROW;
+             ^
+cc1: all warnings being treated as errors
+make: *** [tst.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst.c: In function ‘tree_lookup_generalized’:
+tst.c:377:18: error: comparison between pointer and integer [-Werror]
+     if (s[start] < tn->data) {
+                  ^
+tst.c:380:25: error: comparison between pointer and integer [-Werror]
+     } else if (s[start] > tn->data) {
+                         ^
+cc1: all warnings being treated as errors
+make: *** [tst.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+cc -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic   -c -o queue.o queue.c
+gcc -o tst-test xalloc.o strbuf.o tst.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst.o: In function `tree_lookup_generalized':
+/home/zgs/mycode/15122/week11/21-lec/tst.c:353: undefined reference to `is_Queue'
+/home/zgs/mycode/15122/week11/21-lec/tst.c:362: undefined reference to `Queue_insert'
+/home/zgs/mycode/15122/week11/21-lec/tst.c:386: undefined reference to `Queue_insert'
+/home/zgs/mycode/15122/week11/21-lec/tst.c:396: undefined reference to `is_Queue'
+tst.o: In function `tst_member_generalized':
+/home/zgs/mycode/15122/week11/21-lec/tst.c:406: undefined reference to `is_Queue'
+/home/zgs/mycode/15122/week11/21-lec/tst.c:412: undefined reference to `is_Queue'
+collect2: error: ld returned 1 exit status
+make: *** [tst-test] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes tests
+~/mycode/15122/week11/21-lec $ make tst-test
+make: `tst-test' is up to date.
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ valgrind ./tst-test
+==16362== Memcheck, a memory error detector
+==16362== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==16362== Using Valgrind-3.10.0.SVN and LibVEX; rerun with -h for copyright info
+==16362== Command: ./tst-test
+==16362==
+Entering tests
+tst_new() passes tests
+height is 1
+==16362== Invalid read of size 1
+==16362==    at 0x409DFEF: vfprintf (vfprintf.c:1661)
+==16362==    by 0x40A32AE: printf (printf.c:33)
+==16362==    by 0x804A2A1: test (tst-test.c:21)
+==16362==    by 0x804A3FE: main (tst-test.c:40)
+==16362==  Address 0x4206249 is 0 bytes after a block of size 1 alloc'd
+==16362==    at 0x402C109: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
+==16362==    by 0x8048644: xcalloc (xalloc.c:18)
+==16362==    by 0x8048D5F: char_clone (tst.c:124)
+==16362==    by 0x80494F1: tree_insert (tst.c:229)
+==16362==    by 0x80496E2: tree_insert (tst.c:260)
+==16362==    by 0x80497A8: tst_insert (tst.c:277)
+==16362==    by 0x804A277: test (tst-test.c:19)
+==16362==    by 0x804A3FE: main (tst-test.c:40)
+==16362==
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes tests
+==16362==
+==16362== HEAP SUMMARY:
+==16362==     in use at exit: 0 bytes in 0 blocks
+==16362==   total heap usage: 17 allocs, 17 frees, 240 bytes allocated
+==16362==
+==16362== All heap blocks were freed -- no leaks are possible
+==16362==
+==16362== For counts of detected and suppressed errors, rerun with: -v
+==16362== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst-test.c: In function ‘test’:
+tst-test.c:43:3: error: implicit declaration of function ‘tst_lookup_generalized’ [-Werror=implicit-function-declaration]
+   tst_lookup_generalized(T, "*", q);
+   ^
+tst-test.c:44:3: error: implicit declaration of function ‘Queue_print’ [-Werror=implicit-function-declaration]
+   Queue_print(q);
+   ^
+cc1: all warnings being treated as errors
+make: *** [tst-test.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst-test.c: In function ‘Queue_print’:
+tst-test.c:8:21: error: comparison between signed and unsigned integer expressions [-Werror=sign-compare]
+   for (int i = 0; i < q->len; i++) {
+                     ^
+tst-test.c: In function ‘test’:
+tst-test.c:51:3: error: implicit declaration of function ‘tst_member_generalized’ [-Werror=implicit-function-declaration]
+   tst_member_generalized(T, "*", q);
+   ^
+cc1: all warnings being treated as errors
+make: *** [tst-test.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst-test.c: In function ‘test’:
+tst-test.c:51:3: error: implicit declaration of function ‘tst_member_generalized’ [-Werror=implicit-function-declaration]
+   tst_member_generalized(T, "*", q);
+   ^
+cc1: all warnings being treated as errors
+make: *** [tst-test.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+In file included from tst-test.c:5:0:
+queue.h:11:16: error: redefinition of typedef ‘Queue_elem’ [-Werror=pedantic]
+ typedef char * Queue_elem;
+                ^
+In file included from TST.h:7:0,
+                 from tst-test.c:4:
+queue.h:11:16: note: previous declaration of ‘Queue_elem’ was here
+ typedef char * Queue_elem;
+                ^
+In file included from tst-test.c:5:0:
+queue.h:13:16: error: redefinition of ‘struct queue’
+ typedef struct queue {
+                ^
+In file included from TST.h:7:0,
+                 from tst-test.c:4:
+queue.h:13:16: note: originally defined here
+ typedef struct queue {
+                ^
+In file included from tst-test.c:5:0:
+queue.h:17:4: error: conflicting types for ‘Queue’
+ } *Queue;
+    ^
+In file included from TST.h:7:0,
+                 from tst-test.c:4:
+queue.h:17:4: note: previous declaration of ‘Queue’ was here
+ } *Queue;
+    ^
+In file included from tst-test.c:5:0:
+queue.h:19:6: error: conflicting types for ‘is_Queue’
+ bool is_Queue(Queue q);
+      ^
+In file included from TST.h:7:0,
+                 from tst-test.c:4:
+queue.h:19:6: note: previous declaration of ‘is_Queue’ was here
+ bool is_Queue(Queue q);
+      ^
+In file included from tst-test.c:5:0:
+queue.h:20:7: error: conflicting types for ‘Queue_new’
+ Queue Queue_new();
+       ^
+In file included from TST.h:7:0,
+                 from tst-test.c:4:
+queue.h:20:7: note: previous declaration of ‘Queue_new’ was here
+ Queue Queue_new();
+       ^
+In file included from tst-test.c:5:0:
+queue.h:24:13: error: conflicting types for ‘Queue_dealloc’
+ Queue_elem* Queue_dealloc(Queue q);
+             ^
+In file included from TST.h:7:0,
+                 from tst-test.c:4:
+queue.h:24:13: note: previous declaration of ‘Queue_dealloc’ was here
+ Queue_elem* Queue_dealloc(Queue q);
+             ^
+In file included from tst-test.c:5:0:
+queue.h:25:6: error: conflicting types for ‘Queue_insert’
+ void Queue_insert(Queue q, Queue_elem ele);
+      ^
+In file included from TST.h:7:0,
+                 from tst-test.c:4:
+queue.h:25:6: note: previous declaration of ‘Queue_insert’ was here
+ void Queue_insert(Queue q, Queue_elem ele);
+      ^
+tst-test.c: In function ‘test’:
+tst-test.c:51:3: error: passing argument 3 of ‘tst_member_generalized’ from incompatible pointer type [-Werror]
+   tst_member_generalized(T, "*", q);
+   ^
+In file included from tst-test.c:4:0:
+TST.h:47:6: note: expected ‘Queue’ but argument is of type ‘Queue’
+ void tst_member_generalized(tst t, char *s, Queue q);
+      ^
+cc1: all warnings being treated as errors
+make: *** [tst-test.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+In file included from tst-test.c:5:0:
+queue.h:14:16: error: redefinition of typedef ‘Queue_elem’ [-Werror=pedantic]
+ typedef char * Queue_elem;
+                ^
+In file included from TST.h:7:0,
+                 from tst-test.c:4:
+queue.h:14:16: note: previous declaration of ‘Queue_elem’ was here
+ typedef char * Queue_elem;
+                ^
+In file included from tst-test.c:5:0:
+queue.h:16:16: error: redefinition of ‘struct queue’
+ typedef struct queue {
+                ^
+In file included from TST.h:7:0,
+                 from tst-test.c:4:
+queue.h:16:16: note: originally defined here
+ typedef struct queue {
+                ^
+In file included from tst-test.c:5:0:
+queue.h:20:4: error: conflicting types for ‘Queue’
+ } *Queue;
+    ^
+In file included from TST.h:7:0,
+                 from tst-test.c:4:
+queue.h:20:4: note: previous declaration of ‘Queue’ was here
+ } *Queue;
+    ^
+In file included from tst-test.c:5:0:
+queue.h:22:6: error: conflicting types for ‘is_Queue’
+ bool is_Queue(Queue q);
+      ^
+In file included from TST.h:7:0,
+                 from tst-test.c:4:
+queue.h:22:6: note: previous declaration of ‘is_Queue’ was here
+ bool is_Queue(Queue q);
+      ^
+In file included from tst-test.c:5:0:
+queue.h:23:7: error: conflicting types for ‘Queue_new’
+ Queue Queue_new();
+       ^
+In file included from TST.h:7:0,
+                 from tst-test.c:4:
+queue.h:23:7: note: previous declaration of ‘Queue_new’ was here
+ Queue Queue_new();
+       ^
+In file included from tst-test.c:5:0:
+queue.h:27:13: error: conflicting types for ‘Queue_dealloc’
+ Queue_elem* Queue_dealloc(Queue q);
+             ^
+In file included from TST.h:7:0,
+                 from tst-test.c:4:
+queue.h:27:13: note: previous declaration of ‘Queue_dealloc’ was here
+ Queue_elem* Queue_dealloc(Queue q);
+             ^
+In file included from tst-test.c:5:0:
+queue.h:28:6: error: conflicting types for ‘Queue_insert’
+ void Queue_insert(Queue q, Queue_elem ele);
+      ^
+In file included from TST.h:7:0,
+                 from tst-test.c:4:
+queue.h:28:6: note: previous declaration of ‘Queue_insert’ was here
+ void Queue_insert(Queue q, Queue_elem ele);
+      ^
+tst-test.c: In function ‘test’:
+tst-test.c:51:3: error: passing argument 3 of ‘tst_member_generalized’ from incompatible pointer type [-Werror]
+   tst_member_generalized(T, "*", q);
+   ^
+In file included from tst-test.c:4:0:
+TST.h:47:6: note: expected ‘Queue’ but argument is of type ‘Queue’
+ void tst_member_generalized(tst t, char *s, Queue q);
+      ^
+cc1: all warnings being treated as errors
+make: *** [tst-test.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst-test: tst.c:351: tree_lookup_generalized: Assertion `s != ((void *)0) && start < strlen(s)' failed.
+aborted (core dumped)
+~/mycode/15122/week11/21-lec $ mv TST.h tst.h
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst-test: tst.c:351: tree_lookup_generalized: Assertion `s != ((void *)0) && start < strlen(s)' failed.
+aborted (core dumped)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst-test: tst.c:352: tree_lookup_generalized: Assertion `start < strlen(s)' failed.
+aborted (core dumped)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst-test: tst.c:352: tree_lookup_generalized: Assertion `start < strlen(s)' failed.
+aborted (core dumped)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst-test: tst.c:352: tree_lookup_generalized: Assertion `start < strlen(s)' failed.
+aborted (core dumped)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+The 0th element of queue is: *
+The 1th element of queue is: *
+The 2th element of queue is: *
+tst_free() passes tests
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst.c: In function ‘tree_lookup_generalized’:
+tst.c:362:23: error: dereferencing ‘void *’ pointer [-Werror]
+       strbuf_push(sb, *tn->data);
+                       ^
+tst.c:362:7: error: invalid use of void expression
+       strbuf_push(sb, *tn->data);
+       ^
+tst.c:371:23: error: dereferencing ‘void *’ pointer [-Werror]
+       strbuf_push(sb, *tn->data);
+                       ^
+tst.c:371:7: error: invalid use of void expression
+       strbuf_push(sb, *tn->data);
+       ^
+tst.c:386:23: error: dereferencing ‘void *’ pointer [-Werror]
+       strbuf_push(sb, *tn->data);
+                       ^
+tst.c:386:7: error: invalid use of void expression
+       strbuf_push(sb, *tn->data);
+       ^
+cc1: all warnings being treated as errors
+make: *** [tst.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+tst_free() passes tests
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+The 3th element of queue is: be
+The 4th element of queue is: bd
+tst_free() passes tests
+~/mycode/15122/week11/21-lec $ valgrind ./tst-test
+==16949== Memcheck, a memory error detector
+==16949== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==16949== Using Valgrind-3.10.0.SVN and LibVEX; rerun with -h for copyright info
+==16949== Command: ./tst-test
+==16949==
+Entering tests
+tst_new() passes tests
+height is 1
+==16949== Invalid read of size 1
+==16949==    at 0x409DFEF: vfprintf (vfprintf.c:1661)
+==16949==    by 0x40A32AE: printf (printf.c:33)
+==16949==    by 0x804A31E: test (tst-test.c:30)
+==16949==    by 0x804A525: main (tst-test.c:65)
+==16949==  Address 0x4206249 is 0 bytes after a block of size 1 alloc'd
+==16949==    at 0x402C109: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
+==16949==    by 0x8048644: xcalloc (xalloc.c:18)
+==16949==    by 0x8048D5F: char_clone (tst.c:124)
+==16949==    by 0x80494F1: tree_insert (tst.c:229)
+==16949==    by 0x80496E2: tree_insert (tst.c:260)
+==16949==    by 0x80497A8: tst_insert (tst.c:277)
+==16949==    by 0x804A2F4: test (tst-test.c:28)
+==16949==    by 0x804A525: main (tst-test.c:65)
+==16949==
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+The 3th element of queue is: be
+The 4th element of queue is: bd
+tst_free() passes tests
+==16949==
+==16949== HEAP SUMMARY:
+==16949==     in use at exit: 44 bytes in 6 blocks
+==16949==   total heap usage: 40 allocs, 34 frees, 497 bytes allocated
+==16949==
+==16949== LEAK SUMMARY:
+==16949==    definitely lost: 32 bytes in 1 blocks
+==16949==    indirectly lost: 12 bytes in 5 blocks
+==16949==      possibly lost: 0 bytes in 0 blocks
+==16949==    still reachable: 0 bytes in 0 blocks
+==16949==         suppressed: 0 bytes in 0 blocks
+==16949== Rerun with --leak-check=full to see details of leaked memory
+==16949==
+==16949== For counts of detected and suppressed errors, rerun with: -v
+==16949== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst-test.c: In function ‘test’:
+tst-test.c:56:24: error: comparison between signed and unsigned integer expressions [-Werror=sign-compare]
+   for (size_t i = 0; i < len; i++) {
+                        ^
+cc1: all warnings being treated as errors
+make: *** [tst-test.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+The 3th element of queue is: be
+The 4th element of queue is: bd
+tst_free() passes tests
+~/mycode/15122/week11/21-lec $ valgrind ./tst-test
+==16968== Memcheck, a memory error detector
+==16968== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==16968== Using Valgrind-3.10.0.SVN and LibVEX; rerun with -h for copyright info
+==16968== Command: ./tst-test
+==16968==
+Entering tests
+tst_new() passes tests
+height is 1
+==16968== Invalid read of size 1
+==16968==    at 0x409DFEF: vfprintf (vfprintf.c:1661)
+==16968==    by 0x40A32AE: printf (printf.c:33)
+==16968==    by 0x804A31E: test (tst-test.c:30)
+==16968==    by 0x804A55F: main (tst-test.c:70)
+==16968==  Address 0x4206249 is 0 bytes after a block of size 1 alloc'd
+==16968==    at 0x402C109: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
+==16968==    by 0x8048644: xcalloc (xalloc.c:18)
+==16968==    by 0x8048D5F: char_clone (tst.c:124)
+==16968==    by 0x80494F1: tree_insert (tst.c:229)
+==16968==    by 0x80496E2: tree_insert (tst.c:260)
+==16968==    by 0x80497A8: tst_insert (tst.c:277)
+==16968==    by 0x804A2F4: test (tst-test.c:28)
+==16968==    by 0x804A55F: main (tst-test.c:70)
+==16968==
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+The 3th element of queue is: be
+The 4th element of queue is: bd
+tst_free() passes tests
+==16968==
+==16968== HEAP SUMMARY:
+==16968==     in use at exit: 32 bytes in 1 blocks
+==16968==   total heap usage: 40 allocs, 39 frees, 497 bytes allocated
+==16968==
+==16968== LEAK SUMMARY:
+==16968==    definitely lost: 32 bytes in 1 blocks
+==16968==    indirectly lost: 0 bytes in 0 blocks
+==16968==      possibly lost: 0 bytes in 0 blocks
+==16968==    still reachable: 0 bytes in 0 blocks
+==16968==         suppressed: 0 bytes in 0 blocks
+==16968== Rerun with --leak-check=full to see details of leaked memory
+==16968==
+==16968== For counts of detected and suppressed errors, rerun with: -v
+==16968== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+The 3th element of queue is: be
+The 4th element of queue is: bd
+tst_free() passes tests
+~/mycode/15122/week11/21-lec $ valgrind ./tst-test
+==16979== Memcheck, a memory error detector
+==16979== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==16979== Using Valgrind-3.10.0.SVN and LibVEX; rerun with -h for copyright info
+==16979== Command: ./tst-test
+==16979==
+Entering tests
+tst_new() passes tests
+height is 1
+==16979== Invalid read of size 1
+==16979==    at 0x409DFEF: vfprintf (vfprintf.c:1661)
+==16979==    by 0x40A32AE: printf (printf.c:33)
+==16979==    by 0x804A31E: test (tst-test.c:30)
+==16979==    by 0x804A56A: main (tst-test.c:71)
+==16979==  Address 0x4206249 is 0 bytes after a block of size 1 alloc'd
+==16979==    at 0x402C109: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
+==16979==    by 0x8048644: xcalloc (xalloc.c:18)
+==16979==    by 0x8048D5F: char_clone (tst.c:124)
+==16979==    by 0x80494F1: tree_insert (tst.c:229)
+==16979==    by 0x80496E2: tree_insert (tst.c:260)
+==16979==    by 0x80497A8: tst_insert (tst.c:277)
+==16979==    by 0x804A2F4: test (tst-test.c:28)
+==16979==    by 0x804A56A: main (tst-test.c:71)
+==16979==
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+The 3th element of queue is: be
+The 4th element of queue is: bd
+tst_free() passes tests
+==16979==
+==16979== HEAP SUMMARY:
+==16979==     in use at exit: 0 bytes in 0 blocks
+==16979==   total heap usage: 40 allocs, 40 frees, 497 bytes allocated
+==16979==
+==16979== All heap blocks were freed -- no leaks are possible
+==16979==
+==16979== For counts of detected and suppressed errors, rerun with: -v
+==16979== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+
+string "*" matches:
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+The 3th element of queue is: be
+The 4th element of queue is: bd
+tst_free() passes tests
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst-test.c: In function ‘array_dealloc’:
+tst-test.c:15:24: error: comparison between signed and unsigned integer expressions [-Werror=sign-compare]
+   for (size_t i = 0; i < len; i++) {
+                        ^
+cc1: all warnings being treated as errors
+make: *** [tst-test.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+
+string "*" matches:
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+The 3th element of queue is: be
+The 4th element of queue is: bd
+tst_free() passes tests
+~/mycode/15122/week11/21-lec $ valgrind ./tst-test
+==17019== Memcheck, a memory error detector
+==17019== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==17019== Using Valgrind-3.10.0.SVN and LibVEX; rerun with -h for copyright info
+==17019== Command: ./tst-test
+==17019==
+Entering tests
+tst_new() passes tests
+height is 1
+==17019== Invalid read of size 1
+==17019==    at 0x409DFEF: vfprintf (vfprintf.c:1661)
+==17019==    by 0x40A32AE: printf (printf.c:33)
+==17019==    by 0x804A361: test (tst-test.c:37)
+==17019==    by 0x804A592: main (tst-test.c:73)
+==17019==  Address 0x4206249 is 0 bytes after a block of size 1 alloc'd
+==17019==    at 0x402C109: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
+==17019==    by 0x8048644: xcalloc (xalloc.c:18)
+==17019==    by 0x8048D5F: char_clone (tst.c:124)
+==17019==    by 0x80494F1: tree_insert (tst.c:229)
+==17019==    by 0x80496E2: tree_insert (tst.c:260)
+==17019==    by 0x80497A8: tst_insert (tst.c:277)
+==17019==    by 0x804A337: test (tst-test.c:35)
+==17019==    by 0x804A592: main (tst-test.c:73)
+==17019==
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+
+string "*" matches:
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+The 3th element of queue is: be
+The 4th element of queue is: bd
+tst_free() passes tests
+==17019==
+==17019== HEAP SUMMARY:
+==17019==     in use at exit: 0 bytes in 0 blocks
+==17019==   total heap usage: 40 allocs, 40 frees, 497 bytes allocated
+==17019==
+==17019== All heap blocks were freed -- no leaks are possible
+==17019==
+==17019== For counts of detected and suppressed errors, rerun with: -v
+==17019== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst-test.c: In function ‘test’:
+tst-test.c:65:9: error: redefinition of ‘q’
+   Queue q = Queue_new();
+         ^
+tst-test.c:59:9: note: previous definition of ‘q’ was here
+   Queue q = Queue_new();
+         ^
+make: *** [tst-test.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ valgrind ./tst-test
+==17045== Memcheck, a memory error detector
+==17045== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==17045== Using Valgrind-3.10.0.SVN and LibVEX; rerun with -h for copyright info
+==17045== Command: ./tst-test
+==17045==
+Entering tests
+tst_new() passes tests
+height is 1
+==17045== Invalid read of size 1
+==17045==    at 0x409DFEF: vfprintf (vfprintf.c:1661)
+==17045==    by 0x40A32AE: printf (printf.c:33)
+==17045==    by 0x804A361: test (tst-test.c:37)
+==17045==    by 0x804A5F5: main (tst-test.c:79)
+==17045==  Address 0x4206249 is 0 bytes after a block of size 1 alloc'd
+==17045==    at 0x402C109: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
+==17045==    by 0x8048644: xcalloc (xalloc.c:18)
+==17045==    by 0x8048D5F: char_clone (tst.c:124)
+==17045==    by 0x80494F1: tree_insert (tst.c:229)
+==17045==    by 0x80496E2: tree_insert (tst.c:260)
+==17045==    by 0x80497A8: tst_insert (tst.c:277)
+==17045==    by 0x804A337: test (tst-test.c:35)
+==17045==    by 0x804A5F5: main (tst-test.c:79)
+==17045==
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+
+string "*" matches:
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+The 3th element of queue is: be
+The 4th element of queue is: bd
+
+string "b*" matches:
+The 0th element of queue is: be
+The 1th element of queue is: bd
+tst_free() passes tests
+==17045==
+==17045== HEAP SUMMARY:
+==17045==     in use at exit: 0 bytes in 0 blocks
+==17045==   total heap usage: 47 allocs, 47 frees, 547 bytes allocated
+==17045==
+==17045== All heap blocks were freed -- no leaks are possible
+==17045==
+==17045== For counts of detected and suppressed errors, rerun with: -v
+==17045== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst-test.c: In function ‘test_case_tst_member_generalized_cast’:
+tst-test.c:24:29: error: ‘pattern’ undeclared (first use in this function)
+   tst_member_generalized(T, pattern, q);
+                             ^
+tst-test.c:24:29: note: each undeclared identifier is reported only once for each function it appears in
+tst-test.c:22:57: error: unused parameter ‘patten’ [-Werror=unused-parameter]
+ void test_case_tst_member_generalized_cast(tst T, char *patten) {
+                                                         ^
+tst-test.c: In function ‘test’:
+tst-test.c:83:3: error: implicit declaration of function ‘test_case_tst_member_generalized’ [-Werror=implicit-function-declaration]
+   test_case_tst_member_generalized(T, "*d*");
+   ^
+cc1: all warnings being treated as errors
+make: *** [tst-test.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst-test.c: In function ‘test_case_tst_member_generalized’:
+tst-test.c:24:29: error: ‘pattern’ undeclared (first use in this function)
+   tst_member_generalized(T, pattern, q);
+                             ^
+tst-test.c:24:29: note: each undeclared identifier is reported only once for each function it appears in
+tst-test.c:22:52: error: unused parameter ‘patten’ [-Werror=unused-parameter]
+ void test_case_tst_member_generalized(tst T, char *patten) {
+                                                    ^
+cc1: all warnings being treated as errors
+make: *** [tst-test.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ valgrind ./tst-test
+==17078== Memcheck, a memory error detector
+==17078== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==17078== Using Valgrind-3.10.0.SVN and LibVEX; rerun with -h for copyright info
+==17078== Command: ./tst-test
+==17078==
+Entering tests
+tst_new() passes tests
+height is 1
+==17078== Invalid read of size 1
+==17078==    at 0x409DFEF: vfprintf (vfprintf.c:1661)
+==17078==    by 0x40A32AE: printf (printf.c:33)
+==17078==    by 0x804A3CB: test (tst-test.c:46)
+==17078==    by 0x804A698: main (tst-test.c:92)
+==17078==  Address 0x4206249 is 0 bytes after a block of size 1 alloc'd
+==17078==    at 0x402C109: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
+==17078==    by 0x8048644: xcalloc (xalloc.c:18)
+==17078==    by 0x8048D5F: char_clone (tst.c:124)
+==17078==    by 0x80494F1: tree_insert (tst.c:229)
+==17078==    by 0x80496E2: tree_insert (tst.c:260)
+==17078==    by 0x80497A8: tst_insert (tst.c:277)
+==17078==    by 0x804A3A1: test (tst-test.c:44)
+==17078==    by 0x804A698: main (tst-test.c:92)
+==17078==
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+
+string "*" matches:
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+The 3th element of queue is: be
+The 4th element of queue is: bd
+
+string "b*" matches:
+The 0th element of queue is: be
+The 1th element of queue is: bd
+tst-test: tst.c:370: tree_lookup_generalized: Assertion `(s[start + 1] != '\0') && !tn->is_end_of_word' failed.
+==17078==
+==17078== HEAP SUMMARY:
+==17078==     in use at exit: 247 bytes in 19 blocks
+==17078==   total heap usage: 58 allocs, 39 frees, 1,154 bytes allocated
+==17078==
+==17078== LEAK SUMMARY:
+==17078==    definitely lost: 0 bytes in 0 blocks
+==17078==    indirectly lost: 0 bytes in 0 blocks
+==17078==      possibly lost: 0 bytes in 0 blocks
+==17078==    still reachable: 247 bytes in 19 blocks
+==17078==         suppressed: 0 bytes in 0 blocks
+==17078== Rerun with --leak-check=full to see details of leaked memory
+==17078==
+==17078== For counts of detected and suppressed errors, rerun with: -v
+==17078== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+aborted (core dumped)
+~/mycode/15122/week11/21-lec $  ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+
+string "*" matches:
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+The 3th element of queue is: be
+The 4th element of queue is: bd
+
+string "b*" matches:
+The 0th element of queue is: be
+The 1th element of queue is: bd
+tst-test: tst.c:370: tree_lookup_generalized: Assertion `(s[start + 1] != '\0') && !tn->is_end_of_word' failed.
+aborted (core dumped)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -c -o queue.o queue.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+queue.c: In function ‘Queue_dealloc’:
+queue.c:23:1: error: ‘o’ undeclared (first use in this function)
+ o}
+ ^
+queue.c:23:1: note: each undeclared identifier is reported only once for each function it appears in
+queue.c:23:2: error: expected ‘;’ before ‘}’ token
+ o}
+  ^
+make: *** [queue.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o queue.o queue.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+
+string "*" matches:
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+The 3th element of queue is: be
+The 4th element of queue is: bd
+
+string "b*" matches:
+The 0th element of queue is: be
+The 1th element of queue is: bd
+
+string "*d*" matches:
+The 0th element of queue is: bdg
+The 1th element of queue is: bdf
+tst_free() passes tests
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+
+string "*" matches:
+The 0th element of queue is:
+The 1th element of queue is: a
+The 2th element of queue is:
+The 3th element of queue is: c
+The 4th element of queue is:
+The 5th element of queue is: b
+The 6th element of queue is: b
+The 7th element of queue is: be
+The 8th element of queue is: b
+The 9th element of queue is: bd
+
+string "b*" matches:
+The 0th element of queue is: b
+The 1th element of queue is: be
+The 2th element of queue is: b
+The 3th element of queue is: bd
+
+string "*d*" matches:
+The 0th element of queue is: bd
+The 1th element of queue is: bdg
+The 2th element of queue is: bd
+The 3th element of queue is: bdf
+tst_free() passes tests
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+
+string "*" matches:
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+The 3th element of queue is: be
+The 4th element of queue is: bd
+
+string "b*" matches:
+The 0th element of queue is: be
+The 1th element of queue is: bd
+
+string "*d*" matches:
+The 0th element of queue is: bdg
+The 1th element of queue is: bdf
+tst_free() passes tests
+~/mycode/15122/week11/21-lec $ valgrind ./tst-test
+==17157== Memcheck, a memory error detector
+==17157== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==17157== Using Valgrind-3.10.0.SVN and LibVEX; rerun with -h for copyright info
+==17157== Command: ./tst-test
+==17157==
+Entering tests
+tst_new() passes tests
+height is 1
+==17157== Invalid read of size 1
+==17157==    at 0x409DFEF: vfprintf (vfprintf.c:1661)
+==17157==    by 0x40A32AE: printf (printf.c:33)
+==17157==    by 0x804A3C0: test (tst-test.c:46)
+==17157==    by 0x804A68D: main (tst-test.c:92)
+==17157==  Address 0x4206249 is 0 bytes after a block of size 1 alloc'd
+==17157==    at 0x402C109: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
+==17157==    by 0x8048644: xcalloc (xalloc.c:18)
+==17157==    by 0x8048D5F: char_clone (tst.c:124)
+==17157==    by 0x80494F1: tree_insert (tst.c:229)
+==17157==    by 0x80496E2: tree_insert (tst.c:260)
+==17157==    by 0x80497A8: tst_insert (tst.c:277)
+==17157==    by 0x804A396: test (tst-test.c:44)
+==17157==    by 0x804A68D: main (tst-test.c:92)
+==17157==
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+
+string "*" matches:
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+The 3th element of queue is: be
+The 4th element of queue is: bd
+
+string "b*" matches:
+The 0th element of queue is: be
+The 1th element of queue is: bd
+
+string "*d*" matches:
+The 0th element of queue is: bdg
+The 1th element of queue is: bdf
+tst_free() passes tests
+==17157==
+==17157== HEAP SUMMARY:
+==17157==     in use at exit: 0 bytes in 0 blocks
+==17157==   total heap usage: 58 allocs, 58 frees, 657 bytes allocated
+==17157==
+==17157== All heap blocks were freed -- no leaks are possible
+==17157==
+==17157== For counts of detected and suppressed errors, rerun with: -v
+==17157== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+~/mycode/15122/week11/21-lec $ ls
+Boggle     bst.h   lib            queue.h         strbuf.c   trie-test.c  tst-test.o
+Makefile   bst.h~  queue-test     queue.h~        strbuf.c~  trie.c       tst.c
+Makefile~  bst.o   queue-test.c   queue.o         strbuf.h   trie.h       tst.c~
+TST.h~     ex1.c   queue-test.c~  strbuf-test     strbuf.h~  tst-test     tst.h
+bst.c      ex1.c~  queue.c        strbuf-test.c   strbuf.o   tst-test.c   tst.o
+bst.c~     ex2.c   queue.c~       strbuf-test.c~  trie-test  tst-test.c~  xalloc.o
+~/mycode/15122/week11/21-lec $ cp tst.c tst.c.bak
+~/mycode/15122/week11/21-lec $ cp tst.h tst.h.bak
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst.c: In function ‘is_valid_count’:
+tst.c:74:16: error: ‘tree’ has no member named ‘is_end_of_word’
+     return root->is_end_of_word ? (root->count > 0) : (root->count == 0)
+                ^
+tst.c: In function ‘tree_insert’:
+tst.c:237:8: error: ‘tree’ has no member named ‘is_end_of_word’
+       t->is_end_of_word = true;
+        ^
+tst.c:241:8: error: ‘tree’ has no member named ‘is_end_of_word’
+       t->is_end_of_word = false;
+        ^
+tst.c:250:10: error: ‘tree’ has no member named ‘is_end_of_word’
+         t->is_end_of_word = true;
+          ^
+tst.c: In function ‘tree_lookup_generalized’:
+tst.c:363:35: error: ‘tree’ has no member named ‘is_end_of_word’
+     if (s[start + 1] == '\0' && tn->is_end_of_word) {
+                                   ^
+tst.c:390:35: error: ‘tree’ has no member named ‘is_end_of_word’
+       if (s[start+1] == '\0' && tn->is_end_of_word) {
+                                   ^
+tst.c: In function ‘is_valid_count’:
+tst.c:79:1: error: control reaches end of non-void function [-Werror=return-type]
+ }
+ ^
+cc1: all warnings being treated as errors
+make: *** [tst.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+segmentation fault (core dumped)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+
+string "*" matches:
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+The 3th element of queue is: be
+The 4th element of queue is: bd
+
+string "b*" matches:
+The 0th element of queue is: be
+The 1th element of queue is: bd
+
+string "*d*" matches:
+The 0th element of queue is: bdg
+The 1th element of queue is: bdf
+tst_free() passes tests
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst.c: In function ‘is_ordered’:
+tst.c:43:7: error: too few arguments to function ‘is_ordered’
+       && is_ordered(root->middle, NULL, NULL);
+       ^
+tst.c:34:6: note: declared here
+ bool is_ordered(tree* root, elem lower, elem upper, elem_compare_fn cmp) {
+      ^
+tst.c: In function ‘is_valid_count’:
+tst.c:77:16: error: ‘tree’ has no member named ‘is_end_of_word’
+     return root->is_end_of_word ? (root->count > 0) : (root->count == 0)
+                ^
+tst.c: In function ‘tree_insert’:
+tst.c:241:8: error: ‘tree’ has no member named ‘is_end_of_word’
+       t->is_end_of_word = true;
+        ^
+tst.c:245:8: error: ‘tree’ has no member named ‘is_end_of_word’
+       t->is_end_of_word = false;
+        ^
+tst.c:254:10: error: ‘tree’ has no member named ‘is_end_of_word’
+         t->is_end_of_word = true;
+          ^
+tst.c: In function ‘tree_lookup_generalized’:
+tst.c:367:35: error: ‘tree’ has no member named ‘is_end_of_word’
+     if (s[start + 1] == '\0' && tn->is_end_of_word) {
+                                   ^
+tst.c:394:35: error: ‘tree’ has no member named ‘is_end_of_word’
+       if (s[start+1] == '\0' && tn->is_end_of_word) {
+                                   ^
+tst.c: In function ‘is_ordered’:
+tst.c:45:1: error: control reaches end of non-void function [-Werror=return-type]
+ }
+ ^
+tst.c: In function ‘is_valid_count’:
+tst.c:83:1: error: control reaches end of non-void function [-Werror=return-type]
+ }
+ ^
+cc1: all warnings being treated as errors
+make: *** [tst.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst.c: In function ‘is_ordered’:
+tst.c:43:7: error: too few arguments to function ‘is_ordered’
+       && is_ordered(root->middle, NULL, NULL);
+       ^
+tst.c:34:6: note: declared here
+ bool is_ordered(tree* root, elem lower, elem upper, elem_compare_fn cmp) {
+      ^
+tst.c:45:1: error: control reaches end of non-void function [-Werror=return-type]
+ }
+ ^
+cc1: all warnings being treated as errors
+make: *** [tst.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+
+string "*" matches:
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+The 3th element of queue is: be
+The 4th element of queue is: bd
+
+string "b*" matches:
+The 0th element of queue is: be
+The 1th element of queue is: bd
+
+string "*d*" matches:
+The 0th element of queue is: bdg
+The 1th element of queue is: bdf
+tst_free() passes tests
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst.c: In function ‘is_end_of_word’:
+tst.c:27:11: error: dereferencing ‘void *’ pointer [-Werror]
+   return (*root->data == '\0');
+           ^
+tst.c:27:3: error: void value not ignored as it ought to be
+   return (*root->data == '\0');
+   ^
+tst.c: In function ‘tree_insert’:
+tst.c:245:11: error: ‘start’ undeclared (first use in this function)
+     if (s[start] == '\0') {
+           ^
+tst.c:245:11: note: each undeclared identifier is reported only once for each function it appears in
+tst.c:254:11: error: dereferencing ‘void *’ pointer [-Werror]
+       if (*t->data == '\0') {
+           ^
+tst.c:254:7: error: void value not ignored as it ought to be
+       if (*t->data == '\0') {
+       ^
+tst.c: In function ‘tree_lookup_generalized’:
+tst.c:382:23: error: dereferencing ‘void *’ pointer [-Werror]
+       strbuf_push(sb, *tn->data);
+                       ^
+tst.c:382:7: error: invalid use of void expression
+       strbuf_push(sb, *tn->data);
+       ^
+tst.c:391:9: error: passing argument 1 of ‘Queue_insert’ from incompatible pointer type [-Werror]
+         Queue_insert(strbuf_str(sb));
+         ^
+In file included from tst.h:7:0,
+                 from tst.c:7:
+queue.h:28:6: note: expected ‘Queue’ but argument is of type ‘char *’
+ void Queue_insert(Queue q, Queue_elem ele);
+      ^
+tst.c:391:9: error: too few arguments to function ‘Queue_insert’
+         Queue_insert(strbuf_str(sb));
+         ^
+In file included from tst.h:7:0,
+                 from tst.c:7:
+queue.h:28:6: note: declared here
+ void Queue_insert(Queue q, Queue_elem ele);
+      ^
+tst.c: In function ‘is_end_of_word’:
+tst.c:28:1: error: control reaches end of non-void function [-Werror=return-type]
+ }
+ ^
+cc1: all warnings being treated as errors
+make: *** [tst.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst.c: In function ‘tree_lookup_generalized’:
+tst.c:391:9: error: passing argument 1 of ‘Queue_insert’ from incompatible pointer type [-Werror]
+         Queue_insert(strbuf_str(sb), *(char*)tn->data);
+         ^
+In file included from tst.h:7:0,
+                 from tst.c:7:
+queue.h:28:6: note: expected ‘Queue’ but argument is of type ‘char *’
+ void Queue_insert(Queue q, Queue_elem ele);
+      ^
+tst.c:391:9: error: passing argument 2 of ‘Queue_insert’ makes pointer from integer without a cast [-Werror]
+         Queue_insert(strbuf_str(sb), *(char*)tn->data);
+         ^
+In file included from tst.h:7:0,
+                 from tst.c:7:
+queue.h:28:6: note: expected ‘Queue_elem’ but argument is of type ‘char’
+ void Queue_insert(Queue q, Queue_elem ele);
+      ^
+cc1: all warnings being treated as errors
+make: *** [tst.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst.c: In function ‘tree_lookup_generalized’:
+tst.c:391:9: error: passing argument 1 of ‘Queue_insert’ from incompatible pointer type [-Werror]
+         Queue_insert(strbuf_str(sb), strbuf_str(sb));
+         ^
+In file included from tst.h:7:0,
+                 from tst.c:7:
+queue.h:28:6: note: expected ‘Queue’ but argument is of type ‘char *’
+ void Queue_insert(Queue q, Queue_elem ele);
+      ^
+cc1: all warnings being treated as errors
+make: *** [tst.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+segmentation fault (core dumped)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+segmentation fault (core dumped)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+I am here.
+segmentation fault (core dumped)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+I am here.
+segmentation fault (core dumped)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+segmentation fault (core dumped)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+segmentation fault (core dumped)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+segmentation fault (core dumped)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+segmentation fault (core dumped)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+segmentation fault (core dumped)
+~/mycode/15122/week11/21-lec $ ls
+Boggle     bst.o          queue.c         strbuf.c     trie.h       tst.h
+Makefile   ex1.c          queue.c~        strbuf.c~    tst-test     tst.h.bak
+Makefile~  ex1.c~         queue.h         strbuf.h     tst-test.c   tst.h~
+TST.h~     ex2.c          queue.h~        strbuf.h~    tst-test.c~  tst.o
+bst.c      lib            queue.o         strbuf.o     tst-test.o   xalloc.o
+bst.c~     queue-test     strbuf-test     trie-test    tst.c
+bst.h      queue-test.c   strbuf-test.c   trie-test.c  tst.c.bak
+bst.h~     queue-test.c~  strbuf-test.c~  trie.c       tst.c~
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $  ./strbuf-test
+strbuf_new() passes tests
+strbuf_add() and strbuf_addstr() passes tests
+strbuf_str() passes tests
+strbuf_pop() passes tests
+strbuf_delete() passes tests
+strbuf_push() passes tests
+~/mycode/15122/week11/21-lec $ make tst-test
+make: `tst-test' is up to date.
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+segmentation fault (core dumped)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+I am here.
+segmentation fault (core dumped)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+segmentation fault (core dumped)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+segmentation fault (core dumped)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+I am here.
+segmentation fault (core dumped)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+segmentation fault (core dumped)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst-test.c: In function ‘test_array_access’:
+tst-test.c:95:8: error: unused variable ‘c’ [-Werror=unused-variable]
+   char c = s[5];
+        ^
+cc1: all warnings being treated as errors
+make: *** [tst-test.o] Error 1
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+segmentation fault (core dumped)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Existing test_array_access()
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+segmentation fault (core dumped)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Existing test_array_access()
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+segmentation fault (core dumped)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Existing test_array_access()
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+segmentation fault (core dumped)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Existing test_array_access()
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+I am here.
+
+string "*" matches:
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+
+string "b*" matches:
+The 0th element of queue is: b
+The 1th element of queue is: be
+The 2th element of queue is: b
+The 3th element of queue is: bd
+
+string "*d*" matches:
+The 0th element of queue is: bd
+The 1th element of queue is: bdg
+The 2th element of queue is: bd
+The 3th element of queue is: bdf
+tst_free() passes tests
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+I am here.
+
+string "*" matches:
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+
+string "b*" matches:
+The 0th element of queue is: b
+The 1th element of queue is: be
+The 2th element of queue is: b
+The 3th element of queue is: bd
+
+string "*d*" matches:
+The 0th element of queue is: bd
+The 1th element of queue is: bdg
+The 2th element of queue is: bd
+The 3th element of queue is: bdf
+
+string "bd*" matches:
+The 0th element of queue is: bd
+The 1th element of queue is: bdg
+The 2th element of queue is: bd
+The 3th element of queue is: bdf
+tst_free() passes tests
+~/mycode/15122/week11/21-lec $ valgrind ./tst-test
+==18001== Memcheck, a memory error detector
+==18001== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==18001== Using Valgrind-3.10.0.SVN and LibVEX; rerun with -h for copyright info
+==18001== Command: ./tst-test
+==18001==
+Entering tests
+tst_new() passes tests
+height is 1
+==18001== Invalid read of size 1
+==18001==    at 0x409DFEF: vfprintf (vfprintf.c:1661)
+==18001==    by 0x40A32AE: printf (printf.c:33)
+==18001==    by 0x804A323: test (tst-test.c:46)
+==18001==    by 0x804A61B: main (tst-test.c:96)
+==18001==  Address 0x4206329 is 0 bytes after a block of size 1 alloc'd
+==18001==    at 0x402C109: calloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
+==18001==    by 0x8048644: xcalloc (xalloc.c:18)
+==18001==    by 0x8048E09: char_clone (tst.c:135)
+==18001==    by 0x804959B: tree_insert (tst.c:240)
+==18001==    by 0x804974E: tree_insert (tst.c:276)
+==18001==    by 0x8049814: tst_insert (tst.c:293)
+==18001==    by 0x804A2F9: test (tst-test.c:44)
+==18001==    by 0x804A61B: main (tst-test.c:96)
+==18001==
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+I am here.
+
+string "*" matches:
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+
+string "b*" matches:
+The 0th element of queue is: b
+The 1th element of queue is: be
+The 2th element of queue is: b
+The 3th element of queue is: bd
+
+string "*d*" matches:
+The 0th element of queue is: bd
+The 1th element of queue is: bdg
+The 2th element of queue is: bd
+The 3th element of queue is: bdf
+
+string "bd*" matches:
+The 0th element of queue is: bd
+The 1th element of queue is: bdg
+The 2th element of queue is: bd
+The 3th element of queue is: bdf
+tst_free() passes tests
+==18001==
+==18001== HEAP SUMMARY:
+==18001==     in use at exit: 0 bytes in 0 blocks
+==18001==   total heap usage: 93 allocs, 93 frees, 950 bytes allocated
+==18001==
+==18001== All heap blocks were freed -- no leaks are possible
+==18001==
+==18001== For counts of detected and suppressed errors, rerun with: -v
+==18001== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+I am here.
+
+string "*" matches:
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+
+string "b*" matches:
+The 0th element of queue is: b
+The 1th element of queue is: be
+The 2th element of queue is: b
+The 3th element of queue is: bd
+
+string "*d*" matches:
+The 0th element of queue is: bdf
+The 1th element of queue is: bd
+
+string "bd*" matches:
+The 0th element of queue is: bdf
+The 1th element of queue is: bd
+tst_free() passes tests
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+I am here.
+
+string "*" matches:
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+
+string "b*" matches:
+The 0th element of queue is: b
+The 1th element of queue is: be
+The 2th element of queue is: b
+The 3th element of queue is: bd
+
+string "*d*" matches:
+The 0th element of queue is: bd
+The 1th element of queue is: bdg
+The 2th element of queue is: bd
+The 3th element of queue is: bdf
+
+string "bd*" matches:
+The 0th element of queue is: bd
+The 1th element of queue is: bdg
+The 2th element of queue is: bd
+The 3th element of queue is: bdf
+tst_free() passes tests
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+I am here.
+
+string "*" matches:
+The 0th element of queue is: a
+The 1th element of queue is: a
+The 2th element of queue is: c
+The 3th element of queue is: c
+The 4th element of queue is: b
+The 5th element of queue is: b
+The 6th element of queue is: be
+The 7th element of queue is: be
+The 8th element of queue is: b
+The 9th element of queue is: bd
+The 10th element of queue is: bd
+
+string "b*" matches:
+The 0th element of queue is: b
+The 1th element of queue is: be
+The 2th element of queue is: be
+The 3th element of queue is: b
+The 4th element of queue is: bd
+The 5th element of queue is: bd
+
+string "*d*" matches:
+The 0th element of queue is: bd
+The 1th element of queue is: bdg
+The 2th element of queue is: bdg
+The 3th element of queue is: bd
+The 4th element of queue is: bdf
+The 5th element of queue is: bdf
+The 6th element of queue is: bd
+The 7th element of queue is: bdg
+The 8th element of queue is: bdg
+The 9th element of queue is: bd
+The 10th element of queue is: bdf
+The 11th element of queue is: bdf
+
+string "bd*" matches:
+The 0th element of queue is: bd
+The 1th element of queue is: bdg
+The 2th element of queue is: bdg
+The 3th element of queue is: bd
+The 4th element of queue is: bdf
+The 5th element of queue is: bdf
+tst_free() passes tests
+~/mycode/15122/week11/21-lec $ gdb ./tst-test
+GNU gdb (Ubuntu 7.7.1-0ubuntu5~14.04.2) 7.7.1
+Copyright (C) 2014 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+and "show warranty" for details.
+This GDB was configured as "i686-linux-gnu".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<http://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+<http://www.gnu.org/software/gdb/documentation/>.
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from ./tst-test...done.
+(gdb) until 86
+The program is not being run.
+(gdb) start
+Temporary breakpoint 1 at 0x804a648: file tst-test.c, line 96.
+Starting program: /home/zgs/mycode/15122/week11/21-lec/tst-test
+
+Temporary breakpoint 1, main () at tst-test.c:96
+96	  test();
+(gdb) until 86
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+I am here.
+
+string "*" matches:
+The 0th element of queue is: a
+The 1th element of queue is: a
+The 2th element of queue is: c
+The 3th element of queue is: c
+The 4th element of queue is: b
+The 5th element of queue is: b
+The 6th element of queue is: be
+The 7th element of queue is: be
+The 8th element of queue is: b
+The 9th element of queue is: bd
+The 10th element of queue is: bd
+
+string "b*" matches:
+The 0th element of queue is: b
+The 1th element of queue is: be
+The 2th element of queue is: be
+The 3th element of queue is: b
+The 4th element of queue is: bd
+The 5th element of queue is: bd
+
+string "*d*" matches:
+The 0th element of queue is: bd
+The 1th element of queue is: bdg
+The 2th element of queue is: bdg
+The 3th element of queue is: bd
+The 4th element of queue is: bdf
+The 5th element of queue is: bdf
+The 6th element of queue is: bd
+The 7th element of queue is: bdg
+The 8th element of queue is: bdg
+The 9th element of queue is: bd
+The 10th element of queue is: bdf
+The 11th element of queue is: bdf
+
+string "bd*" matches:
+The 0th element of queue is: bd
+The 1th element of queue is: bdg
+The 2th element of queue is: bdg
+The 3th element of queue is: bd
+The 4th element of queue is: bdf
+The 5th element of queue is: bdf
+tst_free() passes tests
+__libc_start_main (main=0x804a642 <main>, argc=1, argv=0xbffff224,
+    init=0x804a660 <__libc_csu_init>, fini=0x804a6d0 <__libc_csu_fini>,
+    rtld_fini=0xb7fed180 <_dl_fini>, stack_end=0xbffff21c) at libc-start.c:321
+321	libc-start.c: No such file or directory.
+(gdb) s
+__GI_exit (status=0) at exit.c:103
+103	exit.c: No such file or directory.
+(gdb) n
+104	in exit.c
+(gdb) n
+[Inferior 1 (process 18056) exited normally]
+(gdb) n
+The program is not being run.
+(gdb) n
+The program is not being run.
+(gdb) start
+Temporary breakpoint 2 at 0x804a648: file tst-test.c, line 96.
+Starting program: /home/zgs/mycode/15122/week11/21-lec/tst-test
+
+Temporary breakpoint 2, main () at tst-test.c:96
+96	  test();
+(gdb) s
+test () at tst-test.c:32
+32	  printf("Entering tests\n");
+(gdb) until 86
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+I am here.
+
+string "*" matches:
+The 0th element of queue is: a
+The 1th element of queue is: a
+The 2th element of queue is: c
+The 3th element of queue is: c
+The 4th element of queue is: b
+The 5th element of queue is: b
+The 6th element of queue is: be
+The 7th element of queue is: be
+The 8th element of queue is: b
+The 9th element of queue is: bd
+The 10th element of queue is: bd
+
+string "b*" matches:
+The 0th element of queue is: b
+The 1th element of queue is: be
+The 2th element of queue is: be
+The 3th element of queue is: b
+The 4th element of queue is: bd
+The 5th element of queue is: bd
+
+string "*d*" matches:
+The 0th element of queue is: bd
+The 1th element of queue is: bdg
+The 2th element of queue is: bdg
+The 3th element of queue is: bd
+The 4th element of queue is: bdf
+The 5th element of queue is: bdf
+The 6th element of queue is: bd
+The 7th element of queue is: bdg
+The 8th element of queue is: bdg
+The 9th element of queue is: bd
+The 10th element of queue is: bdf
+The 11th element of queue is: bdf
+test () at tst-test.c:86
+86	  test_case_tst_member_generalized(T, "bd*");
+(gdb) s
+test_case_tst_member_generalized (T=0x804e008, pattern=0x804ab70 "bd*")
+    at tst-test.c:23
+23	  Queue q = Queue_new();
+(gdb) n
+24	  tst_member_generalized(T, pattern, q);
+(gdb)
+25	  printf("\nstring \"%s\" matches:\n", pattern);
+(gdb)
+
+string "bd*" matches:
+26	  Queue_print(q);
+(gdb) n
+The 0th element of queue is: bd
+The 1th element of queue is: bdg
+The 2th element of queue is: bdg
+The 3th element of queue is: bd
+The 4th element of queue is: bdf
+The 5th element of queue is: bdf
+27	  array_dealloc((void **)Queue_dealloc(q), q->len);
+(gdb) start
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+
+Temporary breakpoint 3 at 0x804a648: file tst-test.c, line 96.
+Starting program: /home/zgs/mycode/15122/week11/21-lec/tst-test
+
+Temporary breakpoint 3, main () at tst-test.c:96
+96	  test();
+(gdb) s
+test () at tst-test.c:32
+32	  printf("Entering tests\n");
+(gdb) until 86
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+I am here.
+
+string "*" matches:
+The 0th element of queue is: a
+The 1th element of queue is: a
+The 2th element of queue is: c
+The 3th element of queue is: c
+The 4th element of queue is: b
+The 5th element of queue is: b
+The 6th element of queue is: be
+The 7th element of queue is: be
+The 8th element of queue is: b
+The 9th element of queue is: bd
+The 10th element of queue is: bd
+
+string "b*" matches:
+The 0th element of queue is: b
+The 1th element of queue is: be
+The 2th element of queue is: be
+The 3th element of queue is: b
+The 4th element of queue is: bd
+The 5th element of queue is: bd
+
+string "*d*" matches:
+The 0th element of queue is: bd
+The 1th element of queue is: bdg
+The 2th element of queue is: bdg
+The 3th element of queue is: bd
+The 4th element of queue is: bdf
+The 5th element of queue is: bdf
+The 6th element of queue is: bd
+The 7th element of queue is: bdg
+The 8th element of queue is: bdg
+The 9th element of queue is: bd
+The 10th element of queue is: bdf
+The 11th element of queue is: bdf
+test () at tst-test.c:86
+86	  test_case_tst_member_generalized(T, "bd*");
+(gdb) s
+test_case_tst_member_generalized (T=0x804e008, pattern=0x804ab70 "bd*")
+    at tst-test.c:23
+23	  Queue q = Queue_new();
+(gdb) n
+24	  tst_member_generalized(T, pattern, q);
+(gdb) s
+tst_member_generalized (T=0x804e008, s=0x804ab70 "bd*", q=0x804e428) at tst.c:456
+warning: Source file is more recent than executable.
+456	  REQUIRES(is_tst(T));
+(gdb) n
+457	  REQUIRES(s != NULL);
+(gdb)
+458	  REQUIRES(is_Queue(q));
+(gdb)
+460	  struct strbuf *sb = strbuf_new(8);
+(gdb) display sb->buf
+1: sb->buf = 0x1 <error: Cannot access memory at address 0x1>
+(gdb) n
+461	  tree_lookup_generalized(T->root, s, 0, sb, q, T->cmp);
+1: sb->buf = 0x804e3b0 ""
+(gdb) s
+tree_lookup_generalized (tn=0x804e1c8, s=0x804ab70 "bd*", start=0, sb=0x804e408,
+    q=0x804e428, cmp=0x8048d58 <string_compare>) at tst.c:366
+366	  REQUIRES(is_tree(tn, cmp));
+(gdb) n
+367	  REQUIRES(s != NULL);
+(gdb) display sb->buf
+2: sb->buf = 0x804e3b0 ""
+(gdb) n
+368	  REQUIRES(start <= strlen(s));
+2: sb->buf = 0x804e3b0 ""
+(gdb) n
+369	  REQUIRES(is_strbuf(sb));
+2: sb->buf = 0x804e3b0 ""
+(gdb)
+370	  REQUIRES(is_Queue(q));
+2: sb->buf = 0x804e3b0 ""
+(gdb)
+372	  if (tn == NULL) return;
+2: sb->buf = 0x804e3b0 ""
+(gdb)
+374	  if (s[start] == '*') {
+2: sb->buf = 0x804e3b0 ""
+(gdb)
+390	    int r = cmp(&s[start], tn->data);
+2: sb->buf = 0x804e3b0 ""
+(gdb) break 374
+Breakpoint 4 at 0x8049bd5: file tst.c, line 374.
+(gdb) c
+Continuing.
+
+Breakpoint 4, tree_lookup_generalized (tn=0x804e168, s=0x804ab70 "bd*", start=1,
+    sb=0x804e408, q=0x804e428, cmp=0x8048d58 <string_compare>) at tst.c:374
+374	  if (s[start] == '*') {
+2: sb->buf = 0x804e3b0 "b"
+(gdb) c
+Continuing.
+
+Breakpoint 4, tree_lookup_generalized (tn=0x804e0a8, s=0x804ab70 "bd*", start=2,
+    sb=0x804e408, q=0x804e428, cmp=0x8048d58 <string_compare>) at tst.c:374
+374	  if (s[start] == '*') {
+2: sb->buf = 0x804e3b0 "bd"
+(gdb) print start
+$1 = 2
+(gdb) l
+369	  REQUIRES(is_strbuf(sb));
+370	  REQUIRES(is_Queue(q));
+371
+372	  if (tn == NULL) return;
+373
+374	  if (s[start] == '*') {
+375	    tree_lookup_generalized(tn->left, s, start, sb, q, cmp);
+376	    tree_lookup_generalized(tn->right, s, start, sb, q, cmp);
+377
+378	    if (is_end_of_word(tn)) {
+(gdb) n
+375	    tree_lookup_generalized(tn->left, s, start, sb, q, cmp);
+2: sb->buf = 0x804e3b0 "bd"
+(gdb) n
+
+Breakpoint 4, tree_lookup_generalized (tn=0x804e018, s=0x804ab70 "bd*", start=2,
+    sb=0x804e408, q=0x804e428, cmp=0x8048d58 <string_compare>) at tst.c:374
+374	  if (s[start] == '*') {
+2: sb->buf = 0x804e3b0 "bd"
+(gdb) n
+375	    tree_lookup_generalized(tn->left, s, start, sb, q, cmp);
+2: sb->buf = 0x804e3b0 "bd"
+(gdb) n
+376	    tree_lookup_generalized(tn->right, s, start, sb, q, cmp);
+2: sb->buf = 0x804e3b0 "bd"
+(gdb) n
+378	    if (is_end_of_word(tn)) {
+2: sb->buf = 0x804e3b0 "bd"
+(gdb) start
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+
+Temporary breakpoint 5 at 0x804a648: file tst-test.c, line 96.
+Starting program: /home/zgs/mycode/15122/week11/21-lec/tst-test
+
+Temporary breakpoint 5, main () at tst-test.c:96
+96	  test();
+(gdb) c
+Continuing.
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+
+Breakpoint 4, tree_lookup_generalized (tn=0x804e1c8, s=0x804ab54 "*", start=0,
+    sb=0x804e258, q=0x804e038, cmp=0x8048d58 <string_compare>) at tst.c:374
+374	  if (s[start] == '*') {
+2: sb->buf = 0x804e268 ""
+(gdb) c
+Continuing.
+
+Breakpoint 4, tree_lookup_generalized (tn=0x804e108, s=0x804ab54 "*", start=0,
+    sb=0x804e258, q=0x804e038, cmp=0x8048d58 <string_compare>) at tst.c:374
+374	  if (s[start] == '*') {
+2: sb->buf = 0x804e268 ""
+(gdb) c
+Continuing.
+
+Breakpoint 4, tree_lookup_generalized (tn=0x804e108, s=0x804ab54 "*", start=1,
+    sb=0x804e258, q=0x804e038, cmp=0x8048d58 <string_compare>) at tst.c:374
+374	  if (s[start] == '*') {
+2: sb->buf = 0x804e268 ""
+(gdb) c
+Continuing.
+
+Breakpoint 4, tree_lookup_generalized (tn=0x804e198, s=0x804ab54 "*", start=1,
+    sb=0x804e258, q=0x804e038, cmp=0x8048d58 <string_compare>) at tst.c:374
+374	  if (s[start] == '*') {
+2: sb->buf = 0x804e268 "a"
+(gdb) delete 2
+No breakpoint number 2.
+(gdb) start
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+
+Temporary breakpoint 6 at 0x804a648: file tst-test.c, line 96.
+Starting program: /home/zgs/mycode/15122/week11/21-lec/tst-test
+
+Temporary breakpoint 6, main () at tst-test.c:96
+96	  test();
+(gdb) s
+test () at tst-test.c:32
+32	  printf("Entering tests\n");
+(gdb) until 86
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+
+Breakpoint 4, tree_lookup_generalized (tn=0x804e1c8, s=0x804ab54 "*", start=0,
+    sb=0x804e258, q=0x804e038, cmp=0x8048d58 <string_compare>) at tst.c:374
+374	  if (s[start] == '*') {
+2: sb->buf = 0x804e268 ""
+(gdb) n
+375	    tree_lookup_generalized(tn->left, s, start, sb, q, cmp);
+2: sb->buf = 0x804e268 ""
+(gdb)q
+A debugging session is active.
+
+	Inferior 1 [process 18074] will be killed.
+
+Quit anyway? (y or n) y
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+I am here.
+
+string "*" matches:
+The 0th element of queue is: a
+The 1th element of queue is: a
+The 2th element of queue is: c
+The 3th element of queue is: c
+The 4th element of queue is: b
+The 5th element of queue is: b
+The 6th element of queue is: be
+The 7th element of queue is: be
+The 8th element of queue is: b
+The 9th element of queue is: bd
+The 10th element of queue is: bd
+
+string "b*" matches:
+The 0th element of queue is: b
+The 1th element of queue is: be
+The 2th element of queue is: be
+The 3th element of queue is: b
+The 4th element of queue is: bd
+The 5th element of queue is: bd
+
+string "*d*" matches:
+The 0th element of queue is: bd
+The 1th element of queue is: bdg
+The 2th element of queue is: bdg
+The 3th element of queue is: bd
+The 4th element of queue is: bdf
+The 5th element of queue is: bdf
+The 6th element of queue is: bd
+The 7th element of queue is: bdg
+The 8th element of queue is: bdg
+The 9th element of queue is: bd
+The 10th element of queue is: bdf
+The 11th element of queue is: bdf
+
+string "bd*" matches:
+The 0th element of queue is: bd
+The 1th element of queue is: bdg
+The 2th element of queue is: bdg
+The 3th element of queue is: bd
+The 4th element of queue is: bdf
+The 5th element of queue is: bdf
+tst_free() passes tests
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst.o tst.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+tst-test.c: In function ‘test’:
+tst-test.c:91:3: error: passing argument 1 of ‘tst_insert’ from incompatible pointer type [-Werror]
+   tst_insert("d");
+   ^
+In file included from tst-test.c:4:0:
+tst.h:45:6: note: expected ‘tst’ but argument is of type ‘char *’
+ void tst_insert(tst t, elem e);
+      ^
+tst-test.c:91:3: error: too few arguments to function ‘tst_insert’
+   tst_insert("d");
+   ^
+In file included from tst-test.c:4:0:
+tst.h:45:6: note: declared here
+ void tst_insert(tst t, elem e);
+      ^
+tst-test.c:92:3: error: passing argument 1 of ‘tst_insert’ from incompatible pointer type [-Werror]
+   tst_insert("df");
+   ^
+In file included from tst-test.c:4:0:
+tst.h:45:6: note: expected ‘tst’ but argument is of type ‘char *’
+ void tst_insert(tst t, elem e);
+      ^
+tst-test.c:92:3: error: too few arguments to function ‘tst_insert’
+   tst_insert("df");
+   ^
+In file included from tst-test.c:4:0:
+tst.h:45:6: note: declared here
+ void tst_insert(tst t, elem e);
+      ^
+tst-test.c:93:3: error: passing argument 1 of ‘tst_insert’ from incompatible pointer type [-Werror]
+   tst_insert("dg");
+   ^
+In file included from tst-test.c:4:0:
+tst.h:45:6: note: expected ‘tst’ but argument is of type ‘char *’
+ void tst_insert(tst t, elem e);
+      ^
+tst-test.c:93:3: error: too few arguments to function ‘tst_insert’
+   tst_insert("dg");
+   ^
+In file included from tst-test.c:4:0:
+tst.h:45:6: note: declared here
+ void tst_insert(tst t, elem e);
+      ^
+cc1: all warnings being treated as errors
+make: *** [tst-test.o] Error 1
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+I am here.
+
+string "*" matches:
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+
+string "b*" matches:
+The 0th element of queue is: b
+The 1th element of queue is: be
+The 2th element of queue is: b
+The 3th element of queue is: bd
+
+string "*d*" matches:
+The 0th element of queue is: bd
+The 1th element of queue is: bdg
+The 2th element of queue is: bd
+The 3th element of queue is: bdf
+
+string "bd*" matches:
+The 0th element of queue is: bd
+The 1th element of queue is: bdg
+The 2th element of queue is: bd
+The 3th element of queue is: bdf
+
+string "d*" matches:
+The 0th element of queue is: d
+The 1th element of queue is: dg
+The 2th element of queue is: d
+The 3th element of queue is: df
+tst_free() passes tests
+~/mycode/15122/week11/21-lec $ make tst-test
+gcc -c -o tst-test.o tst-test.c -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+gcc -o tst-test xalloc.o strbuf.o tst.o queue.o tst-test.o -lm -g -DDEBUG -Wall -Wextra -Werror -std=c99 -pedantic
+~/mycode/15122/week11/21-lec $ ./tst-test
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+I am here.
+
+string "*" matches:
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+
+string "b*" matches:
+The 0th element of queue is: b
+The 1th element of queue is: be
+The 2th element of queue is: b
+The 3th element of queue is: bd
+
+string "*d*" matches:
+The 0th element of queue is: bd
+The 1th element of queue is: bdg
+The 2th element of queue is: bd
+The 3th element of queue is: bdf
+
+string "bd*" matches:
+The 0th element of queue is: bd
+The 1th element of queue is: bdg
+The 2th element of queue is: bd
+The 3th element of queue is: bdf
+
+string "d*" matches:
+The 0th element of queue is: d
+The 1th element of queue is: dg
+The 2th element of queue is: d
+The 3th element of queue is: df
+tst_free() passes tests
+~/mycode/15122/week11/21-lec $ gdb ./tst-test
+GNU gdb (Ubuntu 7.7.1-0ubuntu5~14.04.2) 7.7.1
+Copyright (C) 2014 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+and "show warranty" for details.
+This GDB was configured as "i686-linux-gnu".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<http://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+<http://www.gnu.org/software/gdb/documentation/>.
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from ./tst-test...done.
+(gdb) start
+Temporary breakpoint 1 at 0x804a676: file tst-test.c, line 104.
+Starting program: /home/zgs/mycode/15122/week11/21-lec/tst-test
+
+Temporary breakpoint 1, main () at tst-test.c:104
+104	  test();
+(gdb) s
+test () at tst-test.c:32
+32	  printf("Entering tests\n");
+(gdb) until 94
+Entering tests
+tst_new() passes tests
+height is 1
+The root node is d
+tst_insert() passes tests
+tst_lookup() passes tests
+tst_free() passes teests
+I am here.
+
+string "*" matches:
+The 0th element of queue is: a
+The 1th element of queue is: c
+The 2th element of queue is: b
+
+string "b*" matches:
+The 0th element of queue is: b
+The 1th element of queue is: be
+The 2th element of queue is: b
+The 3th element of queue is: bd
+
+string "*d*" matches:
+The 0th element of queue is: bd
+The 1th element of queue is: bdg
+The 2th element of queue is: bd
+The 3th element of queue is: bdf
+
+string "bd*" matches:
+The 0th element of queue is: bd
+The 1th element of queue is: bdg
+The 2th element of queue is: bd
+The 3th element of queue is: bdf
+test () at tst-test.c:94
+94	  test_case_tst_member_generalized(T, "d*");
+(gdb) print T->root->data
+$1 = (elem) 0x804e158
+(gdb) print *T->root->data
+Attempt to dereference a generic pointer.
+(gdb) print *(char *) T->root->data
+$2 = 100 'd'
+(gdb) print *(char *) T->root->middle->data
+$3 = 102 'f'
+(gdb) print *(char *) T->root->left->data
+Cannot access memory at address 0x0
+(gdb) print *(char *) T->root->right->data
+Cannot access memory at address 0x0
+(gdb) print *(char *) T->root->middle->right->data
+$4 = 103 'g'
+(gdb) print *(char *) T->root->middle->left->data
+$5 = 0 '\000'
+(gdb) print *(char *) T->root->middle->middle->data
+$6 = 0 '\000'
+(gdb) print *(char *) T->root->middle->right->data
+$7 = 103 'g'
+(gdb) q
+A debugging session is active.
+
+	Inferior 1 [process 18113] will be killed.
+
+Quit anyway? (y or n) y
+~/mycode/15122/week11/21-lec $ 

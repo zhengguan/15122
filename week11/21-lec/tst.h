@@ -4,16 +4,18 @@
 #define _TST_H
 
 #include <stdbool.h>
+#include "queue.h"
 
 typedef void * elem;
+//typedef char elem;
 typedef int elem_compare_fn(elem e1, elem e2);
 
 struct tree_node {
-  elem data;
+  elem data;  // (*data == '\0') -> end of word;
   int height;
-  bool is_end_of_word;
+  //bool is_end_of_word;
 
-  // number of occurences of this word if is_end_of_word == true,
+  // number of occurences of this word if (*this.data == '\0'),
   // if not exists set to 0
   int count;
   struct tree_node* left;
@@ -42,5 +44,6 @@ tst tst_new();
 int tst_lookup(tst t, elem e);
 void tst_insert(tst t, elem e);
 void tst_free(tst t);
+void tst_member_generalized(tst t, char *s, Queue q);
 
 #endif
